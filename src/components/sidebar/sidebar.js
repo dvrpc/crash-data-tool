@@ -7,9 +7,9 @@ import './sidebar.css';
 const dummyData = {
     labels: ['2013', '2014', '2015', '2016', '2017'],
     datasets: [{
-        label: 'Crashes Over Time',
+        label: 'Crashes',
         data: [12, 11, 15, 14, 17],
-        backgroundColor: '#424b54'
+        backgroundColor: '#483d3f'
     }]
 }
 
