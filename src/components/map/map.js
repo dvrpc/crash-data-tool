@@ -28,9 +28,9 @@ class Map extends Component {
 
     render() {
     return (
-        <div id="crashMap" ref={el => this.crashMap = el}>
+        <main id="crashMap" ref={el => this.crashMap = el}>
             
-        </div>
+        </main>
     );
     }
 }

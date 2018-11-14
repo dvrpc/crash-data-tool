@@ -5,9 +5,9 @@ import './sidebar.css';
 class Sidebar extends Component {
   render() {
     return (
-        <div id="sidebar">
-            <p>suh dude</p>
-        </div>
+        <section id="sidebar">
+            <h1 id="crash-map-sidebar-header">487 Crashes</h1>
+        </section>
     );
   }
 }
