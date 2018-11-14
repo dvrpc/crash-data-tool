@@ -1,0 +1,7 @@
+#crash-map-container{
+    background: #11001c;
+}
+#crash-map-content-wrapper{
+    display: flex;
+    height: 92vh;
+}
