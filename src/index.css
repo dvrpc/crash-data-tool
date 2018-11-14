@@ -3,5 +3,9 @@ body {
   padding: 0;
   font-family: 'Roboto', sans-serif;
   font-size: 16px;
+  line-height: 1.5;
   text-rendering: optimizeLegibility;
+}
+.centered-text{
+  text-align: center;
 }
