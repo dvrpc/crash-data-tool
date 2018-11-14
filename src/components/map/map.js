@@ -16,7 +16,7 @@ class Map extends Component {
         mapboxgl.accessToken = 'pk.eyJ1IjoibW1vbHRhIiwiYSI6ImNqZDBkMDZhYjJ6YzczNHJ4cno5eTcydnMifQ.RJNJ7s7hBfrJITOBZBdcOA'
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            style: 'mapbox://styles/mapbox/light-v9',
+            style: 'mapbox://styles/mapbox/streets-v9',
             center: [-75.2273, 40.071],
             zoom: 8.82
         })
