@@ -1,8 +1,8 @@
 #navbar{
     height: 7vh;
     background: #424b54;
-    margin-bottom: 1vh;
     padding: 0 3%;
+    margin-bottom: 1vh;
     display: flex;
     justify-content: space-between;
     align-items: center;

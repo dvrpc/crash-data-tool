@@ -1,7 +1,45 @@
 #homepage{
-    text-align: center;
-    padding: 3%;
+    min-height: 98vh;
+    padding: 1vh 3vh;
+    background: #f7f7f7;
 }
-#temp-jawn:hover{
+#homepage-header{
+    text-align: center;
+}
+#crash-apps-container{
+    margin-top: 5%;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+.crash-app{
+    display: flex;
+    flex-direction: column;
+    box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.7);
+    width: 35vh;
+    height: 35vh;
+    border-radius: 4px;
+    margin-bottom: 5%;
+}
+.crash-app-img{
+    height: 80%;
+    width: 100%;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.crash-app-p{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    bottom: 0;
+    margin: 0;
+    width: 100%;
+    height: 20%;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    background: #424b54;
+    color: #f6efee;
+}
+.crash-app:hover{
     cursor: pointer;
 }
