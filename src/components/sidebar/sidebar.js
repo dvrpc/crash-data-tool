@@ -23,7 +23,7 @@ class Sidebar extends Component {
     render() {
     return (
         <section id="sidebar">
-            <h1 id="crash-map-sidebar-header" class="centered-text">487 Crashes</h1>
+            <h1 id="crash-map-sidebar-header" className="centered-text">487 Crashes</h1>
 
             <Bar data={dummyData} />
 
@@ -31,7 +31,7 @@ class Sidebar extends Component {
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.
             </p>
 
-            <h2 class="centered-text crash-map-sidebar-subheader">A Subheader</h2>
+            <h2 className="centered-text crash-map-sidebar-subheader">A Subheader</h2>
 
             <ul id="crash-map-sidebar-ul">
                 <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>

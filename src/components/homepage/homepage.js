@@ -17,23 +17,23 @@ class Homepage extends Component {
             <hr />
 
             <section id="crash-apps-container">
-                <div class="crash-app">
-                    <img src="https://cdn0.iconfinder.com/data/icons/car-crash/500/hit-2-512.png" alt="hot rod" class="crash-app-img" />
-                    <p class="crash-app-p">
+                <div className="crash-app">
+                    <img src="https://cdn0.iconfinder.com/data/icons/car-crash/500/hit-2-512.png" alt="hot rod" className="crash-app-img" />
+                    <p className="crash-app-p">
                         placeholder
                     </p>
                 </div>
 
-                <div class="crash-app" onClick={this.clickJawn}>
-                    <img src="https://thumbs.gfycat.com/PastEssentialCero-small.gif" alt="hot rod" class="crash-app-img" />
-                    <p class="crash-app-p">
+                <div className="crash-app" onClick={this.clickJawn}>
+                    <img src="https://thumbs.gfycat.com/PastEssentialCero-small.gif" alt="hot rod" className="crash-app-img" />
+                    <p className="crash-app-p">
                         click here to go to the crash data web viewer
                     </p>
                 </div>
 
-                <div class="crash-app">
-                    <img src="https://cdn0.iconfinder.com/data/icons/car-crash/500/hit-2-512.png" alt="hot rod" class="crash-app-img" />
-                    <p class="crash-app-p">
+                <div className="crash-app">
+                    <img src="https://cdn0.iconfinder.com/data/icons/car-crash/500/hit-2-512.png" alt="hot rod" className="crash-app-img" />
+                    <p className="crash-app-p">
                         placeholder
                     </p>
                 </div>
