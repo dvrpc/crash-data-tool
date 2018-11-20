@@ -5,14 +5,22 @@
     background: #f7f7f7;
     margin-right: 1vh;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 .crash-map-sidebar-subheader{
     margin-top: 8%;
 }
 #crash-map-sidebar-ul{
+    border-radius: 3px;
     padding: 0;
+    background: #fff;
     list-style-type: none;
+    text-align: center;
 }
 #crash-map-sidebar-ul li{
-    padding: 1% 0;
+    padding: 2%;
+    border-bottom: 1px groove #0a0908;
+}
+#crash-map-sidebar-ul:last-child{
+    border-bottom: none;
 }

@@ -1,0 +1,22 @@
+.crash-query-subgroup{
+    display: flex;
+    justify-content: space-around;
+}
+.crash-query-subheader{
+    font-weight: 700;
+}
+
+/* override default sweet alert styles */
+.swal2-popup{
+    font-size: 16px;
+}
+.swal2-popup #swal2-content{
+    text-align: left;
+}
+.swal2-popup .swal2-content{
+    font-size: 1em;
+    line-height: 1.5;
+}
+.swal2-popup .swal2-title{
+    font-size: 1.3em;
+}
