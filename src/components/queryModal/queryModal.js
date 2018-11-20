@@ -8,7 +8,7 @@ const queryModal = () => {
     swal({
         titleText: 'Select Options to Build a New Query',
         html: queryModalHTML(),
-        width: '80%',
+        width: '70%',
         confirmButtonText: 'submit query',
         customClass: 'queryModal'
     })

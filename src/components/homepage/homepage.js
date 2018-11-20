@@ -12,32 +12,20 @@ class Homepage extends Component {
     render() {
     return (
         <div id="homepage">
-            <h1 id="homepage-header">Temporary homepage for crash data tool</h1>
-
-            <hr />
+            <h1 id="homepage-header">DVRPC Crash Data Toolkit</h1>
 
             <section id="crash-apps-container">
-                <div className="crash-app">
-                    <img src="https://cdn0.iconfinder.com/data/icons/car-crash/500/hit-2-512.png" alt="hot rod" className="crash-app-img" />
-                    <p className="crash-app-p">
-                        placeholder
-                    </p>
-                </div>
-
                 <div className="crash-app" onClick={this.clickJawn}>
                     <img src="https://thumbs.gfycat.com/PastEssentialCero-small.gif" alt="hot rod" className="crash-app-img" />
                     <p className="crash-app-p">
-                        click here to go to the crash data web viewer
-                    </p>
-                </div>
-
-                <div className="crash-app">
-                    <img src="https://cdn0.iconfinder.com/data/icons/car-crash/500/hit-2-512.png" alt="hot rod" className="crash-app-img" />
-                    <p className="crash-app-p">
-                        placeholder
+                        click here for the crash data web viewer
                     </p>
                 </div>
             </section>
+
+            <footer>
+                <p>DVRPC Footer</p>
+            </footer>
         </div>
     );
     }
