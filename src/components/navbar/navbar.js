@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import queryModal from '../queryModal/queryModal.js'
 
 import './navbar.css';
-
-console.log('what is query modal ', queryModal)
 class Navbar extends Component {
   render() {
     return (

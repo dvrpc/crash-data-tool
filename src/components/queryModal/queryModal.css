@@ -5,6 +5,10 @@
 .crash-query-subheader{
     font-weight: 700;
 }
+#query-submit{
+    display: block;
+    margin: 0 auto;
+}
 
 /* override default sweet alert styles */
 .swal2-popup{
