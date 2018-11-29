@@ -3,14 +3,14 @@
 export default `
     type Crash {
         CRN: String!
-        MAX_SEVERI: String!
-        COUNTY: String!
+        MAX_SEVERI: String
+        COUNTY: String
         MUNICIPALITY: String
         VEHICLE_CO: [Entities!]
     }
 
     type Query {
         crash(CRN: String!): Crash
-        crashes: [Crash]
+        crashes(CRN: String, MAX_SEVRI: String, COUNTY: String, MUNICIPALITY: String): [Crash]
     }
 `
