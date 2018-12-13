@@ -17,9 +17,9 @@ const dummyData = [
         COUNTY: 'Bucks',
         MUNICIPALITY: 'Samsquantch',
         VEHICLE_CO: [{
-            "BICYCLE_CO": 'Schwinn Gambit',
-            "SMALL_TRUC": ' lil truck',
-            "MOTORCYCLE": 'kawasaki?'
+            "BICYCLE_CO": '73',
+            "SMALL_TRUC": ' 40',
+            "MOTORCYCLE": '132'
         }]
     },
     {
@@ -28,9 +28,9 @@ const dummyData = [
         COUNTY: 'Bucks',
         MUNICIPALITY: 'Other',
         VEHICLE_CO: [{
-            "AUTOMOBILE": 'subaru outback', 
-            "PERSON_COU": 'pedestrian', 
-            "MOTORCYCLE": 'harley davidson'
+            "AUTOMOBILE": '6',
+            "PERSON_COU": '98',
+            "MOTORCYCLE": '1'
         }]
     },
     {
@@ -38,11 +38,11 @@ const dummyData = [
         MAX_SEVERI: 'mild',
         COUNTY: 'Delaware',
         MUNICIPALITY: 'What are these',
-        VEHICLE_CO: [
-            {"PERSON_COU": 'pedestrian'}, 
-            {"BICYCLE_CO": 'Iron Horse bike'},
-            {"AUTOMMOBILE": 'VW GTI'}
-        ]
+        VEHICLE_CO: [{
+            "PERSON_COU": '1', 
+            "BICYCLE_CO": '68',
+            "AUTOMOBILE": '12'
+        }]
     },
     {
         CRN: '4',
@@ -50,19 +50,41 @@ const dummyData = [
         COUNTY: 'Montgomery',
         MUNICIPALITY: 'Ardmore',
         VEHICLE_CO: [{
-            "SMALL_TRUC": 'baby truck',
-            "MOTORCYCLE": 'honda or whatever'
+            "SMALL_TRUC": '4',
+            "MOTORCYCLE": '1'
+        }]  
+    },
+    {
+        CRN: '5',
+        MAX_SEVERI: 'minor injury',
+        COUNTY: 'Montgomery',
+        MUNICIPALITY: 'Ardmore',
+        VEHICLE_CO: [{
+            "HEAVY_TRUC": 'thicc truck',
+            "MOTORCYCLE": '4',
+            "VAN_COUNT": "38"
+        }]  
+    },
+    {
+        CRN: '6',
+        MAX_SEVERI: 'fatal',
+        COUNTY: 'Chester',
+        MUNICIPALITY: 'Chester',
+        VEHICLE_CO: [{
+            "AUTOMOBILE": 'thicc truck',
+            "MOTORCYCLE": '40',
+            "VAN_COUNT": "3"
         }]  
     }
 ]
 
 export default {
     Query: {
-        // allow users to grab an individual crash by id (to simulate clicking on one)
+        // allow users to grab an individual crash by id (to simulate clicking on one) I don't know why this always returns null but crashes works...
         crash: (parent, args, context, info) => dummyData.filter(data => data.CRN === args.CRN),
         
         // allow users to build granular queries and get all crashes associated w/selected variables (early stages of the main query modal)
-        crashes: (parent, args, context, info) => {            
+        crashes: (parent, args, context, info) => {
             return dummyData.filter(crash => {
                 const id = args.CRN || null
                 const severity = args.MAX_SEVERI || null
