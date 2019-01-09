@@ -7,6 +7,7 @@ export default `
         COUNTY: String
         MUNICIPALITY: String
         VEHICLE_CO: [Entities!]
+        COLLISION: [CollisionTypes!]
     }
 
     type Query {

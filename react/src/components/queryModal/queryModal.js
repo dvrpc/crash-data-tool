@@ -1,6 +1,38 @@
 import React, { Component } from 'react';
+import { Query } from 'react-apollo'
+import gql from 'graphql-tag'
+import ApolloClient from 'apollo-boost'
+
 
 import './queryModal.css'
+
+// Most of this will be refactored to outside of queryModal, but here for now just to get it working
+const client = new ApolloClient({
+    uri: "http://localhost:4000/graphql"
+})
+
+const buildCrashQuery = (alias, params) => {
+    console.log('alias ', typeof(alias))
+    console.log('params ', params)
+
+    // this works
+    client.query({
+        query: gql `
+            {
+                ${alias}: crashes(MAX_SEVERI: "${params.severity}"){
+                    MAX_SEVERI,
+                    COUNTY,
+                    COLLISION {
+                        ${[...params.collisions]}
+                    },
+                    VEHICLE_CO {
+                        ${[...params.vehicles]}
+                    }
+                }
+            }
+        `
+    }).then(result => console.log('form query result ', result))
+}
 
 // refactor to our own modal b/c of the form
 class QueryModal extends Component {
@@ -17,14 +49,65 @@ class QueryModal extends Component {
         modal.setAttribute('aria-hidden', 'false')
     }
 
+    // @TODO: this needs to communicate w/navbar.js to let it know it has to reset this.state.viewModal to false
     ariaHideModal = () => {
         const modal = this.modal
         modal.style.display = 'none'
         modal.setAttribute('aria-hidden', 'true')
     }
 
-    submitForm = options => {
-        console.log('options from submitForm ', options)
+    submitForm = e => {
+        e.preventDefault()
+        const data = new FormData(e.target)
+        
+        // form data is a weird object that doesn't let you inspect or view the key/value pairs it generates. Logging it will appear empty so you have to do a for/in to inspect the contents
+        // this logs the key (name) and value (value) of only the selected form elements
+        let alias;
+        const params = {
+            severity: '',
+            vehicles: [],
+            collisions: []
+        }
+        for(var [key, value] of data.entries()) {
+            console.log('form data key values ', key, value)
+
+            switch(key){
+                // create a new entry in queryObjs for each selected MAX_SEVERI field
+                case 'MAX_SEVERI':
+                    params.severity = value
+                    // type aliases cannot have spaces, so just take the first word
+                    alias = value.split(' ')[0]
+                    break
+                // assign the rest of the fields
+                case 'COLLISION_':
+                    params.collisions.push(value)
+                    break
+                case 'VEHICLE_CO':
+                    params.vehicles.push(value)
+                    break
+                default:
+                    console.log('default')
+            }
+        }
+
+        // build the query (goal is to loop thru each severity and build a query for it or whatever idk)
+        buildCrashQuery(alias, params)
+
+        /* graphql format:
+            {
+                crashes(MAX_SEVERI: "fatal") {
+                    MAX_SEVERI,
+                    COLLISION {
+                        MOTORCYCLE
+                    },
+                }
+            }
+        */
+    }
+
+    showAdvancedSearchOptions = e => {
+        e.preventDefault()
+        this.advancedSearch.textContent = 'clicking here will reveal all the advanced search options'
     }
 
     componentDidMount() {
@@ -35,10 +118,6 @@ class QueryModal extends Component {
         window.onclick = e => e.target === this.modal ? this.ariaHideModal() : null
     }
 
-    componentDidUpdate() {
-        console.log('show props ', this.props)
-    }
-
     render() {
         return (
             <div id="modal" role="dialog" ref={el => this.modal = el}>
@@ -46,48 +125,75 @@ class QueryModal extends Component {
                     <span id="close-modal" onClick={this.ariaHideModal}>&times;</span>
 
                     <form id="new-crash-query" onSubmit={this.submitForm}>
-                        <section className="crash-query-subgroup">
-                            <div>
-                                <p className="crash-query-subheader">Collision Type</p>
-                                <div id="query-type">
-                                    <input type="checkbox" value="non collision" />Non-collision<br />
-                                    <input type="checkbox" value="rear-end" />Rear-end<br />
-                                    <input type="checkbox" value="head-on" />Head-on<br />
-                                    <input type="checkbox" value="rear-to-rear (backing)" />Rear-to-rear (Backing)<br />
-                                    <input type="checkbox" value="" /> Angle <br />
-                                    <input type="checkbox" value="" /> Sideswipe (same dir.) <br />
-                                    <input type="checkbox" value="" /> Sideswipe (Opposite dir.) <br />
-                                    <input type="checkbox" value="" /> Hit fixed object <br />
-                                    <input type="checkbox" value="" /> Hit pedestrian <br />
-                                    <input type="checkbox" value="" /> Other or unknown
-                                </div>
-                            </div>
+                        <fieldset name="query-severity" className="crash-query-subgroup" form="new-crash-query">
+                            <legend className="crash-query-subheader">Crash Severity</legend>
+                            <input type="checkbox" value="Killed" name="MAX_SEVERI" />Major Injury<br />
+                            <input type="checkbox" value="Moderate injury" name="MAX_SEVERI" />Moderate Injury<br />
+                            <input type="checkbox" value="Minor injury" name="MAX_SEVERI" />Minor Injury<br />
+                            <input type="checkbox" value="unknown injury" name="MAX_SEVERI" />Injury (unknown severity)<br />
+                            <input type="checkbox" value="no injury" name="MAX_SEVERI" />Not Injured<br />
+                            <input type="checkbox" value="unknown" name="MAX_SEVERI" />Unknown<br />
+                        </fieldset>
 
-                            <div>
-                                <p className="crash-query-subheader">Crash Severity</p>
-                                <div id="query-severity">
-                                    <input type="checkbox" value="major injury" />Major Injury<br />
-                                    <input type="checkbox" value="moderate injury" />Moderate Injury<br />
-                                    <input type="checkbox" value="minor injury" />Minor Injury<br />
-                                    <input type="checkbox" value="unknown injury" />Injury (unknown severity)<br />
-                                    <input type="checkbox" value="no injury" />Not Injured<br />
-                                    <input type="checkbox" value="unknown" />Unknown<br />
-                                </div>
-                            </div>
-                        
-                            <div>
-                                <p className="crash-query-subheader">Location</p>
-                                <div id="query-location">
-                                    <select>
-                                        <option value="">load</option>
-                                        <option value="">locations</option>
-                                        <option value="">from</option>
-                                        <option value="">an</option>
-                                        <option value="">API</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </section>
+                        <fieldset name="query-county" className="crash-query-subgroup" form="new-crash-query">
+                            <legend className="crash-query-subheader">County</legend>
+                            <select className="crash-query-select">
+                                <option value="COUNTY" name="Bucks">Bucks</option>
+                                <option value="COUNTY" name="Montgomery">Montgomery</option>
+                                <option value="COUNTY" name="Chester">Chester</option>
+                                <option value="COUNTY" name="Delaware">Delaware</option>
+                            </select>
+                        </fieldset>
+
+                        <fieldset name="query-type" className="crash-query-subgroup" form="new-crash-query">
+                            <legend className="crash-query-subheader">Collision Type:</legend>
+                            <input type="checkbox" name="COLLISION_" value="NonCollision" />Non-collision<br />
+                            <input type="checkbox" name="COLLISION_" value="RearEnd" />Rear-end<br />
+                            <input type="checkbox" name="COLLISION_" value="HeadOn" />Head-on<br />
+                            <input type="checkbox" name="COLLISION_" value="RearToRearBacking" />Rear-to-rear (Backing)<br />
+                            <input type="checkbox" name="COLLISION_" value="Angle" /> Angle <br />
+                            <input type="checkbox" name="COLLISION_" value="SideswipeSameDir" /> Sideswipe (same dir.) <br />
+                            <input type="checkbox" name="COLLISION_" value="SideswipeOppositeDir" /> Sideswipe (Opposite dir.) <br />
+                            <input type="checkbox" name="COLLISION_" value="HitFixedObject" /> Hit fixed object <br />
+                            <input type="checkbox" name="COLLISION_" value="HitPedestrian" /> Hit pedestrian <br />
+                            <input type="checkbox" name="COLLISION_" value="OtherUnknown" /> Other or unknown
+                        </fieldset>
+
+                        <fieldset name="query-vehicleCo" className="crash-query-subgroup" form="new-crash-query">
+                            <legend className="crash-query-subheader">Number of Vehicles Involved</legend>
+                                <input type="checkbox" name="VEHICLE_CO" value="AUTOMOBILE" />Automobile<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="MOTORCYCLE" />Motorcycle<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="BUS_COUNT" />Bus<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="SMALL_TRUC" />Small Truck<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="HEAVY_TRUC" />Large Truck<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="SUV_COUNT" />SUV<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="VAN_COUNT" />Van<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="BICYLE_CO" />Bicycle<br />
+                                {/* <input type="checkbox" name="VEHICLE_CO" value="" />ATV<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="" />Other Type Special Vehicle<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="" />Unknown Type Special Vehicle<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="" />Unicycle, Bicycle or Tricycle<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="" />Other Pedacycle<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="" />Horse and Buggy<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="" />Horse and Rider<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="" />Train<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="" />Trolley<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="" />Other Vehicle<br />
+                                <input type="checkbox" name="VEHICLE_CO" value="" />Unknown Vehicle<br /> */}
+                        </fieldset>
+
+                        <fieldset name="query-count" className="crash-query-subgroup" form="new-crash-query">
+                            <legend className="crash-query-subheader">Person Count</legend>
+                            <select className="crash-query-select">
+                                <option value="PERSON_COU" name="test7">0-5</option>
+                                <option value="PERSON_COU" name="test8">6-10</option>
+                                <option value="PERSON_COU" name="test9">11-15</option>
+                                <option value="PERSON_COU" name="test10">16-20</option>
+                                <option value="PERSON_COU" name="test11">21-25</option>
+                            </select>
+                        </fieldset>
+
+                        <button onClick={this.showAdvancedSearchOptions} ref={el => this.advancedSearch = el} id="advanced-search">Advanced Search</button>
 
                         <input type="submit" value="Submit Query" id="query-submit" />
                     </form>
@@ -201,25 +307,7 @@ export default QueryModal
 //     <div>
 //         <p className="crash-query-subheader">Vehicle Type</p>
 //         <div id="query-vehicle-type">
-//             <input type="checkbox" value="" />Automobile<br />
-//             <input type="checkbox" value="" />Motorcycle<br />
-//             <input type="checkbox" value="" />Bus<br />
-//             <input type="checkbox" value="" />Small Truck<br />
-//             <input type="checkbox" value="" />Large Truck<br />
-//             <input type="checkbox" value="" />SUV<br />
-//             <input type="checkbox" value="" />Van<br />
-//             <input type="checkbox" value="" />Construction Equipment<br />
-//             <input type="checkbox" value="" />ATV<br />
-//             <input type="checkbox" value="" />Other Type Special Vehicle<br />
-//             <input type="checkbox" value="" />Unknown Type Special Vehicle<br />
-//             <input type="checkbox" value="" />Unicycle, Bicycle or Tricycle<br />
-//             <input type="checkbox" value="" />Other Pedacycle<br />
-//             <input type="checkbox" value="" />Horse and Buggy<br />
-//             <input type="checkbox" value="" />Horse and Rider<br />
-//             <input type="checkbox" value="" />Train<br />
-//             <input type="checkbox" value="" />Trolley<br />
-//             <input type="checkbox" value="" />Other Vehicle<br />
-//             <input type="checkbox" value="" />Unknown Vehicle<br />
+
 //         </div>
 //     </div>
 // </section>

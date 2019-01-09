@@ -17,11 +17,14 @@ const client = new ApolloClient({
 client.query({
   query: gql `
       {
-          crashes(MAX_SEVERI: "fatal") {
+          killed: crashes(MAX_SEVERI: "Killed") {
               MAX_SEVERI,
               VEHICLE_CO {
                 MOTORCYCLE
               },
+              COLLISION {
+                HeadOn
+              }
           }
       }
   `

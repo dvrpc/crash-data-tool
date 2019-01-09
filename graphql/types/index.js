@@ -7,7 +7,8 @@ import { mergeTypes } from 'merge-graphql-schemas'
 
 import Crash from './Crash.js'
 import Entities from './Entities.js'
+import CollisionTypes from './CollisionTypes.js'
 
-const typeDefs = [Crash, Entities]
+const typeDefs = [Crash, Entities, CollisionTypes]
 
 export default mergeTypes(typeDefs)

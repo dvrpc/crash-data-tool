@@ -13,67 +13,85 @@
 const dummyData = [
     {
         CRN: '1',
-        MAX_SEVERI: 'fatal',
+        MAX_SEVERI: 'Killed',
         COUNTY: 'Bucks',
         MUNICIPALITY: 'Samsquantch',
         VEHICLE_CO: [{
             "BICYCLE_CO": '73',
             "SMALL_TRUC": ' 40',
             "MOTORCYCLE": '132'
+        }],
+        COLLISION: [{
+            "Angle": '45'
         }]
     },
     {
         CRN: '2',
-        MAX_SEVERI: 'fatal',
+        MAX_SEVERI: 'Killed',
         COUNTY: 'Bucks',
         MUNICIPALITY: 'Other',
         VEHICLE_CO: [{
             "AUTOMOBILE": '6',
             "PERSON_COU": '98',
             "MOTORCYCLE": '1'
+        }],
+        COLLISION: [{
+            "HitFixedObject": "yes?"
         }]
     },
     {
         CRN: '3',
-        MAX_SEVERI: 'mild',
+        MAX_SEVERI: 'Moderate injury',
         COUNTY: 'Delaware',
         MUNICIPALITY: 'What are these',
         VEHICLE_CO: [{
             "PERSON_COU": '1', 
             "BICYCLE_CO": '68',
             "AUTOMOBILE": '12'
+        }],
+        COLLISION: [{
+            "RearEnd": "true"
         }]
     },
     {
         CRN: '4',
-        MAX_SEVERI: 'mild',
+        MAX_SEVERI: 'Moderate injury',
         COUNTY: 'Montgomery',
         MUNICIPALITY: 'Ardmore',
         VEHICLE_CO: [{
             "SMALL_TRUC": '4',
             "MOTORCYCLE": '1'
-        }]  
+        }],
+        COLLISION: [{
+            "HitPedestrian": "false"
+        }]
     },
     {
         CRN: '5',
-        MAX_SEVERI: 'minor injury',
+        MAX_SEVERI: 'Minor injury',
         COUNTY: 'Montgomery',
         MUNICIPALITY: 'Ardmore',
         VEHICLE_CO: [{
             "HEAVY_TRUC": 'thicc truck',
             "MOTORCYCLE": '4',
             "VAN_COUNT": "38"
+        }],
+        COLLISION: [{
+            "NonCollision": "true"
         }]  
     },
     {
         CRN: '6',
-        MAX_SEVERI: 'fatal',
+        MAX_SEVERI: 'Killed',
         COUNTY: 'Chester',
         MUNICIPALITY: 'Chester',
         VEHICLE_CO: [{
             "AUTOMOBILE": 'thicc truck',
             "MOTORCYCLE": '40',
             "VAN_COUNT": "3"
+        }],
+        COLLISION: [{
+            "HeadOn": "true"
         }]  
     }
 ]

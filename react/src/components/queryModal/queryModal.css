@@ -1,15 +1,4 @@
-.crash-query-subgroup{
-    display: flex;
-    justify-content: space-around;
-}
-.crash-query-subheader{
-    font-weight: 700;
-}
-#query-submit{
-    display: block;
-    margin: 0 auto;
-}
-
+/**** Modal Styles ****/
 #modal-content{
     box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
 }
@@ -32,15 +21,63 @@
 #modal-content{
     position: relative;
     margin: 0 auto;
-    background: #f7f7f7;
-    width: 50%;
-    margin-top: 15%;
+    background: #424b54;
+    width: 70%;
+    margin-top: 10%;
     padding: 3%;
     border-radius: 4px;
+    /* @TODO: remove this as late as possible*/
+    border: 15px ridge #f6efee;
 }
 #close-modal{
+    color: #f6efee;
     position: absolute;
     right: 2%;
     top: 2%;
     font-size: 1.5em;
+}
+
+
+/**** Form Styles ****/
+#new-crash-query{
+    color: #f6efee;
+}
+.crash-query-subgroup{
+    display: flex;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+    margin-bottom: 2%;
+}
+.crash-query-subheader{
+    font-weight: 700;
+}
+.crash-query-select{
+    padding: 1%;
+}
+#advanced-search{
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 2%;
+    font-size: 1em;
+    border: none;
+    background: none;
+    color: #f6efee;
+}
+#advanced-search:hover{
+    cursor: pointer;
+}
+#query-submit{
+    display: block;
+    margin: 0 auto;
+    padding: 1%;
+    background: #424b54;
+    color: #f6efee;
+    border: 2px solid #f6efee;
+    border-radius: 3px;
+}
+#query-submit:hover{
+    cursor: pointer;
+    background: #f6efee;
+    color: #424b54;
 }
