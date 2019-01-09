@@ -16,17 +16,20 @@ const client = new ApolloClient({
 // test query
 client.query({
   query: gql `
-      {
-          killed: crashes(MAX_SEVERI: "Killed") {
-              MAX_SEVERI,
-              VEHICLE_CO {
-                MOTORCYCLE
-              },
-              COLLISION {
-                HeadOn
-              }
-          }
+    {
+        killed: crashes(MAX_SEVERI: "Killed"){
+        MAX_SEVERI
+        VEHICLE_CO {
+          MOTORCYCLE
+        }
+      },
+      moderate: crashes(MAX_SEVERI: "Moderate injury"){
+        MAX_SEVERI
+        VEHICLE_CO {
+          MOTORCYCLE
+        }
       }
+    }
   `
 }).then(result => console.log('test query result ', result))
 

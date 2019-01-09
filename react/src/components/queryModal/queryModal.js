@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import ApolloClient from 'apollo-boost'
-
 
 import './queryModal.css'
 
@@ -11,30 +9,41 @@ const client = new ApolloClient({
     uri: "http://localhost:4000/graphql"
 })
 
-const buildCrashQuery = (alias, params) => {
-    console.log('alias ', typeof(alias))
-    console.log('params ', params)
-
-    // this works
-    client.query({
-        query: gql `
-            {
-                ${alias}: crashes(MAX_SEVERI: "${params.severity}"){
-                    MAX_SEVERI,
-                    COUNTY,
-                    COLLISION {
-                        ${[...params.collisions]}
-                    },
-                    VEHICLE_CO {
-                        ${[...params.vehicles]}
-                    }
+// for each instance of MAX_SEVERI, build out nearly identical queries w/different MAX_SEVERI parameters
+    // NOT using fragments here because all the different combination types - from the standard options to the advanced options
+const buildQueryLogic = params => {
+    let queries = '{';
+    const crashSeverity = params.severity
+    
+    // eventually want this to be smart enough to populate the COUNTY, COLLISION, etc., based on what the params are
+    crashSeverity.forEach(severity => {
+        let query = `
+            ${severity.alias}: crashes(MAX_SEVERI: "${severity.value}"){
+                MAX_SEVERI,
+                COUNTY,
+                COLLISION {
+                    ${[...params.collisions]}
+                },
+                VEHICLE_CO {
+                    ${[...params.vehicles]}
                 }
-            }
-        `
+            },`
+
+        queries += query
+    })
+
+    queries += '}'
+
+    return queries
+}
+
+// use the constructed query strings to make a call
+const buildCrashQuery = queries => {
+    client.query({
+        query: gql(queries)
     }).then(result => console.log('form query result ', result))
 }
 
-// refactor to our own modal b/c of the form
 class QueryModal extends Component {
     constructor(props) {
         super(props)
@@ -64,19 +73,19 @@ class QueryModal extends Component {
         // this logs the key (name) and value (value) of only the selected form elements
         let alias;
         const params = {
-            severity: '',
+            severity: [],
             vehicles: [],
             collisions: []
         }
-        for(var [key, value] of data.entries()) {
-            console.log('form data key values ', key, value)
 
+        for(var [key, value] of data.entries()) {
             switch(key){
                 // create a new entry in queryObjs for each selected MAX_SEVERI field
                 case 'MAX_SEVERI':
-                    params.severity = value
                     // type aliases cannot have spaces, so just take the first word
                     alias = value.split(' ')[0]
+                    const severityObj = {alias, value}
+                    params.severity.push(severityObj)
                     break
                 // assign the rest of the fields
                 case 'COLLISION_':
@@ -90,19 +99,9 @@ class QueryModal extends Component {
             }
         }
 
-        // build the query (goal is to loop thru each severity and build a query for it or whatever idk)
-        buildCrashQuery(alias, params)
-
-        /* graphql format:
-            {
-                crashes(MAX_SEVERI: "fatal") {
-                    MAX_SEVERI,
-                    COLLISION {
-                        MOTORCYCLE
-                    },
-                }
-            }
-        */
+        // build and then execute the query
+        const queries = buildQueryLogic(params)
+        buildCrashQuery(queries)
     }
 
     showAdvancedSearchOptions = e => {
