@@ -1,49 +1,7 @@
 import React, { Component } from 'react';
-import gql from 'graphql-tag'
-import ApolloClient from 'apollo-boost'
 
+import { buildQueryLogic, buildCrashQuery } from '../../utils/handleFormRequest.js'
 import './queryModal.css'
-
-// Most of this will be refactored to outside of queryModal, but here for now just to get it working
-const client = new ApolloClient({
-    uri: "http://localhost:4000/graphql"
-})
-
-// for each instance of MAX_SEVERI, build out nearly identical queries w/different MAX_SEVERI parameters
-    // NOT using fragments here because all the different combination types - from the standard options to the advanced options
-const buildQueryLogic = params => {
-    let queries = '{';
-    const crashSeverity = params.severity
-    
-    // eventually want this to be smart enough to populate the COUNTY, COLLISION, etc., based on what the params are
-    crashSeverity.forEach(severity => {
-        let query = `
-            ${severity.alias}: crashes(MAX_SEVERI: "${severity.value}"){
-                MAX_SEVERI,
-                COUNTY,
-                COLLISION {
-                    ${[...params.collisions]}
-                },
-                VEHICLE_CO {
-                    ${[...params.vehicles]}
-                }
-            },`
-
-        queries += query
-    })
-
-    queries += '}'
-
-    return queries
-}
-
-// use the constructed query strings to make a call
-const buildCrashQuery = queries => {
-    client.query({
-        query: gql(queries)
-    }).then(result => console.log('form query result ', result))
-}
-
 class QueryModal extends Component {
     constructor(props) {
         super(props)
@@ -69,8 +27,6 @@ class QueryModal extends Component {
         e.preventDefault()
         const data = new FormData(e.target)
         
-        // form data is a weird object that doesn't let you inspect or view the key/value pairs it generates. Logging it will appear empty so you have to do a for/in to inspect the contents
-        // this logs the key (name) and value (value) of only the selected form elements
         let alias;
         const params = {
             severity: [],
@@ -101,6 +57,8 @@ class QueryModal extends Component {
 
         // build and then execute the query
         const queries = buildQueryLogic(params)
+        // once this becomes more of a real app, the output of this function would populate the Sidebar.
+        // The map itself will always come from the vector tiles (keeping it consistent w/the sidebar info may or may not be a big challenge)
         buildCrashQuery(queries)
     }
 
