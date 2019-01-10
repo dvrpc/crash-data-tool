@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import mapboxgl from "mapbox-gl";
 
+import * as layers from './layers.js'
 import './map.css';
 
 class Map extends Component {
@@ -15,16 +16,28 @@ class Map extends Component {
         console.log('selected severity is ', e)
     }
 
-    // subject to change - did it differently for the TIP
     componentDidMount() {
         mapboxgl.accessToken = 'pk.eyJ1IjoibW1vbHRhIiwiYSI6ImNqZDBkMDZhYjJ6YzczNHJ4cno5eTcydnMifQ.RJNJ7s7hBfrJITOBZBdcOA'
+        
         this.map = new mapboxgl.Map({
             container: this.crashMap,
             style: 'mapbox://styles/mapbox/basic-v9',
             center: [-75.2273, 40.071],
-            zoom: 8.82
+            zoom: 8.2
         })
+
         this.map.addControl(new mapboxgl.NavigationControl())
+
+        // add Region layer
+        this.map.on('load', () => {
+            this.map.addSource("Boundaries" , {
+                type: 'vector',
+                url: 'https://tiles.dvrpc.org/data/dvrpc-municipal.json'
+            })
+
+            this.map.addLayer(layers.countyOutline)
+            this.map.addLayer(layers.municipalityOutline)
+        })
     }
 
     componentWillUnmount() {
