@@ -27,7 +27,7 @@
     padding: 3%;
     border-radius: 4px;
     /* @TODO: remove this as late as possible*/
-    border: 15px ridge #f6efee;
+    border: 10px ridge #f6efee;
 }
 #close-modal{
     color: #f6efee;
