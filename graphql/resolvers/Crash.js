@@ -10,89 +10,104 @@
 
 
 // dummy data instead of db for now
+// @TODO: confirm that COLLISION and VEHICLE_CO don't need to be arrays
 const dummyData = [
     {
         CRN: '1',
         MAX_SEVERI: 'Killed',
         COUNTY: 'Bucks',
         MUNICIPALITY: 'Samsquantch',
-        VEHICLE_CO: [{
+        VEHICLE_CO: {
             "BICYCLE_CO": '73',
             "SMALL_TRUC": ' 40',
             "MOTORCYCLE": '132'
-        }],
-        COLLISION: [{
-            "Angle": '45'
-        }]
+        },
+        COLLISION: {
+            "Angle": '45',
+            "NonCollision": 'true',
+            "RearEnd": 'true',
+            "RearToRearBacking": "false"
+        }
     },
     {
         CRN: '2',
         MAX_SEVERI: 'Killed',
         COUNTY: 'Bucks',
         MUNICIPALITY: 'Other',
-        VEHICLE_CO: [{
+        VEHICLE_CO: {
             "AUTOMOBILE": '6',
             "PERSON_COU": '98',
             "MOTORCYCLE": '1'
-        }],
-        COLLISION: [{
-            "HitFixedObject": "yes?"
-        }]
+        },
+        COLLISION: {
+            "HitFixedObject": "yes?",
+            "RearEnd": "true",
+            "NonCollision": "false"
+        }
     },
     {
         CRN: '3',
         MAX_SEVERI: 'Moderate injury',
         COUNTY: 'Delaware',
         MUNICIPALITY: 'What are these',
-        VEHICLE_CO: [{
+        VEHICLE_CO: {
             "PERSON_COU": '1', 
             "BICYCLE_CO": '68',
             "AUTOMOBILE": '12'
-        }],
-        COLLISION: [{
-            "RearEnd": "true"
-        }]
+        },
+        COLLISION: {
+            "RearEnd": "true",
+            "Angle": "45",
+            "HeadOne": "false",
+            "NonCollision": "false"
+        }
     },
     {
         CRN: '4',
         MAX_SEVERI: 'Moderate injury',
         COUNTY: 'Montgomery',
         MUNICIPALITY: 'Ardmore',
-        VEHICLE_CO: [{
+        VEHICLE_CO: {
             "SMALL_TRUC": '4',
             "MOTORCYCLE": '1'
-        }],
-        COLLISION: [{
-            "HitPedestrian": "false"
-        }]
+        },
+        COLLISION: {
+            "HitPedestrian": "false",
+            "NonCollision": "false",
+            "Angle": "192"
+        }
     },
     {
         CRN: '5',
         MAX_SEVERI: 'Minor injury',
         COUNTY: 'Montgomery',
         MUNICIPALITY: 'Ardmore',
-        VEHICLE_CO: [{
-            "HEAVY_TRUC": 'thicc truck',
+        VEHICLE_CO: {
+            "HEAVY_TRUC": '12',
             "MOTORCYCLE": '4',
             "VAN_COUNT": "38"
-        }],
-        COLLISION: [{
-            "NonCollision": "true"
-        }]  
+        },
+        COLLISION: {
+            "NonCollision": "true",
+            "HeadOn": "true",
+            "SideswipeSameDir": "true"
+        }  
     },
     {
         CRN: '6',
         MAX_SEVERI: 'Killed',
         COUNTY: 'Chester',
         MUNICIPALITY: 'Chester',
-        VEHICLE_CO: [{
-            "AUTOMOBILE": 'thicc truck',
+        VEHICLE_CO: {
+            "AUTOMOBILE": '120',
             "MOTORCYCLE": '40',
             "VAN_COUNT": "3"
-        }],
-        COLLISION: [{
-            "HeadOn": "true"
-        }]  
+        },
+        COLLISION: {
+            "HeadOn": "true",
+            "NonCollision": "false",
+            "RearToRearBacking": "true"
+        }  
     }
 ]
 

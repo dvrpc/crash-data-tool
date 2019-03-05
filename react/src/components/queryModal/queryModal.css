@@ -81,3 +81,18 @@
     background: #f6efee;
     color: #424b54;
 }
+
+
+/**** Response Jawns ****/
+#response-list{
+    color: #f6efee;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.response-list-item{
+    margin: 2%;
+}
+.response-sublist-item{
+    margin: 2px 0 2px 20px;
+}

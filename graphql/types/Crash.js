@@ -6,8 +6,8 @@ export default `
         MAX_SEVERI: String
         COUNTY: String
         MUNICIPALITY: String
-        VEHICLE_CO: [Entities!]
-        COLLISION: [CollisionTypes!]
+        VEHICLE_CO: Entities!
+        COLLISION: CollisionTypes!
     }
 
     type Query {

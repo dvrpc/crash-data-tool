@@ -1,4 +1,5 @@
 #sidebar{
+    font-size: 14px;
     width: 35vw;
     height: 100%;
     padding: 0 1vw;
@@ -15,7 +16,6 @@
     padding: 0;
     background: #fff;
     list-style-type: none;
-    text-align: center;
 }
 #crash-map-sidebar-ul li{
     padding: 2%;

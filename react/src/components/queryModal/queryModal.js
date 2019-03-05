@@ -6,7 +6,8 @@ class QueryModal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-
+            form: true,
+            response: {}
         }
     }
 
@@ -23,6 +24,7 @@ class QueryModal extends Component {
         modal.setAttribute('aria-hidden', 'true')
     }
 
+    // The response data from this query is what should populate the sidebar.
     submitForm = e => {
         e.preventDefault()
         const data = new FormData(e.target)
@@ -58,8 +60,22 @@ class QueryModal extends Component {
         // build and then execute the query
         const queries = buildQueryLogic(params)
         // once this becomes more of a real app, the output of this function would populate the Sidebar.
-        // The map itself will always come from the vector tiles (keeping it consistent w/the sidebar info may or may not be a big challenge)
-        buildCrashQuery(queries)
+        // The map itself will always come from the vector tiles (keeping it consistent w/the sidebar info may or may not be a challenge)
+        const result = buildCrashQuery(queries)
+        
+        result.then(response => {
+            if(Object.keys(response).length) {
+                this.setState({
+                    form: false,
+                    response: response.data
+                })
+            }else{
+                this.setState({
+                    form: false,
+                    response: ['no data']
+                })
+            }
+        })
     }
 
     showAdvancedSearchOptions = e => {
@@ -76,84 +92,105 @@ class QueryModal extends Component {
     }
 
     render() {
+        let val = Object.keys(this.state.response).length ? this.state.response[0] : null
+        if(val) Object.keys(val.COLLISION).map(key => console.log(val.COLLISION[key]))
         return (
             <div id="modal" role="dialog" ref={el => this.modal = el}>
                 <div id="modal-content">
                     <span id="close-modal" onClick={this.ariaHideModal}>&times;</span>
 
-                    <form id="new-crash-query" onSubmit={this.submitForm}>
-                        <fieldset name="query-severity" className="crash-query-subgroup" form="new-crash-query">
-                            <legend className="crash-query-subheader">Crash Severity</legend>
-                            <input type="checkbox" value="Killed" name="MAX_SEVERI" />Major Injury<br />
-                            <input type="checkbox" value="Moderate injury" name="MAX_SEVERI" />Moderate Injury<br />
-                            <input type="checkbox" value="Minor injury" name="MAX_SEVERI" />Minor Injury<br />
-                            <input type="checkbox" value="unknown injury" name="MAX_SEVERI" />Injury (unknown severity)<br />
-                            <input type="checkbox" value="no injury" name="MAX_SEVERI" />Not Injured<br />
-                            <input type="checkbox" value="unknown" name="MAX_SEVERI" />Unknown<br />
-                        </fieldset>
+                    {this.state.form ? (
+                        <form id="new-crash-query" onSubmit={this.submitForm}>
+                            <fieldset name="query-severity" className="crash-query-subgroup" form="new-crash-query">
+                                <legend className="crash-query-subheader">Crash Severity</legend>
+                                <input type="checkbox" value="Killed" name="MAX_SEVERI" />Major Injury<br />
+                                <input type="checkbox" value="Moderate injury" name="MAX_SEVERI" />Moderate Injury<br />
+                                <input type="checkbox" value="Minor injury" name="MAX_SEVERI" />Minor Injury<br />
+                                <input type="checkbox" value="unknown injury" name="MAX_SEVERI" />Injury (unknown severity)<br />
+                                <input type="checkbox" value="no injury" name="MAX_SEVERI" />Not Injured<br />
+                                <input type="checkbox" value="unknown" name="MAX_SEVERI" />Unknown<br />
+                            </fieldset>
 
-                        <fieldset name="query-county" className="crash-query-subgroup" form="new-crash-query">
-                            <legend className="crash-query-subheader">County</legend>
-                            <select className="crash-query-select">
-                                <option value="COUNTY" name="Bucks">Bucks</option>
-                                <option value="COUNTY" name="Montgomery">Montgomery</option>
-                                <option value="COUNTY" name="Chester">Chester</option>
-                                <option value="COUNTY" name="Delaware">Delaware</option>
-                            </select>
-                        </fieldset>
+                            <fieldset name="query-county" className="crash-query-subgroup" form="new-crash-query">
+                                <legend className="crash-query-subheader">County</legend>
+                                <select className="crash-query-select">
+                                    <option value="COUNTY" name="Bucks">Bucks</option>
+                                    <option value="COUNTY" name="Montgomery">Montgomery</option>
+                                    <option value="COUNTY" name="Chester">Chester</option>
+                                    <option value="COUNTY" name="Delaware">Delaware</option>
+                                </select>
+                            </fieldset>
 
-                        <fieldset name="query-type" className="crash-query-subgroup" form="new-crash-query">
-                            <legend className="crash-query-subheader">Collision Type:</legend>
-                            <input type="checkbox" name="COLLISION_" value="NonCollision" />Non-collision<br />
-                            <input type="checkbox" name="COLLISION_" value="RearEnd" />Rear-end<br />
-                            <input type="checkbox" name="COLLISION_" value="HeadOn" />Head-on<br />
-                            <input type="checkbox" name="COLLISION_" value="RearToRearBacking" />Rear-to-rear (Backing)<br />
-                            <input type="checkbox" name="COLLISION_" value="Angle" /> Angle <br />
-                            <input type="checkbox" name="COLLISION_" value="SideswipeSameDir" /> Sideswipe (same dir.) <br />
-                            <input type="checkbox" name="COLLISION_" value="SideswipeOppositeDir" /> Sideswipe (Opposite dir.) <br />
-                            <input type="checkbox" name="COLLISION_" value="HitFixedObject" /> Hit fixed object <br />
-                            <input type="checkbox" name="COLLISION_" value="HitPedestrian" /> Hit pedestrian <br />
-                            <input type="checkbox" name="COLLISION_" value="OtherUnknown" /> Other or unknown
-                        </fieldset>
+                            <fieldset name="query-type" className="crash-query-subgroup" form="new-crash-query">
+                                <legend className="crash-query-subheader">Collision Type:</legend>
+                                <input type="checkbox" name="COLLISION_" value="NonCollision" />Non-collision<br />
+                                <input type="checkbox" name="COLLISION_" value="RearEnd" />Rear-end<br />
+                                <input type="checkbox" name="COLLISION_" value="HeadOn" />Head-on<br />
+                                <input type="checkbox" name="COLLISION_" value="RearToRearBacking" />Rear-to-rear (Backing)<br />
+                                <input type="checkbox" name="COLLISION_" value="Angle" /> Angle <br />
+                                <input type="checkbox" name="COLLISION_" value="SideswipeSameDir" /> Sideswipe (same dir.) <br />
+                                <input type="checkbox" name="COLLISION_" value="SideswipeOppositeDir" /> Sideswipe (Opposite dir.) <br />
+                                <input type="checkbox" name="COLLISION_" value="HitFixedObject" /> Hit fixed object <br />
+                                <input type="checkbox" name="COLLISION_" value="HitPedestrian" /> Hit pedestrian <br />
+                                <input type="checkbox" name="COLLISION_" value="OtherUnknown" /> Other or unknown
+                            </fieldset>
 
-                        <fieldset name="query-vehicleCo" className="crash-query-subgroup" form="new-crash-query">
-                            <legend className="crash-query-subheader">Number of Vehicles Involved</legend>
-                                <input type="checkbox" name="VEHICLE_CO" value="AUTOMOBILE" />Automobile<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="MOTORCYCLE" />Motorcycle<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="BUS_COUNT" />Bus<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="SMALL_TRUC" />Small Truck<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="HEAVY_TRUC" />Large Truck<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="SUV_COUNT" />SUV<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="VAN_COUNT" />Van<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="BICYLE_CO" />Bicycle<br />
-                                {/* <input type="checkbox" name="VEHICLE_CO" value="" />ATV<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="" />Other Type Special Vehicle<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="" />Unknown Type Special Vehicle<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="" />Unicycle, Bicycle or Tricycle<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="" />Other Pedacycle<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="" />Horse and Buggy<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="" />Horse and Rider<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="" />Train<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="" />Trolley<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="" />Other Vehicle<br />
-                                <input type="checkbox" name="VEHICLE_CO" value="" />Unknown Vehicle<br /> */}
-                        </fieldset>
+                            <fieldset name="query-vehicleCo" className="crash-query-subgroup" form="new-crash-query">
+                                <legend className="crash-query-subheader">Number of Vehicles Involved</legend>
+                                    <input type="checkbox" name="VEHICLE_CO" value="AUTOMOBILE" />Automobile<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="MOTORCYCLE" />Motorcycle<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="BUS_COUNT" />Bus<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="SMALL_TRUC" />Small Truck<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="HEAVY_TRUC" />Large Truck<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="SUV_COUNT" />SUV<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="VAN_COUNT" />Van<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="BICYLE_CO" />Bicycle<br />
+                                    {/* <input type="checkbox" name="VEHICLE_CO" value="" />ATV<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="" />Other Type Special Vehicle<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="" />Unknown Type Special Vehicle<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="" />Unicycle, Bicycle or Tricycle<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="" />Other Pedacycle<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="" />Horse and Buggy<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="" />Horse and Rider<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="" />Train<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="" />Trolley<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="" />Other Vehicle<br />
+                                    <input type="checkbox" name="VEHICLE_CO" value="" />Unknown Vehicle<br /> */}
+                            </fieldset>
 
-                        <fieldset name="query-count" className="crash-query-subgroup" form="new-crash-query">
-                            <legend className="crash-query-subheader">Person Count</legend>
-                            <select className="crash-query-select">
-                                <option value="PERSON_COU" name="test7">0-5</option>
-                                <option value="PERSON_COU" name="test8">6-10</option>
-                                <option value="PERSON_COU" name="test9">11-15</option>
-                                <option value="PERSON_COU" name="test10">16-20</option>
-                                <option value="PERSON_COU" name="test11">21-25</option>
-                            </select>
-                        </fieldset>
+                            <fieldset name="query-count" className="crash-query-subgroup" form="new-crash-query">
+                                <legend className="crash-query-subheader">Person Count</legend>
+                                <select className="crash-query-select">
+                                    <option value="PERSON_COU" name="test7">0-5</option>
+                                    <option value="PERSON_COU" name="test8">6-10</option>
+                                    <option value="PERSON_COU" name="test9">11-15</option>
+                                    <option value="PERSON_COU" name="test10">16-20</option>
+                                    <option value="PERSON_COU" name="test11">21-25</option>
+                                </select>
+                            </fieldset>
 
-                        <button onClick={this.showAdvancedSearchOptions} ref={el => this.advancedSearch = el} id="advanced-search">Advanced Search</button>
+                            <button onClick={this.showAdvancedSearchOptions} ref={el => this.advancedSearch = el} id="advanced-search">Advanced Search</button>
 
-                        <input type="submit" value="Submit Query" id="query-submit" />
-                    </form>
+                            <input type="submit" value="Submit Query" id="query-submit" />
+                        </form>
+                    ) : (
+                        <ul id="response-list">
+                            {
+                                Object.keys(this.state.response).map(key => {
+                                    return this.state.response[key].map((val, index) => {
+                                        return (
+                                            <li key={val.COUNTY + index} className="response-list-item">
+                                                <strong>{val.COUNTY} County</strong> <br />
+                                                <strong>Crash Severity</strong>: {val.MAX_SEVERI} <br />
+                                                <strong>Collision Type</strong>: {Object.keys(val.COLLISION).map((key, index) => <p className="response-sublist-item" key={index}>{key}: {val.COLLISION[key]}</p>)}
+                                                <strong>Vehicle Type</strong>:  {Object.keys(val.VEHICLE_CO).map((key, index) => <p className="response-sublist-item" key={index}>{key}: {val.VEHICLE_CO[key]}</p>)}
+                                            </li>
+                                        )
+                                    })
+                                })
+                            }
+                        </ul>
+                    )}
                 </div>
             </div>
         )

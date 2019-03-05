@@ -8,9 +8,9 @@
 #homepage-header{
     text-align: center;
     color: #ecebe4;
-    width: 100%;
-    margin: 0;
-    padding: 2% 0;
+    width: 90%;
+    margin: 0 auto;
+    padding: 3% 0;
     border-bottom: 1px ridge #ecebe4;
     font-weight: 100;
 }
@@ -51,7 +51,7 @@
 .crash-app:hover{
     cursor: pointer;
 }
-footer{
+#homepage footer{
     position: absolute;
     bottom: 0;
     width: 94%;

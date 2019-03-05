@@ -4,6 +4,7 @@ import mapboxgl from "mapbox-gl";
 import * as layers from './layers.js'
 import './map.css';
 
+
 class Map extends Component {
     constructor(props){
         super(props)
@@ -13,7 +14,7 @@ class Map extends Component {
     }
 
     toggleSeverity = e => {
-        console.log('selected severity is ', e)
+        console.log('selected severity is ', e.target)
     }
 
     componentDidMount() {
@@ -28,15 +29,24 @@ class Map extends Component {
 
         this.map.addControl(new mapboxgl.NavigationControl())
 
-        // add Region layer
+        // add DVRPC regional outlines + crash data heat map
         this.map.on('load', () => {
             this.map.addSource("Boundaries" , {
                 type: 'vector',
                 url: 'https://tiles.dvrpc.org/data/dvrpc-municipal.json'
             })
 
+            // @TODO: add this back in once the crashes vector tile is up
+            // this.map.addSource("Crashes", {
+            //     type: 'vector',
+            //     url: ''
+            // })
+
             this.map.addLayer(layers.countyOutline)
             this.map.addLayer(layers.municipalityOutline)
+
+            // @TODO: add this back in once the crashes vector tile is up
+            // this.map.addLayer(layers.crashHeat)
         })
     }
 
@@ -47,7 +57,6 @@ class Map extends Component {
     render() {
         return (
             <main id="crashMap" ref={el => this.crashMap = el}>
-                {/* @TODO: maybe re-consider shadow. Looking over a map may be one of the few instances where having no x or y offset makes sense.. */}
                 <div id="severity-toggle" className="shadow">
                     <h3 className="centered-text">Crash Severity</h3>
                     <hr />

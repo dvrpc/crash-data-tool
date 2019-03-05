@@ -36,10 +36,10 @@ const buildQueryLogic = params => {
 
 // use the constructed query strings to make a call
 const buildCrashQuery = queries => {
-    client.query({
+    return client.query({
         query: gql(queries)
     // eventually the output here will hit a reducer so that Sidebar.js can consume result
-    }).then(result => console.log('form query result ', result))
+    }).then(result => result)
 }
 
 export { buildQueryLogic, buildCrashQuery }
