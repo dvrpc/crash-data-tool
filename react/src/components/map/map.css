@@ -2,16 +2,30 @@
     width: 65vw;
     height: 100%;
 }
-#severity-toggle{
+#legend{
+    width: 20%;
     margin: 10px;
-    padding: 5px;
+    padding: 10px;
     border-radius: 3px;
     background: #f7f7f7;
     position: absolute;
     z-index: 2;
 }
+#legend-header{
+    margin: 0;
+}
 .mapboxgl-ctrl-group{
     background: #f7f7f7;
-    /* overrule the mapbox box-shadow style */
-    box-shadow: 1px 2px 3px rgba(0,0,0,0.4) !important;
+}
+
+/* Legend */
+#legend-gradient{
+    display: block;
+    height: 20px;
+    margin-top: 10px;
+    background: linear-gradient(to right, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #d62839);
+}
+.legend-text{
+    display: flex;
+    justify-content: space-between;
 }

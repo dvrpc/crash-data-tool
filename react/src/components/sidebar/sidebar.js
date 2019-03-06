@@ -10,7 +10,8 @@ const dummyData = {
     datasets: [{
         label: 'Crashes',
         data: [12, 11, 15, 14, 17],
-        backgroundColor: '#483d3f'
+        // options: dark (#0c1821), nav (#424b54)
+        backgroundColor: '#424b54'
     }]
 }
 

@@ -5,7 +5,7 @@ const countyOutline = {
     'source-layer': 'county',
     paint: {
         'line-width': 2.5,
-        'line-color': '#483d3f'
+        'line-color': '#fafafa'
     },
     filter: [
         '==',
@@ -21,7 +21,7 @@ const municipalityOutline = {
     'source-layer': 'municipalities',
     paint: {
         'line-width': 0.5,
-        'line-color': '#b4b4b4'
+        'line-color': '#e3f2fd'
     }
 }
 
@@ -29,46 +29,46 @@ const crashHeat = {
     id: 'crashHeat',
     type: 'heatmap',
     source: 'Crashes',
-
-    // @TODO: change this depending on what the layer name is
-    'source-layer': 'Crashes',
+    'source-layer': 'pa-crash',
 
     // @TODO: explore maxzoom
-    maxzoom: 9,
+    maxzoom: 13,
     paint: {
         'heatmap-weight': [
             'interpolate',
             ['linear'],
-            ['get', 'MAX_SEVERI'],
+            ['get', 'TOT_INJ_CO'],
             0, 0,
-            8, 0
+            43, 2
         ],
 
-        // @TODO: edit this - straight from the example
         'heatmap-intensity': [
             'interpolate',
             ['linear'],
             ['zoom'],
             0, 1,
-            9, 3
+            13, 4
         ],
 
-        // It seems like this assigns color based on density of crashes, which raises a good question for the meeting:
-            // Should crash severity or crash density determine the heatmap? Does severity even matter, or is that only for the sidebar breakdown?
-            // Ultimately, people are interested in # of crashes over an area to see *if* it's dangerous and the sidebar breakdown can tell them *how* dangerous it is
+        'heatmap-radius': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            8.2, 8,
+            13, 5
+        ],
+
         'heatmap-color': [
             'interpolate',
             ['linear'],
-            ['MAX_SEVERI'],
-            0, '#2166ac',
-            0.125, '#4393c3',
-            0.25, '#92c5de',
-            0.375, '#d1e5f0',
-            0.5, '#f7f7f7',
-            0.625, '#fddbc7',
-            0.75, '#f4a582',
-            0.875, '#d6604d',
-            1, '#b2182b',
+            ['heatmap-density'],
+            0, 'rgba(0,0,0,0)',
+            0.16, '#4ba3c3',
+            0.33, '#6eb5cf',
+            0.5, '#93c7db',
+            0.66, '#e67e88',
+            0.83, '#de5260',
+            1, '#d62839'
         ]
 
         //@TODO: add in the circles past a certain breakpoint 
