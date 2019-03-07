@@ -1,7 +1,7 @@
 .footer {
     display: flex;
-    color: white;
-    background: #333333;
+    color: #f6efee;
+    background: #171a21;
     /* this is a bad way to get over the sidebar padding and force full width @TODO do this better  */
     width: 103%;
     margin-left: -3%;

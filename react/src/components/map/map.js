@@ -44,10 +44,13 @@ class Map extends Component {
                 url: 'https://tiles.dvrpc.org/data/pa-crash.json'
             })
 
+            // add regional boundaries
             this.map.addLayer(layers.countyOutline)
             this.map.addLayer(layers.municipalityOutline)
 
+            // add crash data layers
             this.map.addLayer(layers.crashHeat)
+            this.map.addLayer(layers.crashCircles)
         })
     }
 

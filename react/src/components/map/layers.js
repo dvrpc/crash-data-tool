@@ -26,7 +26,7 @@ const municipalityOutline = {
 }
 
 const crashHeat = {
-    id: 'crashHeat',
+    id: 'crash-heat',
     type: 'heatmap',
     source: 'Crashes',
     'source-layer': 'pa-crash',
@@ -39,7 +39,7 @@ const crashHeat = {
             ['linear'],
             ['get', 'TOT_INJ_CO'],
             0, 0,
-            43, 2
+            43, 2.5
         ],
 
         'heatmap-intensity': [
@@ -47,7 +47,7 @@ const crashHeat = {
             ['linear'],
             ['zoom'],
             0, 1,
-            13, 4
+            13, 2
         ],
 
         'heatmap-radius': [
@@ -75,4 +75,42 @@ const crashHeat = {
     }
 }
 
-export { countyOutline, municipalityOutline, crashHeat }
+const crashCircles = {
+    id: 'crash-circles',
+    type: 'circle',
+    source: 'Crashes',
+    'source-layer': 'pa-crash',
+    minzoom: 13,
+    paint: {
+        // as of now, these numbers are baesd off of the TOT_INJ_CO ranges
+        // update them after we switch over to MAX_SEVERI
+        'circle-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'TOT_INJ_CO'],
+            0, 'rgba(0,0,0,0)',
+            1, '#4ba3c3',
+            2, '#6eb5cf',
+            3, '#93c7db',
+            15, '#e67e88',
+            30, '#de5260',
+            43, '#d62839'
+        ],
+        'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            13, 5,
+            22, 20
+        ],
+        'circle-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            13, 0.7,
+            22, 1
+        ]
+    }
+}
+
+export { countyOutline, municipalityOutline, crashHeat, crashCircles }

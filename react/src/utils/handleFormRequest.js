@@ -2,8 +2,11 @@
 import gql from 'graphql-tag'
 import ApolloClient from 'apollo-boost'
 
+const buildUri = '10.1.1.194:4000/graphql'
+const localUri = 'http://localhost:4000/graphql'
+
 const client = new ApolloClient({
-    uri: "http://localhost:4000/graphql"
+    uri: localUri
 })
 
 // for each instance of MAX_SEVERI, build out nearly identical queries w/different MAX_SEVERI parameters
