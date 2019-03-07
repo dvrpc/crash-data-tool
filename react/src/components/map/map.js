@@ -51,6 +51,37 @@ class Map extends Component {
             // add crash data layers
             this.map.addLayer(layers.crashHeat)
             this.map.addLayer(layers.crashCircles)
+
+            // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
+            this.map.on('mousemove', 'crash-circles', e => {
+                console.log('e be ', e)
+                this.map.getCanvas().style.cursor = 'pointer'
+            })
+            this.map.on('mouseleave', 'crash-circles', e => {
+                this.map.getCanvas().style = ''
+            })
+
+            // clicking a circle creates a popup w/basic information
+            this.map.on('click', 'crash-circles', e => {
+                // @TODO: refactor this into a utils function within /map
+                const properties = e.features[0].properties
+                const crn = properties['CRN']
+                let totalInjured = properties['TOT_INJ_CO']
+
+                // do the grammar
+                totalInjured === 1 ? totalInjured += ' person' : totalInjured += ' people'
+
+                new mapboxgl.Popup({
+                    closebutton: true,
+                    closeOnClick: true
+                }).setLngLat(e.lngLat)
+                .setHTML(`
+                    <h3 class="crash-popup-header">CRN: ${crn}</h3>
+                    <hr />
+                    <p>${totalInjured} injured in this crash</p>
+                `)
+                .addTo(this.map)
+            })
         })
     }
 
@@ -65,7 +96,7 @@ class Map extends Component {
                     <h3 id="legend-header" className="centered-text">Total Injured</h3>
                     <span id="legend-gradient"></span>
                     <div className="legend-text">
-                        <span>1</span>
+                        <span>0</span>
                         <span>5</span>
                         <span>10</span>
                         <span>15</span>

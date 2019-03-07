@@ -70,8 +70,6 @@ const crashHeat = {
             0.83, '#de5260',
             1, '#d62839'
         ]
-
-        //@TODO: add in the circles past a certain breakpoint 
     }
 }
 
@@ -88,7 +86,7 @@ const crashCircles = {
             'interpolate',
             ['linear'],
             ['get', 'TOT_INJ_CO'],
-            0, 'rgba(0,0,0,0)',
+            0, '#f7f7f7',
             1, '#4ba3c3',
             2, '#6eb5cf',
             3, '#93c7db',
