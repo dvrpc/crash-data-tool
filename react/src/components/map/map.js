@@ -65,20 +65,18 @@ class Map extends Component {
             this.map.on('click', 'crash-circles', e => {
                 // @TODO: refactor this into a utils function within /map
                 const properties = e.features[0].properties
-                const crn = properties['CRN']
-                let totalInjured = properties['TOT_INJ_CO']
+                const crashId = properties['crash_id']
+                let severity = properties['max_sever']
 
-                // do the grammar
-                totalInjured === 1 ? totalInjured += ' person' : totalInjured += ' people'
+
 
                 new mapboxgl.Popup({
                     closebutton: true,
                     closeOnClick: true
                 }).setLngLat(e.lngLat)
                 .setHTML(`
-                    <h3 class="crash-popup-header">CRN: ${crn}</h3>
+                    <h3 class="crash-popup-header">CRN: ${crashId}</h3>
                     <hr />
-                    <p>${totalInjured} injured in this crash</p>
                 `)
                 .addTo(this.map)
             })
@@ -93,15 +91,11 @@ class Map extends Component {
         return (
             <main id="crashMap" ref={el => this.crashMap = el}>
                 <div id="legend" className="shadow">
-                    <h3 id="legend-header" className="centered-text">Total Injured</h3>
+                    <h3 id="legend-header" className="centered-text">Max Injury Severity</h3>
                     <span id="legend-gradient"></span>
                     <div className="legend-text">
-                        <span>0</span>
-                        <span>5</span>
-                        <span>10</span>
-                        <span>15</span>
-                        <span>20</span>
-                        <span>25+</span>
+                        <span>No Injury</span>
+                        <span>Fatal</span>
                     </div>
                 </div>
             </main>
