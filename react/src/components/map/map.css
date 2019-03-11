@@ -31,6 +31,12 @@
 }
 
 /* Popups */
+.mapboxgl-popup{
+    max-width: 45%;
+}
+.mapboxgl-popup-content{
+    padding: 10px 15px 15px;
+}
 .crash-popup-header{
     text-align: center;
 }
