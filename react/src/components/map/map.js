@@ -67,7 +67,7 @@ class Map extends Component {
                 const crashId = properties['crash_id']
                 let severity = properties['max_sever']
 
-                fetch(`http://localhost:5000/api/crash-data/v1/popupInfo?id=${crashId}`)
+                fetch(`https://a.michaelruane.com/api/crash-data/v1/popupInfo?id=${crashId}`)
                 .then(data=> {if (data.ok) return data.json()})
                 .then(crashJawn=>{
                     if (crashJawn.status.status === 'success'){
