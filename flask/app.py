@@ -5,7 +5,7 @@ purpose: simple REST API to retrieve summary information in DVRPC's crash data t
 """
 
 
-from flask import Flask, request
+from flask import Flask, request, abort
 from flask_cors import CORS
 from lib import credentials
 import psycopg2 as psql
@@ -45,7 +45,8 @@ def get_popup_info():
         pa_type.vehicle_count,
         pa_type.bicycle,
         pa_type.ped,
-        pa_type.vehicle_occupancy
+        pa_type.persons_involved,
+        pa_type.collision_type
     FROM pa_crash
     JOIN 
         pa_severity ON pa_crash.crash_id = pa_severity.crash_id
@@ -63,45 +64,36 @@ def get_popup_info():
         payload['features']: []
             -- if there is an item in the array, then the 
     """
-    payload = {
-        'status': {
-            'status': 'pending...',
-            'message': 'function is running'
-        },
-        'features': []
-    }
+    payload = {}
 
     ## is the CRN there?
     if id is not None:
         ## success message
-        payload['status'] = {
-            'status': 'success',
-            'message': 'received request for crash_id {}'.format(id)
-        }
+        payload['status'] = 200
         ## try/except block for query
         try:
             cur.execute(sql.SQL(qry.format(id)))
-            for row in cur.fetchall():
-                result = {
-                    'month': row[0],
-                    'year': row[1],
-                    'vehicle_count': row[2],
-                    'bike': row[3],
-                    'ped': row[4],
-                    'persons': row[5]
-                }
-                payload['features'].append(result)
+            rows = cur.fetchall()
+            if len(rows) is not 0:
+                for row in rows:
+                    result = {
+                        'month': row[0],
+                        'year': row[1],
+                        'vehicle_count': row[2],
+                        'bike': row[3],
+                        'ped': row[4],
+                        'persons': row[5],
+                        'collision_type': row[6]
+                    }
+                    payload['features'] = result
+                    return json.dumps(payload, indent=4)
+            else:
+                ## query returns no results
+                abort(401)
         ## alter payload status/message if query fails
         except Exception as e:
-            payload['status'] = {
-                'status': 'failed',
-                'message': 'query input was received, but the query failed. Error Message: {0}'.format(e)
-            }
+            abort(401)
     ## alter payload message for invalid query
     else:
-        payload['status'] = {
-           'status': 'failed',
-           'message': 'Error: not crash id supplied'
-        }
-    return json.dumps(payload, indent=4)
+        abort(404)
 
