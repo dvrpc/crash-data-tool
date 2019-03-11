@@ -62,6 +62,7 @@ class Map extends Component {
 
             // clicking a circle creates a popup w/basic information
             this.map.on('click', 'crash-circles', e => {
+
                 // get info
                 const popupInfo = getPopupInfo(e)
 
@@ -73,7 +74,7 @@ class Map extends Component {
                     const popup = new mapboxgl.Popup({
                         closebutton: true,
                         closeOnClick: true
-                    }).setLngLat(e.lnglat)
+                    }).setLngLat(e.lngLat)
 
                     setPopup(popupInfo, popup, this.map)
                 }
