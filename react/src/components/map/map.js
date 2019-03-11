@@ -54,7 +54,6 @@ class Map extends Component {
 
             // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
             this.map.on('mousemove', 'crash-circles', e => {
-                console.log('e be ', e)
                 this.map.getCanvas().style.cursor = 'pointer'
             })
             this.map.on('mouseleave', 'crash-circles', e => {
