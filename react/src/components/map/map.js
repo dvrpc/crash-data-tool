@@ -67,17 +67,31 @@ class Map extends Component {
                 const crashId = properties['crash_id']
                 let severity = properties['max_sever']
 
+                fetch(`http://localhost:5000/api/crash-data/v1/popupInfo?id=${crashId}`)
+                .then(data=> {if (data.ok) return data.json()})
+                .then(crashJawn=>{
+                    if (crashJawn.status.status === 'success'){
+                        let data = crashJawn.features[0],
+                            bikePed = data.bike == 0 && data.ped == 0 ? 'No cyclists nor pedestrians were involved' : `${data.bike} bikes and ${data.ped} pedestrians were involved`
+    
+                        new mapboxgl.Popup({
+                            closebutton: true,
+                            closeOnClick: true
+                        }).setLngLat(e.lngLat)
+                        .setHTML(`
+                            <h3 class="crash-popup-header">CRN: ${crashId}</h3>
+                            <hr />
+                            <p>Crash occurred in ${data.month} ${data.year}</p>
+                            <p>${data.vehicle_count} vehicle crash involving ${data.persons} persons</p>
+                            <p>The max injury severity level was ${severity}</p>
+                            <p>${bikePed}</p>                        
+                        `)
+                        .addTo(this.map)
+                    }
+                })
 
 
-                new mapboxgl.Popup({
-                    closebutton: true,
-                    closeOnClick: true
-                }).setLngLat(e.lngLat)
-                .setHTML(`
-                    <h3 class="crash-popup-header">CRN: ${crashId}</h3>
-                    <hr />
-                `)
-                .addTo(this.map)
+
             })
         })
     }

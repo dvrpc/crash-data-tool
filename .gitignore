@@ -1,1 +1,8 @@
 /node_modules
+
+
+## api files
+.idea
+__pycache__
+venv
+/flask/lib
