@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import mapboxgl from "mapbox-gl";
 
 import * as layers from './layers.js'
-import { getPopupInfo, setPopup } from './popups.js';
+import * as popups from './popups.js';
 import './map.css';
 
 class Map extends Component {
@@ -64,19 +64,21 @@ class Map extends Component {
             this.map.on('click', 'crash-circles', e => {
 
                 // get info
-                const popupInfo = getPopupInfo(e)
+                const popupInfo = popups.getPopupInfo(e)
+
+                // initialize the mapbox popup object
+                const popup = new mapboxgl.Popup({
+                    closebutton: true,
+                    closeOnClick: true
+                }).setLngLat(e.lngLat)
 
                 // create a popup or alert user about an error if the fetch fails
                 if(popupInfo === 'string'){
-                    // @TODO: a better way to handle failed fetches
-                    alert(popupInfo + '. Please try again')
+                    const id = e.features[0].properties['crash_id']
+                    popups.catchPopupFail(popup, this.map, id)
+                    
                 }else{
-                    const popup = new mapboxgl.Popup({
-                        closebutton: true,
-                        closeOnClick: true
-                    }).setLngLat(e.lngLat)
-
-                    setPopup(popupInfo, popup, this.map)
+                    popups.setPopup(popupInfo, popup, this.map)
                 }
             })
         })

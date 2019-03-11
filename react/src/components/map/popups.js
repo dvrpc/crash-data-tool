@@ -62,4 +62,14 @@ const setPopup = (popupInfo, popup, map) => {
     })
 }
 
-export { getPopupInfo, setPopup }
+// handle popup failer
+const catchPopupFail = (popup, map, id) => {
+    popup.setHTML(`
+        <h3 class="crash-popup-header">Opps!</h3>
+        <p>Something went wrong and the data was unable to be fetched, please try again.</p>
+        <p>If the issue persists, please contact <a href="mailto:kmurphy@dvrpc.org">kmurphy@dvrpc.org</a> and let him know that data for crash number ${id} is not available. Thank you. </p>
+    `)
+    .addTo(map)
+}
+
+export { getPopupInfo, setPopup, catchPopupFail }
