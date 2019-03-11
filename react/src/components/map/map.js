@@ -63,6 +63,11 @@ class Map extends Component {
             // clicking a circle creates a popup w/basic information
             this.map.on('click', 'crash-circles', e => {
 
+                // @TODO: handle multiple features at the same point. 
+                // loop through features.length and call getPopupInfo(e) for each feature
+                // store the results as an array of promises and then promise.All them jawns to create a paginated list of popups
+                    // this will work w/the current structure and handle cases where not every feature has a response
+
                 // get info
                 const popupInfo = popups.getPopupInfo(e)
 
@@ -72,14 +77,14 @@ class Map extends Component {
                     closeOnClick: true
                 }).setLngLat(e.lngLat)
 
-                // create a popup or alert user about an error if the fetch fails
-                if(popupInfo === 'string'){
-                    const id = e.features[0].properties['crash_id']
-                    popups.catchPopupFail(popup, this.map, id)
-                    
-                }else{
-                    popups.setPopup(popupInfo, popup, this.map)
-                }
+                popupInfo.then(result => {
+                    // create a popup or alert user about an error if the fetch fails
+                    if(result.fail){
+                        popups.catchPopupFail(popup, this.map, result.id)
+                    }else{
+                        popups.setPopup(result, popup, this.map)
+                    }
+                })
             })
         })
     }
