@@ -33,13 +33,18 @@ const crashHeat = {
 
     // @TODO: explore maxzoom
     maxzoom: 13,
+    // KSI: Killed or severely injured
+    filter: ['any', 
+        ['==', ['get', 'max_sever'], 1], 
+        ['==', ['get', 'max_sever'], 2],
+    ],
     paint: {
         'heatmap-weight': [
             'interpolate',
             ['linear'],
-            ['get', 'TOT_INJ_CO'],
-            0, 0,
-            43, 2.5
+            ['get', 'max_sever'],
+            1, 2.5,
+            4, 0
         ],
 
         'heatmap-intensity': [
@@ -82,17 +87,20 @@ const crashCircles = {
     paint: {
         // as of now, these numbers are baesd off of the TOT_INJ_CO ranges
         // update them after we switch over to MAX_SEVERI
+        /*
+            0: Not injured, 1: killed, 2: major, 3: moderate, 4: minor, 8: injury/unknown severity, 9: unknown
+        */
         'circle-color': [
-            'interpolate',
-            ['linear'],
-            ['get', 'TOT_INJ_CO'],
+            'match',
+            ['get', 'max_sever'],
             0, '#f7f7f7',
-            1, '#4ba3c3',
-            2, '#6eb5cf',
-            3, '#93c7db',
-            15, '#e67e88',
-            30, '#de5260',
-            43, '#d62839'
+            1, '#d62839',
+            2, '#de5260',
+            3, '#e67e88',
+            4, '#93c7db',
+            8, '#6eb5cf',
+            9, '#4ba3c3',
+            'rgba(255,255,255,0)'
         ],
         'circle-radius': [
             'interpolate',
