@@ -11,8 +11,9 @@ class Sidebar extends Component {
         super(props)
         // temporary home for chart data - look into how useEffect or useState work & how they capture data from other components
         this.state = {
-            barData: [12, 8, 15, 14, 17, 24],
-            pieData: [9, 7, 15],
+            severityData: [12, 8, 15, 14, 17, 24],
+            modeData: [9, 7, 15],
+            collisionTypeData: [8, 3, 1, 5, 10, 7, 2, 6, 9, 4]
         }
     }
 
@@ -20,8 +21,13 @@ class Sidebar extends Component {
     
     render() {
         // for now just update the charts here
-        const barChart = charts.bar(this.state.barData)
-        const pieChart = charts.pie(this.state.pieData)
+        const severityChart = charts.severity(this.state.severityData)
+        const severityOptions = charts.barOptions('Injury type', 'Number of persons')
+
+        const collisionTypeChart = charts.collisionType(this.state.collisionTypeData)
+
+        const modeChart = charts.mode(this.state.modeData)
+        const modeOptions = charts.barOptions('Mode', 'Number of persons')
 
         return (
             <section id="sidebar">
@@ -29,15 +35,17 @@ class Sidebar extends Component {
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. consectetur adipiscing elit.</p>
                 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crash Severity</h2>
-                    <Bar data={barChart} options={charts.barOptions} />
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.</p>
+                    <Bar data={severityChart} options={severityOptions}/>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Mode</h2>
-                    <Pie data={pieChart} />
+                    <Bar data={modeChart} options={modeOptions} />
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.</p>
                 
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.</p>
-                
+                <h2 className="centered-text crash-map-sidebar-subheader">Collision Type</h2>
+                    <Pie data={collisionTypeChart} />
+                    <p><strong>Note:</strong> The collision type pie chart is an example of how it would look in the worst case scenario, where the selected area has at least 1 instance of every single collision type.</p>
+
                 <h2 className="centered-text crash-map-sidebar-subheader">A Subheader</h2>
                     <ul id="crash-map-sidebar-ul" className="shadow">
                         <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
