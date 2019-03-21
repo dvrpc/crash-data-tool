@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Bar, Pie } from 'react-chartjs-2';
+import { Bar, Doughnut } from 'react-chartjs-2';
 
 import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
@@ -9,15 +9,13 @@ import './sidebar.css';
 class Sidebar extends Component {
     constructor(props){
         super(props)
-        // temporary home for chart data - look into how useEffect or useState work & how they capture data from other components
+        // temporary home for chart data - determine whether Context or Redux makes more sense for global state management and then pull data from there
         this.state = {
             severityData: [12, 8, 15, 14, 17, 24],
             modeData: [9, 7, 15],
             collisionTypeData: [8, 3, 1, 5, 10, 7, 2, 6, 9, 4]
         }
     }
-
-    // @TODO: add whatever the hook/lifecycle jawn for useState or useEffect is here to plug in the map response to the chart functions
     
     render() {
         // for now just update the charts here
@@ -43,7 +41,7 @@ class Sidebar extends Component {
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.</p>
                 
                 <h2 className="centered-text crash-map-sidebar-subheader">Collision Type</h2>
-                    <Pie data={collisionTypeChart} />
+                    <Doughnut data={collisionTypeChart} />
                     <p><strong>Note:</strong> The collision type pie chart is an example of how it would look in the worst case scenario, where the selected area has at least 1 instance of every single collision type.</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">A Subheader</h2>

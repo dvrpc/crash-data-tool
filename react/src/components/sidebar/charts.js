@@ -45,14 +45,6 @@ const mode = data => {
         labels: ['Bicyclists', 'Pedestrians', 'Vehicle Occupants'],
         datasets: [{
             data,
-            /*color options:
-                dark red/brownish: 885a5a
-                dark green: 498467
-                orange: e3655b
-                purple: 6457a6
-                grey/purple: 747c92
-                light purple: cfcfea
-            */
             backgroundColor: '#6457a6'
         }]
     }
@@ -61,16 +53,14 @@ const mode = data => {
 
 // Collision Type chart data
     // This function will eventually need more parameters because labels will not always be all 10 collision types - it will just be the collision types found in the selected area
-    // that will affect backgroundColor as well. Handle it in the following way:
-        // Create arrays for labels and backgroundColor with 10 values. Based off of the # of different collision types in the response, slice those arrays and set them as labels and backgroundColor, respectively
+    // Handle it in the following way:
+        // Create arrays for labels and backgroundColor with 10 values each. Based off of the # of different collision types in the response, slice those arrays and set them as labels and backgroundColor, respectively
 const collisionType = data => {
     return {
         labels: ['Non collision', 'Rear-end', 'Head on', 'Rear-to-rear (backing)', 'Angle', 'Sideswipe (same dir.)', 'Sideswipe (Opposite dir.)', 'Hit fixed object', 'Hit pedestrian', 'Other/Unknown'],
         datasets: [{
             data,
-            backgroundColor: [
-                '#b7b6c1','#c6e0ff','#dd403a', '#bad1cd', '#f2d1c9', '#e086d3', '#8332ac', '#a99985', '#89043d', '#aec3b0'
-            ]
+            backgroundColor: ['#b7b6c1','#c6e0ff','#dd403a', '#bad1cd', '#f2d1c9', '#e086d3', '#8332ac', '#a99985', '#89043d', '#aec3b0']
         }]
     }
 }
