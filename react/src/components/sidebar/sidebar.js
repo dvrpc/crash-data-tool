@@ -1,45 +1,48 @@
 import React, { Component } from 'react';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Doughnut } from 'react-chartjs-2';
 
+import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
 import './sidebar.css';
 
-// replace with response props from queryRenderedFeatures
-const barData = {
-    labels: ['2013', '2014', '2015', '2016', '2017'],
-    datasets: [{
-        label: 'Crashes',
-        data: [12, 8, 15, 14, 17],
-        // options: dark (#0c1821), nav (#424b54)
-        backgroundColor: '#424b54'
-    }]
-}
-const barOptions = {
-    scales: {
-        yAxes: [{
-            ticks: {
-                beginAtZero: true
-            }
-        }]
-    }
-}
 
 class Sidebar extends Component {
     constructor(props){
         super(props)
+        // temporary home for chart data - determine whether Context or Redux makes more sense for global state management and then pull data from there
         this.state = {
-
+            severityData: [12, 8, 15, 14, 17, 24],
+            modeData: [9, 7, 15],
+            collisionTypeData: [8, 3, 1, 5, 10, 7, 2, 6, 9, 4]
         }
     }
     
     render() {
+        // for now just update the charts here
+        const severityChart = charts.severity(this.state.severityData)
+        const severityOptions = charts.barOptions('Injury type', 'Number of persons')
+
+        const collisionTypeChart = charts.collisionType(this.state.collisionTypeData)
+
+        const modeChart = charts.mode(this.state.modeData)
+        const modeOptions = charts.barOptions('Mode', 'Number of persons')
+
         return (
             <section id="sidebar">
-                <h1 id="crash-map-sidebar-header" className="centered-text">4,824 Crashes</h1>
+                <h1 id="crash-map-sidebar-header" className="centered-text">Crash Statistics for Selected Area</h1>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. consectetur adipiscing elit.</p>
+                
+                <h2 className="centered-text crash-map-sidebar-subheader">Crash Severity</h2>
+                    <Bar data={severityChart} options={severityOptions}/>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.</p>
 
-                <Bar data={barData} options={barOptions} />
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.</p>
+                <h2 className="centered-text crash-map-sidebar-subheader">Mode</h2>
+                    <Bar data={modeChart} options={modeOptions} />
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.</p>
+                
+                <h2 className="centered-text crash-map-sidebar-subheader">Collision Type</h2>
+                    <Doughnut data={collisionTypeChart} />
+                    <p><strong>Note:</strong> The collision type pie chart is an example of how it would look in the worst case scenario, where the selected area has at least 1 instance of every single collision type.</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">A Subheader</h2>
                     <ul id="crash-map-sidebar-ul" className="shadow">
