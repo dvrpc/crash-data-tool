@@ -22,12 +22,13 @@ class Search extends Component {
         const selectedSearch = this.state.selectedSearch
 
         return (
-            <form id="search-form" onSubmit={ form.postSearch }>
+            <form id="search-form" onSubmit={ form.submitSearch }>
                 <label htmlFor="select-search-type">Search By: </label>
                 <select id="select-search-type" onChange={ this.selectSearch }>
                     <option value="address">Address</option>
                     <option value="county">County</option>
                     <option value="municipality">Municipality</option>
+                    <option value="state">State</option>
                 </select>
                 {selectedSearch ? (
                     <select id="search-type">
@@ -35,7 +36,7 @@ class Search extends Component {
                     </select>
                 ) : <input type="text" />
                 }
-                <input type="button" value="search" />
+                <input type="submit" value="search" />
             </form>
         )
     }
