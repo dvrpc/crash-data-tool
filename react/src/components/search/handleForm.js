@@ -1,6 +1,42 @@
 import { counties, munis, states } from './dropdowns.js'
 
-// based off of the selected value, create the next dropdown or search bar
+////
+// Functions to handle parsed form inputs
+////
+const passSearchToAPI = async (type, boundary) => {
+    const api = `https://a.michaelruane.com/api/crash-data/v1/sidebarInfo?type=${type}&value=${boundary}`
+
+    // @TODO: add options to fetch
+    const stream = await fetch(api)
+    const response = await stream.json()
+    console.log('response is ', response)
+
+    // @TODO: put response in the Context tree so sidebar.js can consume it
+}
+
+// runs the mapboxgl geocoder to turn address or boundary into coordinates
+const geocode = jawn => {
+    console.log('geocoding ', jawn)
+    return jawn
+}
+
+// passes a geocoded jawn and (optionally) a boundary to map.js
+const updateMap = (coords, boundary) => {
+    console.log('hit update map')
+    // geocode coordinates if necessary
+    if(!coords) coords = geocode(boundary)
+
+    // put this jawn in the Context tree so that map.js can read from it
+    const output = {
+        coords,
+        boundary
+    }
+}
+
+
+////
+// Functions to parse form inputs
+////
 const handleSelect = value => {
     switch(value){
         case 'county':
@@ -14,13 +50,11 @@ const handleSelect = value => {
     }
 }
 
-// GETS response data from database and tells the map to update
-const submitSearch = async e => {
+// parse form inputs and figure out what to do with them
+const submitSearch = e => {
     e.preventDefault()
-    
-    // Full endpoint: `https://a.michaelruane.com/api/crash-data/v1/sidebarInfo?type=${type}&value=${value}`
-    let api = `https://a.michaelruane.com/api/crash-data/v1/sidebarInfo?`
-    let type, value;
+    let type, boundary, coords;
+    let apiCall = true
 
     const form = e.target
     const data = new FormData(form)
@@ -32,37 +66,27 @@ const submitSearch = async e => {
                 type = input
                 break
             case 'boundary': 
-                value = encodeURIComponent(input)
+                boundary = encodeURIComponent(input)
                 break
+            // The API is not set up to handle states yet
             case 'state':
-                value = encodeURIComponent(input)
+                boundary = encodeURIComponent(input)
                 break
             default:
-                console.log('default address case ', input)
-                // address case won't hit the API from here. It'll geocode a valid address and then pass that info to map.flyTo()
-                // after flyTo() is done, get the boundingBox from the new map extent and pass that to the API
-                    // it can either be a separate endpoint or add logic to handle `type=address&value=[[sw co-ordinate],[ne co-ordinates]]`
+                apiCall = false
+                coords = geocode(input)
         }
     }
 
-    api += `type=${type}&value=${value}`
+    // get data from db and then geocode the boundary so that the map can update and do all the necessary filtering
+    if(apiCall) {
+        passSearchToAPI(type, boundary)
+        updateMap(false, boundary)
 
-    // @TODO: add options to fetch
-    const stream = await fetch(api)
-    const response = await stream.json()
-    console.log('response is ', response)
-
-    //
-    // Map update will have a location to zoomTo, and a boundary object (when applicable) to constrain the map results
-    // 
-        // Find a way to extract location geometry from the county/municipality strings. Address will take care of itself via geocoding. ZoomTo location
-        // Boundary object (true for muni and county, null for address) adds filters to the following mapbox layers:
-            // circles: filter out all that != the passed county or muni name
-            // muniOutline: IF muni, increase line-width and change line-color of the passed muni name
-            // countyOutline: IF county, increase line-width and change line-color of the passed county name
-            // add a 'Remove Boundary' overlay to the map that changes boundary to null
-            // Null boundary object shows all results for the map extent. 
-
+    // update the map let it handle hitting the API (map.flyTo() ==> map.LngLatBounds() ==> fetch(`endpoint-that-handles-geometry-envelopes`))
+    }else{
+        updateMap(coords, false)
+    }
 }
 
 export  { handleSelect, submitSearch }

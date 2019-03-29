@@ -14,6 +14,13 @@ class Map extends Component {
         }
     }
 
+    // Boundary object (valid for muni and county, false for address) adds filters to the following mapbox layers:
+        // circles: filter out all that != the passed county or muni name
+        // muniOutline: IF muni, increase line-width and change line-color of the passed muni name
+        // countyOutline: IF county, increase line-width and change line-color of the passed county name
+        // add a 'Remove Boundary' overlay to the map that changes boundary to null
+        // false boundary object shows all results for the map extent. 
+
     componentDidMount() {
         mapboxgl.accessToken = 'pk.eyJ1IjoibW1vbHRhIiwiYSI6ImNqZDBkMDZhYjJ6YzczNHJ4cno5eTcydnMifQ.RJNJ7s7hBfrJITOBZBdcOA'
         
