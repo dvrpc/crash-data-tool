@@ -1,13 +1,4 @@
-const munis = [
-    'ABINGTON','ASTON','Aldan','Ambler','Atglen','Audubon','Audubon Park','Avondale','BASS RIVER','BEDMINSTER'
-]
-
-const counties = [
-'Atlantic','Berks','Bucks','Burlington','Camden','Cape May','Cecil','Chester','Cumberland','Delaware','Gloucester','Harford','Hunterdon','Kent','Lancaster','Lehigh','Mercer','Middlesex','Monmouth','Montgomery','New Castle','Northampton','Ocean','Philadelphia','Salem','Somerset','Warren','York'
-]
-const states = [
-    'Pennsylvania','New Jersey'
-]
+import { counties, munis, states } from './dropdowns.js'
 
 // based off of the selected value, create the next dropdown or search bar
 const handleSelect = value => {
@@ -26,15 +17,40 @@ const handleSelect = value => {
 // GETS response data from database and tells the map to update
 const submitSearch = async e => {
     e.preventDefault()
-    console.log('form submitted')
     
-    //
-    // Pass form data to a GET for db info. URL parameters for the GET request should look something like:
-    //
-    // `&type=${type}&value=${value}` where:
-        // type is either county, municipality or address
-        // value is either county name, municipality geoid or geometry envelope
-    // the response should either go to the context api or redux store so that sidebar.js can consume it
+    // Full endpoint: `https://a.michaelruane.com/api/crash-data/v1/sidebarInfo?type=${type}&value=${value}`
+    let api = `https://a.michaelruane.com/api/crash-data/v1/sidebarInfo?`
+    let type, value;
+
+    const form = e.target
+    const data = new FormData(form)
+    
+    // extract form data to finish das form
+    for(var [key, input] of data.entries()) {
+        switch(key) {
+            case 'type':
+                type = input
+                break
+            case 'boundary': 
+                value = encodeURIComponent(input)
+                break
+            case 'state':
+                value = encodeURIComponent(input)
+                break
+            default:
+                console.log('default address case ', input)
+                // address case won't hit the API from here. It'll geocode a valid address and then pass that info to map.flyTo()
+                // after flyTo() is done, get the boundingBox from the new map extent and pass that to the API
+                    // it can either be a separate endpoint or add logic to handle `type=address&value=[[sw co-ordinate],[ne co-ordinates]]`
+        }
+    }
+
+    api += `type=${type}&value=${value}`
+
+    // @TODO: add options to fetch
+    const stream = await fetch(api)
+    const response = await stream.json()
+    console.log('response is ', response)
 
     //
     // Map update will have a location to zoomTo, and a boundary object (when applicable) to constrain the map results
