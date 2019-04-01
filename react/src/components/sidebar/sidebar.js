@@ -8,27 +8,12 @@ import './sidebar.css';
 
 
 class Sidebar extends Component {
-    constructor(props){
-        super(props)
-        // temporary home for chart data - determine whether Context or Redux makes more sense for global state management and then pull data from there
-        this.state = {
-            severityData: [12, 8, 15, 14, 17, 24],
-            modeData: [9, 7, 15],
-            collisionTypeData: [8, 3, 1, 5, 10, 7, 2, 6, 9, 4]
-        }
-    }
-    
     render() {
-
-        console.log('props is ', this.props)
+        //let data = this.props.data ? combineData(this.props.data) : null
+        let data = this.props.data ? charts.makeCharts(this.props.data) : charts.makePlaceholders()
+    
         // for now just update the charts here
-        const severityChart = charts.severity(this.state.severityData)
         const severityOptions = charts.barOptions('Injury type', 'Number of persons')
-
-        const collisionTypeChart = charts.collisionType(this.state.collisionTypeData)
-
-        const modeChart = charts.mode(this.state.modeData)
-        const modeOptions = charts.barOptions('Mode', 'Number of persons')
 
         return (
             <section id="sidebar">
@@ -36,15 +21,15 @@ class Sidebar extends Component {
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. consectetur adipiscing elit.</p>
                 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crash Severity</h2>
-                    <Bar data={severityChart} options={severityOptions}/>
+                    <Bar data={data.severityChart} options={severityOptions}/>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Mode</h2>
-                    <Bar data={modeChart} options={modeOptions} />
+                    <Doughnut data={data.modeChart} />
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.</p>
                 
                 <h2 className="centered-text crash-map-sidebar-subheader">Collision Type</h2>
-                    <Doughnut data={collisionTypeChart} />
+                    <Doughnut data={data.collisionTypeChart} />
                     <p><strong>Note:</strong> The collision type pie chart is an example of how it would look in the worst case scenario, where the selected area has at least 1 instance of every single collision type.</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">A Subheader</h2>

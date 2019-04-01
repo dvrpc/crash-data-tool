@@ -1,6 +1,5 @@
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'
 import { counties, munis, states } from './dropdowns.js'
-import getDataFromKeyword from '../../redux/reducers/mapReducer.js'
 
 
 ////
