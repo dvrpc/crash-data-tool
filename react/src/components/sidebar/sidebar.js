@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux'
 import { Bar, Doughnut } from 'react-chartjs-2';
 
 import * as charts from './charts.js'
@@ -18,6 +19,8 @@ class Sidebar extends Component {
     }
     
     render() {
+
+        console.log('props is ', this.props)
         // for now just update the charts here
         const severityChart = charts.severity(this.state.severityData)
         const severityOptions = charts.barOptions('Injury type', 'Number of persons')
@@ -64,4 +67,10 @@ class Sidebar extends Component {
     }
 }
 
-export default Sidebar;
+const mapStateToProps = state => {
+    return {
+        data: state.data
+    }
+}
+
+export default connect(mapStateToProps, null)(Sidebar)

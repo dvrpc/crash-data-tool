@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import './search.css'
 import * as form from './handleForm.js'
+import { getDataFromKeyword } from '../../redux/reducers/mapReducer.js'
 
 class Search extends Component {
-    constructor(){
-        super()
+    constructor(props){
+        super(props)
         this.state = {
             selectedSearch: false
         }
@@ -18,11 +20,26 @@ class Search extends Component {
         this.setState({selectedSearch})
     }
 
+    submitSearch = e => {
+        const output = form.submitSearch(e)
+        
+        // pass coords to update the map
+        //const mapCenter = output.coords
+        //this.props.setMapCenter(mapCenter)
+
+        // hit the api to get sidebar info (if applicable)
+        if(output.boundary){
+            const boundary = output.boundary
+            this.props.getData(boundary)
+        }
+
+    }
+
     render() {
         const selectedSearch = this.state.selectedSearch
 
         return (
-            <form id="search-form" onSubmit={ form.submitSearch }>
+            <form id="search-form" onSubmit={ this.submitSearch }>
                 <fieldset name="type" form="search-form">
                     <label htmlFor="select-search-type">Search By: </label>
                     <select name="type" id="select-search-type" onChange={ this.selectSearch }>
@@ -50,4 +67,10 @@ class Search extends Component {
     }
 }
 
-export default Search;
+const mapDispatchToProps = dispatch => {
+    return {
+        getData: boundaryObj => dispatch(getDataFromKeyword(boundaryObj))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(Search);
