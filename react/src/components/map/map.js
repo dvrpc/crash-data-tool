@@ -11,7 +11,8 @@ class Map extends Component {
         // this might not be necessary
         super(props)
         this.state = {
-            center: null
+            center: null,
+            bounding: false
         }
     }
 
@@ -93,8 +94,10 @@ class Map extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const center = this.props.center
-        if(prevProps.center !== center) this.setState({ center })
+        if(prevProps.center !== this.props.center) {
+            const center = this.props.center
+            this.setState({ center })
+        }
         
         this.map.flyTo({
             center: this.state.center,
@@ -128,7 +131,8 @@ class Map extends Component {
 // to receive co-ordinates for the new map center
 const mapStateToProps = state => {
     return {
-        center: state.center
+        center: state.center,
+        bounding: state.bounding
     }
 }
 

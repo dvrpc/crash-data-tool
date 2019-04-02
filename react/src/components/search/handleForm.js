@@ -10,6 +10,7 @@ const geocode = async query => {
     const token = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
     const api = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${token}&autocomplete=true&bbox=-76.09405517578125,39.49211914385648,-74.32525634765625,40.614734298694216`
     
+    // @TODO: add error handling
     const stream = await fetch(api)
     const result = await stream.json()
 
@@ -47,6 +48,7 @@ const submitSearch = e => {
 
     const form = e.target
     const data = new FormData(form)
+    let query;
     
     // extract form data to finish das form
     for(var [key, input] of data.entries()) {
@@ -54,19 +56,19 @@ const submitSearch = e => {
             case 'type':
                 output.boundary.type = input
                 break
-            case 'boundary': 
-                output.boundary.name = encodeURIComponent(input)
-                output.coords = geocode(input)
+            case 'boundary':
+                query = encodeURIComponent(input)
+                output.coords = geocode(query)
+                output.boundary.name = query
                 break
             // The API is not set up to handle states yet
             case 'state':
-                output.boundary.name = encodeURIComponent(input)
-                output.coords = geocode(input)
+                query = encodeURIComponent(input)
+                output.coords = geocode(query)
+                output.boundary.name = query
                 break
             default:
-                // new plan: instead of a <Geocoder> component, hit the public geocoder API and extract the co-ordinates from there. 
-                // Figure out typeahead after that...
-                const query = encodeURIComponent(input)
+                query = encodeURIComponent(input)
                 output.coords = geocode(query)
                 output.boundary.name = false
         }
