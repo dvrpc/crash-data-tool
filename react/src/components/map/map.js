@@ -98,7 +98,10 @@ class Map extends Component {
         
         this.map.flyTo({
             center: this.state.center,
-            zoom: 12
+            // @TODO: dynamic zoom levels to handle address search, county search, etc
+            zoom: 12,
+            speed: 0.9,
+            curve: 1.7
         })
     }
 
