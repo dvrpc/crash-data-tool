@@ -17,7 +17,7 @@ const SET_MAP_CENTER = 'SET_MAP_CENTER'
 /*****************************/
 /****** ACTION CREATORS ******/
 const get_data_from_keyword = data => ({ type: GET_DATA_FROM_KEYWORD, data })
-const set_map_center = coords => ({ type: SET_MAP_CENTER, coords })
+const set_map_center = center => ({ type: SET_MAP_CENTER, center })
 
 
 /***********************/
@@ -27,8 +27,7 @@ export default function mapReducer(state = [], action) {
         case GET_DATA_FROM_KEYWORD:
             return Object.assign({}, state, { data: action.data })
         case SET_MAP_CENTER:
-            console.log('value passed as map center ', state)
-            return Object.assign({}, state, { coords: action.coords })
+            return Object.assign({}, state, { center: action.center })
         default:
             return state
     }
@@ -52,4 +51,8 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
     }
 }
 
-export const setMapCenter = coords => dispatch => dispatch(set_map_center(coords))
+// @TODO: probably going to have to rename this & create a second function that *just* spits back co-ords (for when users update map center by moving the map around instead of searching)
+export const setMapCenter = center => dispatch => center.then(response => {
+    const center = response.features[0].center
+    dispatch(set_map_center(center))
+})

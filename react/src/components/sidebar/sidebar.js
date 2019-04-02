@@ -9,10 +9,7 @@ import './sidebar.css';
 
 class Sidebar extends Component {
     render() {
-        //let data = this.props.data ? combineData(this.props.data) : null
         let data = this.props.data ? charts.makeCharts(this.props.data) : charts.makePlaceholders()
-    
-        // for now just update the charts here
         const severityOptions = charts.barOptions('Injury type', 'Number of persons')
 
         return (

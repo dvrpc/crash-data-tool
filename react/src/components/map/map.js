@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux'
 import mapboxgl from "mapbox-gl";
 
 import * as layers from './layers.js'
@@ -10,7 +11,7 @@ class Map extends Component {
         // this might not be necessary
         super(props)
         this.state = {
-
+            center: null
         }
     }
 
@@ -28,7 +29,7 @@ class Map extends Component {
             container: this.crashMap,
             // optoins: basic (some colors), light (greyscale), 
             style: 'mapbox://styles/mapbox/dark-v9',
-            center: [-75.2273, 40.071],
+            center: this.state.center || [-75.2273, 40.071],
             zoom: 8.2
         })
 
@@ -36,11 +37,6 @@ class Map extends Component {
 
         // add DVRPC regional outlines + crash data heat map
         this.map.on('load', () => {
-
-            // quick hack to get over the small initial paint
-            // @TODO: look into why the initial render is a fraction of map container height
-            this.map.resize()
-
             this.map.addSource("Boundaries" , {
                 type: 'vector',
                 url: 'https://tiles.dvrpc.org/data/dvrpc-municipal.json'
@@ -96,6 +92,16 @@ class Map extends Component {
         })
     }
 
+    componentDidUpdate(prevProps) {
+        const center = this.props.center
+        if(prevProps.center !== center) this.setState({ center })
+        
+        this.map.flyTo({
+            center: this.state.center,
+            zoom: 12
+        })
+    }
+
     componentWillUnmount() {
         this.map.remove()
     }
@@ -116,4 +122,18 @@ class Map extends Component {
     }
 }
 
-export default Map;
+// to receive co-ordinates for the new map center
+const mapStateToProps = state => {
+    return {
+        center: state.center
+    }
+}
+
+// to send co-ordinates for API calls
+const mapDispatchToProps = dispatch => {
+    return {
+        apiCoords: coords => dispatch()
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Map);

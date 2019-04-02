@@ -29,7 +29,7 @@ class Search extends Component {
         this.props.setMapCenter(mapCenter)
 
         // hit the api to get sidebar info (if applicable)
-        if(output.boundary){
+        if(output.boundary.name){
             const boundary = output.boundary
             this.props.getData(boundary)
         }
