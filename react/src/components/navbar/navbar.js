@@ -4,12 +4,6 @@ import Search from '../search/search.js'
 import './navbar.css';
 
 class Navbar extends Component {
-  constructor() {
-    super()
-    this.state = {
-    }
-  }
-
   render() {
     return (
         <nav id="navbar">

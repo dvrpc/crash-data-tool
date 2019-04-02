@@ -22,7 +22,7 @@ class Map extends Component {
         // false boundary object shows all results for the map extent. 
 
     componentDidMount() {
-        mapboxgl.accessToken = 'pk.eyJ1IjoibW1vbHRhIiwiYSI6ImNqZDBkMDZhYjJ6YzczNHJ4cno5eTcydnMifQ.RJNJ7s7hBfrJITOBZBdcOA'
+        mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
         
         this.map = new mapboxgl.Map({
             container: this.crashMap,

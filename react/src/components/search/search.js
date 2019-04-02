@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import './search.css'
+import { getDataFromKeyword, setMapCenter } from '../../redux/reducers/mapReducer.js'
 import * as form from './handleForm.js'
-import { getDataFromKeyword } from '../../redux/reducers/mapReducer.js'
+
+import './search.css'
 
 class Search extends Component {
     constructor(props){
@@ -24,15 +25,14 @@ class Search extends Component {
         const output = form.submitSearch(e)
         
         // pass coords to update the map
-        //const mapCenter = output.coords
-        //this.props.setMapCenter(mapCenter)
+        const mapCenter = output.coords
+        this.props.setMapCenter(mapCenter)
 
         // hit the api to get sidebar info (if applicable)
         if(output.boundary){
             const boundary = output.boundary
             this.props.getData(boundary)
         }
-
     }
 
     render() {
@@ -69,7 +69,8 @@ class Search extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-        getData: boundaryObj => dispatch(getDataFromKeyword(boundaryObj))
+        getData: boundaryObj => dispatch(getDataFromKeyword(boundaryObj)),
+        setMapCenter: coords => dispatch(setMapCenter(coords))
     }
 }
 
