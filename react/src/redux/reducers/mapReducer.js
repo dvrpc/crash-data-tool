@@ -58,13 +58,7 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
     }
 }
 
-// @TODO: probably going to have to rename this & create a second function that *just* spits back co-ords (for when users update map center by moving the map around instead of searching)
-export const setMapCenter = center => dispatch => {
-    center.then(response => {
-        const center = response.features[0].center
-        dispatch(set_map_center(center))
-    })
-}
+export const setMapCenter = center => dispatch => dispatch(set_map_center(center))
 
 export const setMapBounding = bounding => dispatch => {
     bounding.name = decodeURIComponent(bounding.name)

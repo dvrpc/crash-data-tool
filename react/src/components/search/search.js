@@ -23,16 +23,18 @@ class Search extends Component {
 
     submitSearch = e => {
         const output = form.submitSearch(e)
-        
-        // pass coords to update the map
-        const mapCenter = output.coords
-        this.props.setMapCenter(mapCenter)
+
+        // push the new map center
+        output.coords.then(result => {
+            const center = result.features[0].center
+            
+            this.props.setMapCenter(center)
+        })
 
         // hit the api to get sidebar info (if applicable)
         if(output.boundary.name){
             const boundary = output.boundary
 
-            // it might not be the worst idea to combine these - have getData also spit out a bounding object
             this.props.getData(boundary)
             this.props.setMapBounding(boundary)
         }

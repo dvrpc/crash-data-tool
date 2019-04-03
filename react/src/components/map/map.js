@@ -96,15 +96,15 @@ class Map extends Component {
         }
 
         if(this.props.bounding.name) {
-            //@TODO: figure out a good way to clear existing filters. 
-            // The obvious solution is to just set the muni and county filters to their default but there might be a better way
+            //@TODO: figure out a good way to clear existing filters when swapping between a muni and county search 
 
             const boundingObj = this.props.bounding
             const filter = createBoundaryFilter(boundingObj)
+            const baseFilter = filter.baseFilter
 
-            this.map.setFilter(filter.layer, filter.layerFilter)            
-            this.map.setPaintProperty(filter.layer, 'line-width', 4)
-            this.map.setPaintProperty(filter.layer, 'line-color', '#f7c59f')
+            this.map.setFilter(baseFilter.layer, baseFilter.filter)            
+            this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
+            this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f7c59f')
         }
 
         if(this.state.center){
