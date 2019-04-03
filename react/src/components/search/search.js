@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { getDataFromKeyword, setMapCenter } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setMapCenter, setMapBounding } from '../../redux/reducers/mapReducer.js'
 import * as form from './handleForm.js'
 
 import './search.css'
@@ -31,7 +31,10 @@ class Search extends Component {
         // hit the api to get sidebar info (if applicable)
         if(output.boundary.name){
             const boundary = output.boundary
+
+            // it might not be the worst idea to combine these - have getData also spit out a bounding object
             this.props.getData(boundary)
+            this.props.setMapBounding(boundary)
         }
     }
 
@@ -70,7 +73,8 @@ class Search extends Component {
 const mapDispatchToProps = dispatch => {
     return {
         getData: boundaryObj => dispatch(getDataFromKeyword(boundaryObj)),
-        setMapCenter: coords => dispatch(setMapCenter(coords))
+        setMapCenter: coords => dispatch(setMapCenter(coords)),
+        setMapBounding: boundingObj => dispatch(setMapBounding(boundingObj))
     }
 }
 

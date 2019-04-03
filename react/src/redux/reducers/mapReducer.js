@@ -66,4 +66,7 @@ export const setMapCenter = center => dispatch => {
     })
 }
 
-export const setMapBounding = bounding => dispatch => dispatch(set_map_bounding(bounding))
+export const setMapBounding = bounding => dispatch => {
+    bounding.name = decodeURIComponent(bounding.name)
+    dispatch(set_map_bounding(bounding))
+}

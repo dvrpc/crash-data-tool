@@ -4,24 +4,17 @@ import mapboxgl from "mapbox-gl";
 
 import * as layers from './layers.js'
 import * as popups from './popups.js';
+import { createBoundaryFilter } from './boundaryFilters.js'
 import './map.css';
 
 class Map extends Component {
     constructor(props){
-        // this might not be necessary
         super(props)
         this.state = {
             center: null,
             bounding: false
         }
     }
-
-    // Boundary object (valid for muni and county, false for address) adds filters to the following mapbox layers:
-        // circles: filter out all that != the passed county or muni name
-        // muniOutline: IF muni, increase line-width and change line-color of the passed muni name
-        // countyOutline: IF county, increase line-width and change line-color of the passed county name
-        // add a 'Remove Boundary' overlay to the map that changes boundary to null
-        // false boundary object shows all results for the map extent. 
 
     componentDidMount() {
         mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
@@ -90,6 +83,9 @@ class Map extends Component {
                     }
                 })
             })
+
+            // @TODO: add the map update info here once the database is updated. 
+            // something like: if (this.props.bounding.name){map.onZoomEnd(updateSidebar(newCoords))}
         })
     }
 
@@ -98,14 +94,28 @@ class Map extends Component {
             const center = this.props.center
             this.setState({ center })
         }
-        
-        this.map.flyTo({
-            center: this.state.center,
-            // @TODO: dynamic zoom levels to handle address search, county search, etc
-            zoom: 12,
-            speed: 0.9,
-            curve: 1.7
-        })
+
+        if(this.props.bounding.name) {
+            //@TODO: figure out a good way to clear existing filters. 
+            // The obvious solution is to just set the muni and county filters to their default but there might be a better way
+
+            const boundingObj = this.props.bounding
+            const filter = createBoundaryFilter(boundingObj)
+
+            this.map.setFilter(filter.layer, filter.layerFilter)            
+            this.map.setPaintProperty(filter.layer, 'line-width', 4)
+            this.map.setPaintProperty(filter.layer, 'line-color', '#f7c59f')
+        }
+
+        if(this.state.center){
+            this.map.flyTo({
+                center: this.state.center,
+                // @TODO: dynamic zoom levels to handle address search, county search, etc
+                zoom: 12,
+                speed: 0.9,
+                curve: 1.7
+            })
+        }
     }
 
     componentWillUnmount() {

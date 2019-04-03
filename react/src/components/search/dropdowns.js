@@ -1,5 +1,5 @@
 const munis = [
-    'ABINGTON','ASTON','Aldan','Ambler','Atglen','Audubon','Audubon Park','Avondale','BASS RIVER','BEDMINSTER'
+    'ABINGTON','ASTON','Aldan','Ambler','Atglen','Audubon','Audubon Park','Avondale','BASS RIVER','BEDMINSTER', 'Bedminster Township'
 ]
 
 const counties = [
