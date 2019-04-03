@@ -1,3 +1,6 @@
+////
+// Functions to process chart data
+////
 // General bar chart options
 const barOptions = (xlabel, ylabel) =>{
     return {
@@ -25,39 +28,30 @@ const barOptions = (xlabel, ylabel) =>{
         }
     }
 }
-
-
 // Severity chart data
 const severity = data => {
     return {
-        labels: ['Fatal', 'Serious', 'Moderate', 'Minor', 'Unknown', 'Uninjured'],
+        labels: ['Fatal', 'Major', 'Minor', 'Uninjured', 'Unknown'],
         datasets: [{
             data,
-            backgroundColor: ['#d62839', '#de5260','#e67e88','#93c7db','#4ba3c3','#e3e3e3']
+            backgroundColor: ['#d62839','#e67e88','#93c7db','#4ba3c3','#e3e3e3']
         }]
     }
 }
-
-
 // Mode Chart data
 const mode = data => {
     return {
-        labels: ['Bicyclists', 'Pedestrians', 'Vehicle Occupants'],
+        labels: ['Pedestrians', 'Bicyclists', 'Vehicle Occupants'],
         datasets: [{
             data,
-            backgroundColor: '#6457a6'
+            backgroundColor: ['#6457a6', '#dd403a','#c6e0ff']
         }]
     }
 }
-
-
 // Collision Type chart data
-    // This function will eventually need more parameters because labels will not always be all 10 collision types - it will just be the collision types found in the selected area
-    // Handle it in the following way:
-        // Create arrays for labels and backgroundColor with 10 values each. Based off of the # of different collision types in the response, slice those arrays and set them as labels and backgroundColor, respectively
 const collisionType = data => {
     return {
-        labels: ['Non collision', 'Rear-end', 'Head on', 'Rear-to-rear (backing)', 'Angle', 'Sideswipe (same dir.)', 'Sideswipe (Opposite dir.)', 'Hit fixed object', 'Hit pedestrian', 'Other/Unknown'],
+        labels: ['Angle', 'Head on', 'Hit fixed object', 'Hit pedestrian', 'Non-collision', 'Other/Unknown', 'Rear-end',  'Rear-to-rear (backing)', 'Sideswipe (Opposite dir.)', 'Sideswipe (same dir.)'],
         datasets: [{
             data,
             backgroundColor: ['#b7b6c1','#c6e0ff','#dd403a', '#bad1cd', '#f2d1c9', '#e086d3', '#8332ac', '#a99985', '#89043d', '#aec3b0']
@@ -65,4 +59,51 @@ const collisionType = data => {
     }
 }
 
-export {severity, mode, barOptions, collisionType}
+
+////
+// Functions to build the charts
+////
+// initialize empty charts
+const makePlaceholders = () => {
+    const collisionTypeChart = collisionType([0,0,0,0,0,0,0,0,0,0])
+    const severityChart = severity([0,0,0,0,0])
+    const modeChart = mode([0,0,0])
+    return { collisionTypeChart, severityChart, modeChart }
+}
+// using the API response to build the actual charts
+const makeCharts = data => {
+    let severityChart, modeChart, collisionTypeChart;
+
+    const output = {
+        mode: [],
+        severity: [],
+        type: []
+    }
+
+    // with the current split, we need to loop through every year of data, and loop through the values in those years to extract and combine each number...
+    // @TODO: improve this. If Marco/Kevin approve, redo the API response to aggregates instead of yearly breakdown, otherwise figure out a better way to extract the data
+    for(var year in data){
+        const x = data[year]
+
+        Object.keys(x).forEach(key => {
+
+            const innerObj = x[key]
+
+            Object.keys(innerObj).forEach((innerKey, index) => {
+                if(output[key][index] > -1){
+                    output[key][index] += innerObj[innerKey]
+                }else{
+                    output[key].push(innerObj[innerKey])
+                }
+            })
+        })
+    }
+
+    severityChart = severity(output.severity)
+    modeChart = mode(output.mode)
+    collisionTypeChart = collisionType(output.type)
+
+    return { severityChart, modeChart, collisionTypeChart }
+}
+
+export { makeCharts, makePlaceholders, barOptions }

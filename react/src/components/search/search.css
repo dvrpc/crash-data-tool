@@ -1,0 +1,19 @@
+.geocoder-pin-right{
+    display: none;
+}
+.geocoder-icon{
+    display: none;
+}
+.suggestions{
+    display: flex;
+}
+#search-form{
+    color: #f6efee;
+    display: flex;
+    align-items: center;
+}
+fieldset{
+    border: none;
+    margin: 0;
+    padding: 0;
+}

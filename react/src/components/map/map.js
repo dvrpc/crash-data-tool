@@ -1,27 +1,29 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux'
 import mapboxgl from "mapbox-gl";
 
 import * as layers from './layers.js'
 import * as popups from './popups.js';
+import { createBoundaryFilter } from './boundaryFilters.js'
 import './map.css';
 
 class Map extends Component {
     constructor(props){
-        // this might not be necessary
         super(props)
         this.state = {
-
+            center: null,
+            bounding: false
         }
     }
 
     componentDidMount() {
-        mapboxgl.accessToken = 'pk.eyJ1IjoibW1vbHRhIiwiYSI6ImNqZDBkMDZhYjJ6YzczNHJ4cno5eTcydnMifQ.RJNJ7s7hBfrJITOBZBdcOA'
+        mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
         
         this.map = new mapboxgl.Map({
             container: this.crashMap,
             // optoins: basic (some colors), light (greyscale), 
             style: 'mapbox://styles/mapbox/dark-v9',
-            center: [-75.2273, 40.071],
+            center: this.state.center || [-75.2273, 40.071],
             zoom: 8.2
         })
 
@@ -29,11 +31,6 @@ class Map extends Component {
 
         // add DVRPC regional outlines + crash data heat map
         this.map.on('load', () => {
-
-            // quick hack to get over the small initial paint
-            // @TODO: look into why the initial render is a fraction of map container height
-            this.map.resize()
-
             this.map.addSource("Boundaries" , {
                 type: 'vector',
                 url: 'https://tiles.dvrpc.org/data/dvrpc-municipal.json'
@@ -86,7 +83,39 @@ class Map extends Component {
                     }
                 })
             })
+
+            // @TODO: add the map update info here once the database is updated. 
+            // something like: if (this.props.bounding.name){map.onZoomEnd(updateSidebar(newCoords))}
         })
+    }
+
+    componentDidUpdate(prevProps) {
+        if(prevProps.center !== this.props.center) {
+            const center = this.props.center
+            this.setState({ center })
+        }
+
+        if(this.props.bounding.name) {
+            //@TODO: figure out a good way to clear existing filters when swapping between a muni and county search 
+
+            const boundingObj = this.props.bounding
+            const filter = createBoundaryFilter(boundingObj)
+            const baseFilter = filter.baseFilter
+
+            this.map.setFilter(baseFilter.layer, baseFilter.filter)            
+            this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
+            this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f7c59f')
+        }
+
+        if(this.state.center){
+            this.map.flyTo({
+                center: this.state.center,
+                // @TODO: dynamic zoom levels to handle address search, county search, etc
+                zoom: 12,
+                speed: 0.9,
+                curve: 1.7
+            })
+        }
     }
 
     componentWillUnmount() {
@@ -109,4 +138,19 @@ class Map extends Component {
     }
 }
 
-export default Map;
+// to receive co-ordinates for the new map center
+const mapStateToProps = state => {
+    return {
+        center: state.center,
+        bounding: state.bounding
+    }
+}
+
+// to send co-ordinates for API calls
+const mapDispatchToProps = dispatch => {
+    return {
+        apiCoords: coords => dispatch()
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Map);
