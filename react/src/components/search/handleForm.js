@@ -1,6 +1,5 @@
 import { counties, munis, states } from './dropdowns.js'
 
-
 ////
 // Functions to handle parsed form inputs
 ////
@@ -24,9 +23,9 @@ const geocode = async query => {
 const handleSelect = value => {
     switch(value){
         case 'county':
-            return counties
+            return Object.keys(counties).sort((a, b) => a + b)
         case 'municipality':
-            return munis
+            return Object.keys(munis).sort((a, b) => a + b)
         case 'state':
             return states
         default:
@@ -60,6 +59,10 @@ const submitSearch = e => {
                 query = encodeURIComponent(input)
                 output.coords = geocode(query)
                 output.boundary.name = query
+
+                // get the boundary ID for filtering
+                const type = output.boundary.type
+                output.boundary.id = type === 'county' ? counties[input] : munis[input]
                 break
             // The API is not set up to handle states yet
             case 'state':
