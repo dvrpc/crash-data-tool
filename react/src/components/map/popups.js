@@ -10,8 +10,8 @@ const options = {
 }
 
 const getPopupInfo = async e => {
-    const properties = e.features[0].properties
-    const id = properties['crash_id']
+    const properties = e.features[0].properties    
+    const id = properties['id']
     let severity = properties['max_sever']
 
     let output = {

@@ -101,8 +101,15 @@ class Map extends Component {
             const boundingObj = this.props.bounding
             const filter = createBoundaryFilter(boundingObj)
             const baseFilter = filter.baseFilter
+            const heatFilter = filter.heatFilter
+            const circleFilter = filter.circlesFilter
 
-            this.map.setFilter(baseFilter.layer, baseFilter.filter)            
+            // set the appropriate filters
+            this.map.setFilter(baseFilter.layer, baseFilter.filter)
+            this.map.setFilter(heatFilter.layer, heatFilter.filter)
+            this.map.setFilter(circleFilter.layer, circleFilter.filter)
+            
+            // make the appropraite paint changes
             this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
             this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f7c59f')
         }
