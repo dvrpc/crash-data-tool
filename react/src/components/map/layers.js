@@ -1,3 +1,9 @@
+/*
+    @TODO: change the filtering back to integers once the VT's are fixed.
+    crashHeat: max sever '1' and '2' back to 1 and 2
+    crashCircles: circle-color paint property '1', '2', etc., back to 1, 2, etc
+*/
+
 const countyOutline = {
     id: 'county-outline',
     type: 'line',
@@ -33,8 +39,8 @@ const crashHeat = {
     maxzoom: 13,
     // KSI: Killed or severely injured
     filter: ['any', 
-        ['==', ['get', 'max_sever'], 1], 
-        ['==', ['get', 'max_sever'], 2],
+        ['==', ['get', 'max_sever'], '1'],
+        ['==', ['get', 'max_sever'], '2'],
     ],
     paint: {
         'heatmap-weight': [
@@ -86,13 +92,13 @@ const crashCircles = {
         'circle-color': [
             'match',
             ['get', 'max_sever'],
-            0, '#f7f7f7',
-            1, '#d62839',
-            2, '#de5260',
-            3, '#e67e88',
-            4, '#93c7db',
-            8, '#6eb5cf',
-            9, '#4ba3c3',
+            '0', '#f7f7f7',
+            '1', '#d62839',
+            '2', '#de5260',
+            '3', '#e67e88',
+            '4', '#93c7db',
+            '8', '#6eb5cf',
+            '9', '#4ba3c3',
             'rgba(255,255,255,0)'
         ],
         'circle-radius': [

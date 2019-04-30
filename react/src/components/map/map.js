@@ -85,7 +85,7 @@ class Map extends Component {
             })
 
             // @TODO: add the map update info here once the database is updated. 
-            // something like: if (this.props.bounding.name){map.onZoomEnd(updateSidebar(newCoords))}
+            // something like: if (!this.props.bounding.name){map.onZoomEnd(updateSidebar(newCoords))}
         })
     }
 
@@ -101,24 +101,28 @@ class Map extends Component {
             const boundingObj = this.props.bounding
             const filter = createBoundaryFilter(boundingObj)
             const baseFilter = filter.baseFilter
+            const resetFilter = filter.resetFilter
             const heatFilter = filter.heatFilter
             const circleFilter = filter.circlesFilter
 
             // set the appropriate filters
             this.map.setFilter(baseFilter.layer, baseFilter.filter)
+            this.map.setFilter(resetFilter.layer, resetFilter.filter)
             this.map.setFilter(heatFilter.layer, heatFilter.filter)
             this.map.setFilter(circleFilter.layer, circleFilter.filter)
             
             // make the appropraite paint changes
             this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
             this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f7c59f')
+            this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
+            this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
         }
 
         if(this.state.center){
             this.map.flyTo({
                 center: this.state.center,
                 // @TODO: dynamic zoom levels to handle address search, county search, etc
-                zoom: 12,
+                zoom: 9,
                 speed: 0.9,
                 curve: 1.7
             })
@@ -128,6 +132,13 @@ class Map extends Component {
     componentWillUnmount() {
         this.map.remove()
     }
+    /*
+        Refactor the legend div to a component that accepts props (determined by zoom level)
+        default state: Title: Crash Density. Scale: same gradient, 0 - 10+ (?)
+        zoom state: Title: Max Injury Severity. Scale: No injury - fatal (this is the current legend)
+        Props to pass: title (h3 text), minRange, maxRange
+    */
+
 
     render() {
         return (
@@ -156,7 +167,7 @@ const mapStateToProps = state => {
 // to send co-ordinates for API calls
 const mapDispatchToProps = dispatch => {
     return {
-        apiCoords: coords => dispatch()
+        apiCoords: coords => dispatch(coords)
     }
 }
 

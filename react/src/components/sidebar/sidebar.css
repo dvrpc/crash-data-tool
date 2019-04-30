@@ -11,6 +11,9 @@
 .crash-map-sidebar-subheader{
     margin-top: 8%;
 }
+.sidebar-paragraphs{
+    padding: 0 3%;
+}
 #crash-map-sidebar-ul{
     border-radius: 3px;
     padding: 0;
