@@ -60,21 +60,17 @@ class Map extends Component {
             // clicking a circle creates a popup w/basic information
             this.map.on('click', 'crash-circles', e => {
 
-                // @TODO: handle multiple features at the same point. 
-                // loop through features.length and call getPopupInfo(e) for each feature
-                // store the results as an array of promises and then promise.All them jawns to create a paginated list of popups
-                    // this will work w/the current structure and handle cases where not every feature has a response
-
-                // get info
-                const popupInfo = popups.getPopupInfo(e)
-
                 // initialize the mapbox popup object
                 const popup = new mapboxgl.Popup({
                     closebutton: true,
                     closeOnClick: true
                 }).setLngLat(e.lngLat)
+                    
+                // get info
+                const popupInfo = popups.getPopupInfo(e)
 
                 popupInfo.then(result => {
+
                     // create a popup or alert user about an error if the fetch fails
                     if(result.fail){
                         popups.catchPopupFail(popup, this.map, result.id)
@@ -82,6 +78,12 @@ class Map extends Component {
                         popups.setPopup(result, popup, this.map)
                     }
                 })
+
+                // Idea: 
+                // store an array of CRN's on local state as popupState. 
+                // IF reaact paginate can be added directly to the HTML, do that and use the features.length array to set up the skeleton.
+                // ELSE after the popup is added, grab it by ref and insert reactPaginate to it
+                // whenever an arrow or number is clicked, grab the appropriate ref from local state, call getPopupInfo and set the popup HTML w/new data + updated pagination jawn
             })
 
             // @TODO: add the map update info here once the database is updated. 
@@ -96,8 +98,6 @@ class Map extends Component {
         }
 
         if(this.props.bounding.name) {
-            //@TODO: figure out a good way to clear existing filters when swapping between a muni and county search 
-
             const boundingObj = this.props.bounding
             const filter = createBoundaryFilter(boundingObj)
             const baseFilter = filter.baseFilter

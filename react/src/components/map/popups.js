@@ -1,6 +1,5 @@
 import { severityLookup } from './mapLookups.js'
 
-
 const options = {
     method: 'GET',
     mode: 'cors',
@@ -10,6 +9,11 @@ const options = {
 }
 
 const getPopupInfo = async e => {
+    console.log('e is ', e.features)
+
+    // probably simple as e.features.forEach, get properties from there and return an array of promises
+    // it probably makes more sense to return the LENGTH of the popup array so that 
+
     const properties = e.features[0].properties    
     const id = properties['id']
     let severity = properties['max_sever']
@@ -41,10 +45,10 @@ const setPopup = (popupInfo, popup, map) => {
         <p>Collision Type: ${popupInfo.collision_type}</p>
         <p>Max Severity: ${popupInfo.severity}</p>
         <p>Crash Date: ${popupInfo.month}, ${popupInfo.year}</p>
-        <p>Number of persons involved: ${popupInfo.persons}</p>
-        <p>Number of vehicles involved: ${popupInfo.vehicle_count}</p>
-        <p>Number of pedestrians involved: ${popupInfo.ped}</p>
-        <p>Number of bicyclists involved: ${popupInfo.bike}</p>
+        <p>Persons involved: ${popupInfo.persons}</p>
+        <p>Vehicles involved: ${popupInfo.vehicle_count}</p>
+        <p>Pedestrians involved: ${popupInfo.ped}</p>
+        <p>Bicyclists involved: ${popupInfo.bike}</p>
     `)
     .addTo(map)
 }
