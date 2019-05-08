@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactPaginate from 'react-paginate';
 import { connect } from 'react-redux'
 import mapboxgl from "mapbox-gl";
 
@@ -59,6 +60,10 @@ class Map extends Component {
 
             // clicking a circle creates a popup w/basic information
             this.map.on('click', 'crash-circles', e => {
+                const features = e.features
+
+                // extract array of crn and severity for all crashes at that clicked point
+                const crnArray = features.map(crash => { return {crn: crash.properties.id, severity: crash.properties.max_sever} })
 
                 // initialize the mapbox popup object
                 const popup = new mapboxgl.Popup({
@@ -67,23 +72,21 @@ class Map extends Component {
                 }).setLngLat(e.lngLat)
                     
                 // get info
-                const popupInfo = popups.getPopupInfo(e)
+                const popupInfo = popups.getPopupInfo(crnArray[0])
 
                 popupInfo.then(result => {
+                    let html;
 
-                    // create a popup or alert user about an error if the fetch fails
+                    // create popup content (success or fail)
                     if(result.fail){
-                        popups.catchPopupFail(popup, this.map, result.id)
+                        html = popups.catchPopupFail(result.crn)
                     }else{
-                        popups.setPopup(result, popup, this.map)
+                        html = popups.setPopup(result)
                     }
-                })
 
-                // Idea: 
-                // store an array of CRN's on local state as popupState. 
-                // IF reaact paginate can be added directly to the HTML, do that and use the features.length array to set up the skeleton.
-                // ELSE after the popup is added, grab it by ref and insert reactPaginate to it
-                // whenever an arrow or number is clicked, grab the appropriate ref from local state, call getPopupInfo and set the popup HTML w/new data + updated pagination jawn
+                    // add the popup to the map
+                    popup.setHTML(html).addTo(this.map)
+                })
             })
 
             // @TODO: add the map update info here once the database is updated. 
