@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import ReactPaginate from 'react-paginate';
 import { connect } from 'react-redux'
 import mapboxgl from "mapbox-gl";
@@ -87,6 +88,26 @@ class Map extends Component {
                     // add the popup to the map
                     popup.setHTML(html).addTo(this.map)
                 })
+
+                // add pagination if necessary
+                if (crnArray.length > 1) {
+                                        
+                    const paginate = <ReactPaginate
+                    previousLabel={'previous'}
+                    nextLabel={'next'}
+                    breakLabel={'...'}
+                    pageCount={crnArray.length}
+                    pageRangeDisplayed={5}
+                    />
+                                        
+                    // two big issues with this approach
+                        // 1) direct dom manipulation (document.querySelector) is bad practice for react
+                        // 2) ReactDOM.createPortal needs to be called in the return of a components render method
+                        // a potential work around is to create a wrapper component that accepts the popup as props, creates the paginate element and then calls createPortal in the render method, placing <Paginate /> within popup. 
+                            // since paginate would exist within another component, the click handlers could also go there. 
+                    
+                    ReactDOM.createPortal(paginate, popup)
+                }
             })
 
             // @TODO: add the map update info here once the database is updated. 
@@ -100,7 +121,7 @@ class Map extends Component {
             this.setState({ center })
         }
 
-        if(this.props.bounding.name) {
+        if(this.props.bounding) {
             const boundingObj = this.props.bounding
             const filter = createBoundaryFilter(boundingObj)
             const baseFilter = filter.baseFilter
