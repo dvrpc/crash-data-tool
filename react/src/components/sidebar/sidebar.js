@@ -10,11 +10,12 @@ import './sidebar.css';
 class Sidebar extends Component {
     render() {
         let data = this.props.data ? charts.makeCharts(this.props.data) : charts.makePlaceholders()
+        let area = this.props.context || 'Selected Area'
         const severityOptions = charts.barOptions('Injury type', 'Number of persons')
 
         return (
             <section id="sidebar">
-                <h1 id="crash-map-sidebar-header" className="centered-text">Crash Statistics for Selected Area</h1>
+                <h1 id="crash-map-sidebar-header" className="centered-text">Crash Statistics for {area}</h1>
                     <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. consectetur adipiscing elit.</p>
                 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crash Severity</h2>
@@ -51,7 +52,8 @@ class Sidebar extends Component {
 
 const mapStateToProps = state => {
     return {
-        data: state.data
+        data: state.data,
+        context: state.area
     }
 }
 

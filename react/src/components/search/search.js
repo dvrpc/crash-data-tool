@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { getDataFromKeyword, setMapCenter, setMapBounding } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setMapCenter, setMapBounding, setSidebarHeaderContext } from '../../redux/reducers/mapReducer.js'
 import * as form from './handleForm.js'
 
 import './search.css'
@@ -34,7 +34,10 @@ class Search extends Component {
         // hit the api to get sidebar info (if applicable)
         if(output.boundary.name){
             const boundary = output.boundary
+            let decodedName = boundary.type === 'county' ? decodeURI(boundary.name) + ' County' : decodeURI(boundary.name)
 
+            // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
+            this.props.setSidebarHeaderContext(decodedName)
             this.props.getData(boundary)
             this.props.setMapBounding(boundary)
         }
@@ -76,7 +79,8 @@ const mapDispatchToProps = dispatch => {
     return {
         getData: boundaryObj => dispatch(getDataFromKeyword(boundaryObj)),
         setMapCenter: coords => dispatch(setMapCenter(coords)),
-        setMapBounding: boundingObj => dispatch(setMapBounding(boundingObj))
+        setMapBounding: boundingObj => dispatch(setMapBounding(boundingObj)),
+        setSidebarHeaderContext: area => dispatch(setSidebarHeaderContext(area))
     }
 }
 

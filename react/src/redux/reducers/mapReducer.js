@@ -13,6 +13,7 @@ const getOptions = {
 const GET_DATA_FROM_KEYWORD = 'GET_DATA_FROM_KEYWORD'
 const SET_MAP_CENTER = 'SET_MAP_CENTER'
 const SET_MAP_BOUNDING = 'SET_MAP_BOUNDING'
+const SET_SIDEBAR_HEADER_CONTEXT = 'SET_SIDEBAR_HEADER_CONTEXT'
 
 
 /*****************************/
@@ -20,6 +21,7 @@ const SET_MAP_BOUNDING = 'SET_MAP_BOUNDING'
 const get_data_from_keyword = data => ({ type: GET_DATA_FROM_KEYWORD, data })
 const set_map_center = center => ({ type: SET_MAP_CENTER, center })
 const set_map_bounding = bounding => ({ type: SET_MAP_BOUNDING, bounding })
+const set_sidebar_header_context = area => ( { type: SET_SIDEBAR_HEADER_CONTEXT, area })
 
 
 /***********************/
@@ -35,6 +37,9 @@ export default function mapReducer(state = [], action) {
         case SET_MAP_BOUNDING:
             const bounding = action.bounding
             return Object.assign({}, state, { bounding })
+        case SET_SIDEBAR_HEADER_CONTEXT:
+            const area = action.area
+            return Object.assign({}, state, { area })
         default:
             return state
     }
@@ -64,3 +69,5 @@ export const setMapBounding = bounding => dispatch => {
     bounding.name = decodeURIComponent(bounding.name)
     dispatch(set_map_bounding(bounding))
 }
+
+export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
