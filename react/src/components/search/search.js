@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { getDataFromKeyword, setMapCenter, setMapBounding, setSidebarHeaderContext } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setMapCenter, setMapBounding, setSidebarHeaderContext, getBoundingBox } from '../../redux/reducers/mapReducer.js'
 import * as form from './handleForm.js'
 
 import './search.css'
@@ -31,15 +31,17 @@ class Search extends Component {
             this.props.setMapCenter(center)
         })
 
-        // hit the api to get sidebar info (if applicable)
+        // hit the api's to get sidebar info (if applicable)
         if(output.boundary.name){
             const boundary = output.boundary
+
             let decodedName = boundary.type === 'county' ? decodeURI(boundary.name) + ' County' : decodeURI(boundary.name)
 
             // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
             this.props.setSidebarHeaderContext(decodedName)
             this.props.getData(boundary)
             this.props.setMapBounding(boundary)
+            this.props.getBoundingBox(boundary.id)
         }
     }
 
@@ -80,7 +82,8 @@ const mapDispatchToProps = dispatch => {
         getData: boundaryObj => dispatch(getDataFromKeyword(boundaryObj)),
         setMapCenter: coords => dispatch(setMapCenter(coords)),
         setMapBounding: boundingObj => dispatch(setMapBounding(boundingObj)),
-        setSidebarHeaderContext: area => dispatch(setSidebarHeaderContext(area))
+        setSidebarHeaderContext: area => dispatch(setSidebarHeaderContext(area)),
+        getBoundingBox: id => dispatch(getBoundingBox(id))
     }
 }
 

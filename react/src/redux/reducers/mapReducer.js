@@ -14,6 +14,7 @@ const GET_DATA_FROM_KEYWORD = 'GET_DATA_FROM_KEYWORD'
 const SET_MAP_CENTER = 'SET_MAP_CENTER'
 const SET_MAP_BOUNDING = 'SET_MAP_BOUNDING'
 const SET_SIDEBAR_HEADER_CONTEXT = 'SET_SIDEBAR_HEADER_CONTEXT'
+const GET_BOUNDING_BOX = 'GET_BOUNDING_BOX'
 
 
 /*****************************/
@@ -22,6 +23,7 @@ const get_data_from_keyword = data => ({ type: GET_DATA_FROM_KEYWORD, data })
 const set_map_center = center => ({ type: SET_MAP_CENTER, center })
 const set_map_bounding = bounding => ({ type: SET_MAP_BOUNDING, bounding })
 const set_sidebar_header_context = area => ( { type: SET_SIDEBAR_HEADER_CONTEXT, area })
+const get_bounding_box = bbox => ( { type: GET_BOUNDING_BOX, bbox } )
 
 
 /***********************/
@@ -40,6 +42,9 @@ export default function mapReducer(state = [], action) {
         case SET_SIDEBAR_HEADER_CONTEXT:
             const area = action.area
             return Object.assign({}, state, { area })
+        case GET_BOUNDING_BOX:
+            const bbox = action.bbox
+            return Object.assign({}, state, { bbox })
         default:
             return state
     }
@@ -58,7 +63,7 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
         const failObj = { fail: stream.statusText, boundaryObj }
         dispatch(get_data_from_keyword(failObj))
     }else{
-        const response = await stream.json()    
+        const response = await stream.json()
         dispatch(get_data_from_keyword(response))
     }
 }
@@ -71,3 +76,32 @@ export const setMapBounding = bounding => dispatch => {
 }
 
 export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
+
+export const getBoundingBox = id => async dispatch => {
+    const length = id.length
+    let api;
+
+    if (length > 2 ){
+        const countyID = id.substring(0, 2)
+        const muniID = id.substring(2, length)
+        
+        console.log('county ID is ', countyID)
+        console.log('muniID is ', muniID)
+
+        // Endpoint to get MUNICIPALITY boundaries
+        api = `https://services1.arcgis.com/jOy9iZUXBy03ojXb/ArcGIS/rest/services/PennDOTBoundaries_v_2/FeatureServer/2/query?where=COUNTY=${countyID}+AND+MUNICIPAL_CODE=${muniID}&geometryType=esriGeometryEnvelope&inSR=4326&&returnExtentOnly=true&f=pgeojson`
+    }else{
+        
+        // Endpoint to get COUNTY boundaries
+        api = `https://services1.arcgis.com/jOy9iZUXBy03ojXb/ArcGIS/rest/services/PennDOTBoundaries_v_2/FeatureServer/0/query?where=COUNTY_CODE=${id}&geometryType=esriGeometryEnvelope&inSR=4326&returnExtentOnly=true&f=pgeojson`
+    }
+
+    
+
+    const stream = await fetch(api, getOptions)
+    
+    if(stream.ok) {
+        const response = await stream.json()
+        console.log('response is ', response)
+    }
+}

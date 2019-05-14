@@ -100,13 +100,12 @@ class Map extends Component {
                     pageRangeDisplayed={5}
                     />
                                         
-                    // two big issues with this approach
-                        // 1) direct dom manipulation (document.querySelector) is bad practice for react
-                        // 2) ReactDOM.createPortal needs to be called in the return of a components render method
+                    // big issue with this approach
+                        // ReactDOM.createPortal needs to be called in the return of a components render method
                         // a potential work around is to create a wrapper component that accepts the popup as props, creates the paginate element and then calls createPortal in the render method, placing <Paginate /> within popup. 
                             // since paginate would exist within another component, the click handlers could also go there. 
                     
-                    ReactDOM.createPortal(paginate, popup)
+                    //ReactDOM.createPortal(paginate, popup)
                 }
             })
 
