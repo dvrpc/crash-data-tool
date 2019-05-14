@@ -184,11 +184,4 @@ const mapStateToProps = state => {
     }
 }
 
-// to send co-ordinates for API calls
-const mapDispatchToProps = dispatch => {
-    return {
-        apiCoords: coords => dispatch(coords)
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Map);
+export default connect(mapStateToProps, null)(Map);
