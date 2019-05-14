@@ -12,10 +12,6 @@ import './map.css';
 class Map extends Component {
     constructor(props){
         super(props)
-        this.state = {
-            center: null,
-            bounding: false
-        }
     }
 
     componentDidMount() {
@@ -25,7 +21,7 @@ class Map extends Component {
             container: this.crashMap,
             // optoins: basic (some colors), light (greyscale), 
             style: 'mapbox://styles/mapbox/dark-v9',
-            center: this.state.center || [-75.2273, 40.071],
+            center: [-75.2273, 40.071],
             zoom: 8.2
         })
 
@@ -71,7 +67,7 @@ class Map extends Component {
                     closebutton: true,
                     closeOnClick: true
                 }).setLngLat(e.lngLat)
-                    
+
                 // get info
                 const popupInfo = popups.getPopupInfo(crnArray[0])
 
@@ -115,9 +111,20 @@ class Map extends Component {
     }
 
     componentDidUpdate(prevProps) {
+
+        // zoom to a new center when appropriate (address searches)
         if(prevProps.center !== this.props.center) {
-            const center = this.props.center
-            this.setState({ center })
+            this.map.flyTo({
+                center: this.props.center,
+                zoom: 12,
+                speed: 0.9,
+                curve: 1.7
+            })
+        }
+
+        // zoom to a bounding box when appropriate (all non-address searches)
+        if(prevProps.bbox !== this.props.bbox) {
+            this.map.fitBounds(this.props.bbox)
         }
 
         if(this.props.bounding) {
@@ -140,16 +147,6 @@ class Map extends Component {
             this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
             this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
         }
-
-        if(this.state.center){
-            this.map.flyTo({
-                center: this.state.center,
-                // @TODO: dynamic zoom levels to handle address search, county search, etc
-                zoom: 9,
-                speed: 0.9,
-                curve: 1.7
-            })
-        }
     }
 
     componentWillUnmount() {
@@ -161,7 +158,6 @@ class Map extends Component {
         zoom state: Title: Max Injury Severity. Scale: No injury - fatal (this is the current legend)
         Props to pass: title (h3 text), minRange, maxRange
     */
-
 
     render() {
         return (
@@ -183,7 +179,8 @@ class Map extends Component {
 const mapStateToProps = state => {
     return {
         center: state.center,
-        bounding: state.bounding
+        bounding: state.bounding,
+        bbox: state.bbox
     }
 }
 

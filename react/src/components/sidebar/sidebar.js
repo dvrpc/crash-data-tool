@@ -8,8 +8,8 @@ import './sidebar.css';
 
 
 class Sidebar extends Component {
-    render() {
-        let data = this.props.data ? charts.makeCharts(this.props.data) : charts.makePlaceholders()
+    render() {        
+        let data = this.props.data ? charts.makeCharts(this.props.data) : charts.makePlaceholders()        
         let area = this.props.context || 'Selected Area'
         const severityOptions = charts.barOptions('Injury type', 'Number of persons')
 

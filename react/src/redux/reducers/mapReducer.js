@@ -3,7 +3,13 @@ const getOptions = {
     method: 'GET',
     mode: 'cors',
     headers: {
-        'Content-Type': 'application/json; charset=utf-8'
+        'Content-Type': 'application/json; charset=utf-8',
+    }
+}
+const postOptions = {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     }
 }
 
@@ -81,27 +87,28 @@ export const getBoundingBox = id => async dispatch => {
     const length = id.length
     let api;
 
+    // determine if id is type county or municipality
     if (length > 2 ){
         const countyID = id.substring(0, 2)
         const muniID = id.substring(2, length)
-        
-        console.log('county ID is ', countyID)
-        console.log('muniID is ', muniID)
 
         // Endpoint to get MUNICIPALITY boundaries
-        api = `https://services1.arcgis.com/jOy9iZUXBy03ojXb/ArcGIS/rest/services/PennDOTBoundaries_v_2/FeatureServer/2/query?where=COUNTY=${countyID}+AND+MUNICIPAL_CODE=${muniID}&geometryType=esriGeometryEnvelope&inSR=4326&&returnExtentOnly=true&f=pgeojson`
+        api = `https://services1.arcgis.com/jOy9iZUXBy03ojXb/ArcGIS/rest/services/PennDOTBoundaries_v_2/FeatureServer/2/query?where=COUNTY=${countyID}+AND+MUNICIPAL_CODE=${muniID}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=pgeojson`
     }else{
         
         // Endpoint to get COUNTY boundaries
-        api = `https://services1.arcgis.com/jOy9iZUXBy03ojXb/ArcGIS/rest/services/PennDOTBoundaries_v_2/FeatureServer/0/query?where=COUNTY_CODE=${id}&geometryType=esriGeometryEnvelope&inSR=4326&returnExtentOnly=true&f=pgeojson`
+        api = `https://services1.arcgis.com/jOy9iZUXBy03ojXb/ArcGIS/rest/services/PennDOTBoundaries_v_2/FeatureServer/0/query?where=COUNTY_CODE=${id}&geometryType=esriGeometryEnvelope&&outSR=4326&returnExtentOnly=true&f=pgeojson`
     }
 
-    
-
-    const stream = await fetch(api, getOptions)
+    const stream = await fetch(api, postOptions)
     
     if(stream.ok) {
         const response = await stream.json()
-        console.log('response is ', response)
+        const bbox = response.bbox
+
+        dispatch(get_bounding_box(bbox))
+    }else {
+        // error handling
+        alert('esri bbox call failed ', stream)
     }
 }

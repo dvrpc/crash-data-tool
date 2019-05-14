@@ -24,12 +24,13 @@ class Search extends Component {
     submitSearch = e => {
         const output = form.submitSearch(e)
 
-        // push the new map center
-        output.coords.then(result => {
-            const center = result.features[0].center
-            
-            this.props.setMapCenter(center)
-        })
+        // push the new map center when applicated (address search only)
+        if(output.coords) {
+            output.coords.then(result => {
+                const center = result.features[0].center    
+                this.props.setMapCenter(center)
+            })
+        }
 
         // hit the api's to get sidebar info (if applicable)
         if(output.boundary.name){

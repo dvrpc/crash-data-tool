@@ -38,7 +38,6 @@ const submitSearch = e => {
     e.preventDefault()
 
     const output = { 
-        coords: [], 
         boundary: {
             type: '',
             name: ''
@@ -57,7 +56,6 @@ const submitSearch = e => {
                 break
             case 'boundary':
                 query = encodeURIComponent(input)
-                output.coords = geocode(query)
                 output.boundary.name = query
 
                 // get the boundary ID for filtering
