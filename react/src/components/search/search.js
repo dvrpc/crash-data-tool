@@ -24,7 +24,7 @@ class Search extends Component {
     submitSearch = e => {
         const output = form.submitSearch(e)
 
-        // push the new map center when applicated (address search only)
+        // push the new map center when applicable (address search only)
         if(output.coords) {
             output.coords.then(result => {
                 const center = result.features[0].center    

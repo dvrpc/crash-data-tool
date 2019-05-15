@@ -10,10 +10,6 @@ import { createBoundaryFilter } from './boundaryFilters.js'
 import './map.css';
 
 class Map extends Component {
-    constructor(props){
-        super(props)
-    }
-
     componentDidMount() {
         mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
         
@@ -41,6 +37,8 @@ class Map extends Component {
 
             // add regional boundaries
             this.map.addLayer(layers.countyOutline)
+
+            // @TODO: add municipality layers at X zoom level, remove it at Y level (default or higher)
             this.map.addLayer(layers.municipalityOutline)
 
             // add crash data layers
@@ -146,7 +144,11 @@ class Map extends Component {
             this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f7c59f')
             this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
             this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
+        }else{
+            // @TODO: remove the bounding box filter whenever a user goes back to an address search
+            console.log('add in the code to remove filters ')
         }
+
     }
 
     componentWillUnmount() {
