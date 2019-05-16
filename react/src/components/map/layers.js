@@ -48,7 +48,7 @@ const crashHeat = {
             ['linear'],
             ['get', 'max_sever'],
             1, 2.5,
-            4, 0
+            2, 0
         ],
         'heatmap-intensity': [
             'interpolate',
@@ -85,6 +85,10 @@ const crashCircles = {
     source: 'Crashes',
     'source-layer': 'pa-crash',
     minzoom: 13,
+    filter: ['any', 
+        ['==', ['get', 'max_sever'], '1'],
+        ['==', ['get', 'max_sever'], '2'],
+    ],
     paint: {
         /*
             0: Not injured, 1: killed, 2: major, 3: moderate, 4: minor, 8: injury/unknown severity, 9: unknown
