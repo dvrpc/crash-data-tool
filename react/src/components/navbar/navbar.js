@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom'
 
 import Search from '../search/search.js'
 import './navbar.css';
@@ -7,7 +8,7 @@ class Navbar extends Component {
   render() {
     return (
         <nav id="navbar">
-          <a id="crash-map-nav-home" href="https://www.youtube.com/watch?v=53yaDdg2gy8">HOME</a>
+          <Link id="crash-map-nav-home" to="/">HOME</Link>
           <Search />
         </nav>
     );
