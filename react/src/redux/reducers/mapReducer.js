@@ -84,21 +84,13 @@ export const setMapBounding = bounding => dispatch => {
 export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
 
 export const getBoundingBox = id => async dispatch => {
-    const length = id.length
-    let api;
+    let featureServer;
 
-    // determine if id is type county or municipality
-    if (length > 2 ){
-        const countyID = id.substring(0, 2)
-        const muniID = id.substring(2, length)
+    // 0 for Municipalities, 1 for Counties
+    id.length > 2 ? featureServer = 0 : featureServer = 1
 
-        // Endpoint to get MUNICIPALITY boundaries
-        api = `https://services1.arcgis.com/jOy9iZUXBy03ojXb/ArcGIS/rest/services/PennDOTBoundaries_v_2/FeatureServer/2/query?where=COUNTY=${countyID}+AND+MUNICIPAL_CODE=${muniID}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=pgeojson`
-    }else{
-        
-        // Endpoint to get COUNTY boundaries
-        api = `https://services1.arcgis.com/jOy9iZUXBy03ojXb/ArcGIS/rest/services/PennDOTBoundaries_v_2/FeatureServer/0/query?where=COUNTY_CODE=${id}&geometryType=esriGeometryEnvelope&&outSR=4326&returnExtentOnly=true&f=pgeojson`
-    }
+    // boundary query string w/appropriate featureServer & id
+    const api = `https://services1.arcgis.com/LWtWv6q6BJyKidj8/ArcGIS/rest/services/DVRPC_Boundaries/FeatureServer/${featureServer}/query?where=DOT_CODE=${id}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=pgeojson`
 
     const stream = await fetch(api, postOptions)
     

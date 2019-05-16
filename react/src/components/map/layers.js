@@ -62,7 +62,7 @@ const crashHeat = {
             ['linear'],
             ['zoom'],
             8.2, 8,
-            13, 5
+            13, 3
         ],
         'heatmap-color': [
             'interpolate',
