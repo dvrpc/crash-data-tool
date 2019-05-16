@@ -165,18 +165,42 @@ class Map extends Component {
     // function to reset map to default view on
     resetControl = () => this.map.flyTo({center: [-75.2273, 40.071], zoom: 8.2})
 
+    // function to toggle which circles are on the map (defaults to KSI)
+    toggleCircleType = e => {
+        // get a handle on the selected radio button's id
+        const id = e.target.id
+
+        // update the crash circle filter bassed off of the id
+    }
+
     render() {
         return (
             <main id="crashMap" ref={el => this.crashMap = el}>
-                <div id="legend" className="shadow">
-                    <h3 id="legend-header" className="centered-text">Max Injury Severity</h3>
+                <div id="legend" className="shadow overlays">
+                    <h3 id="" className="legend-header centered-text">Max Injury Severity</h3>
                     <span id="legend-gradient"></span>
                     <div className="legend-text">
                         <span>No Injury</span>
                         <span>Fatal</span>
                     </div>
                 </div>
-                <div id="default-extent-btn" className="mapboxgl-ctrl-icon" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
+
+                <div id="toggle-circles" className="overlays">
+                    <h3 className="legend-header centered-text">Toggle Crash Type</h3>
+                    <form id="toggle-circles-form" onChange={this.toggleCircleType}>
+                        <div>
+                            <label htmlFor="KSI">KSI</label>
+                            <input id="KSI" type="radio" value="KSI" name="crash-circle-type" defaultChecked />
+                        </div>
+
+                        <div>
+                            <label htmlFor="All">All</label>
+                            <input id="All" type="radio" value="All" name="crash-circle-type" />
+                        </div>
+                    </form>
+                </div>
+
+                <div id="default-extent-btn" className="mapboxgl-ctrl-icon shadow overlays" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
                     <img id="default-extent-img" src='https://www.dvrpc.org/img/banner/new/bug-favicon.png' alt='DVRPC logo' />
                 </div>
             </main>
