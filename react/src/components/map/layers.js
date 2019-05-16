@@ -48,7 +48,7 @@ const crashHeat = {
             ['linear'],
             ['get', 'max_sever'],
             1, 2.5,
-            2, 0
+            2, 1
         ],
         'heatmap-intensity': [
             'interpolate',

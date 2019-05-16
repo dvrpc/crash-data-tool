@@ -177,7 +177,7 @@ class Map extends Component {
         return (
             <main id="crashMap" ref={el => this.crashMap = el}>
                 <div id="legend" className="shadow overlays">
-                    <h3 id="" className="legend-header centered-text">Max Injury Severity</h3>
+                    <h3 className="legend-header centered-text">Max Injury Severity</h3>
                     <span id="legend-gradient"></span>
                     <div className="legend-text">
                         <span>No Injury</span>
@@ -185,14 +185,13 @@ class Map extends Component {
                     </div>
                 </div>
 
-                <div id="toggle-circles" className="overlays">
+                <div id="toggle-circles" className="shadow overlays">
                     <h3 className="legend-header centered-text">Toggle Crash Type</h3>
                     <form id="toggle-circles-form" onChange={this.toggleCircleType}>
                         <div>
                             <label htmlFor="KSI">KSI</label>
                             <input id="KSI" type="radio" value="KSI" name="crash-circle-type" defaultChecked />
                         </div>
-
                         <div>
                             <label htmlFor="All">All</label>
                             <input id="All" type="radio" value="All" name="crash-circle-type" />
@@ -200,7 +199,7 @@ class Map extends Component {
                     </form>
                 </div>
 
-                <div id="default-extent-btn" className="mapboxgl-ctrl-icon shadow overlays" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
+                <div id="default-extent-btn" className="shadow overlays" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
                     <img id="default-extent-img" src='https://www.dvrpc.org/img/banner/new/bug-favicon.png' alt='DVRPC logo' />
                 </div>
             </main>

@@ -19,36 +19,10 @@ class Sidebar extends Component {
         }
     }
 
-    // update state with the data
-    componentDidUpdate(prevProps, nextProps) {
-        /* Once the new endpoint is made, setState with data received as props (include error handling)
-                A quick solution is to add 'default' : 'pa_crash.municipality LIKE \'{0}\''.format(args.get('value'))` to queryRef, but there must be a more efficient 'get every record' method
-            
-            const data = nextProps.data
-            const area = nextProps.context
-            this.setState({
-                data, 
-                context
-            })
-        */
-    }
-
     render() {
-
-        /* once the new endpoint is made, replace data and area with:
-            let charts = charts.makeCharts(this.state.data)
-            let area = this.state.context
-        */
-
-        /* an alternative is to only have state for the default, not update it on DidUpdate and just make the data and area ternarys this:
-            let data = this.props.data ? charts.makeCharts(this.props.data) : charts.makeCharts(this.state.data)        
-            let area = this.props.context ? this.props.context : this.state.context
-            ... but this feels like a bad idea
-        */
-
-        // process state data 
+        // process the churts
         let data = this.props.data ? charts.makeCharts(this.props.data) : charts.makePlaceholders()        
-        let area = this.props.context || 'Selected Area'
+        let area = this.props.context || this.state.context
         const severityOptions = charts.barOptions('Injury type', 'Number of persons')
 
         return (
