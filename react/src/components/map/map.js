@@ -6,7 +6,7 @@ import mapboxgl from "mapbox-gl";
 
 import * as layers from './layers.js'
 import * as popups from './popups.js';
-import { createBoundaryFilter } from './boundaryFilters.js'
+import { createBoundaryFilter } from './boundaryFilters.js';
 import './map.css';
 
 class Map extends Component {
@@ -15,13 +15,14 @@ class Map extends Component {
         
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            // optoins: basic (some colors), light (greyscale), 
             style: 'mapbox://styles/mapbox/dark-v9',
             center: [-75.2273, 40.071],
             zoom: 8.2
         })
 
-        this.map.addControl(new mapboxgl.NavigationControl())
+        // add navigation + custom return to default button
+        const navControl = new mapboxgl.NavigationControl()
+        this.map.addControl(navControl)
 
         // add DVRPC regional outlines + crash data heat map
         this.map.on('load', () => {
@@ -161,6 +162,9 @@ class Map extends Component {
         Props to pass: title (h3 text), minRange, maxRange
     */
 
+    // function to reset map to default view on
+    resetControl = () => this.map.flyTo({center: [-75.2273, 40.071], zoom: 8.2})
+
     render() {
         return (
             <main id="crashMap" ref={el => this.crashMap = el}>
@@ -171,6 +175,9 @@ class Map extends Component {
                         <span>No Injury</span>
                         <span>Fatal</span>
                     </div>
+                </div>
+                <div id="default-extent-btn" className="mapboxgl-ctrl-icon" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
+                    <img id="default-extent-img" src='https://www.dvrpc.org/img/banner/new/bug-favicon.png' alt='DVRPC logo' />
                 </div>
             </main>
         );
