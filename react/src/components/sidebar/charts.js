@@ -72,12 +72,10 @@ const makePlaceholders = () => {
 }
 
 // transform db response into a format the charting functions can consume
-const formatData = (year, data, output) => {
-    const x = data[year]
+const formatData = (yearData, output) => {
+    Object.keys(yearData).forEach(key => {
     
-    Object.keys(x).forEach(key => {
-    
-        const innerObj = x[key]
+        const innerObj = yearData[key]
     
         Object.keys(innerObj).forEach((innerKey, index) => {
             if(output[key][index] > -1){
@@ -92,7 +90,8 @@ const formatData = (year, data, output) => {
 // default call that formats all available years of data
 const useAllYears = (data, output) => {
     for(var year in data){
-        formatData(year, data, output)
+        const yearData = data[year]
+        formatData(yearData, output)
     }
 
     return output
@@ -100,9 +99,11 @@ const useAllYears = (data, output) => {
 
 // accepts a custom range and formats specified years of data into a format that can be consuemd by chart functions
 const useSetRange = (data, range, output) => {
+
     for(var year in data){
         if(year >= range.from && year <= range.to){
-            formatData(year, data, output)
+            const yearData = data[year]
+            formatData(yearData, output)
         }
     }
 
@@ -110,7 +111,9 @@ const useSetRange = (data, range, output) => {
 }
 
 // using the API response to build the actual charts
-const makeCharts = (data, range) => {
+const makeCharts = (data, range) => {    
+    if(!data) return makePlaceholders()
+
     let severityChart, modeChart, collisionTypeChart;
 
     let output = {

@@ -12,11 +12,25 @@ class Sidebar extends Component {
     constructor(props) {
         super(props)
 
-        // load default state from the jawn
+        // load default state from the jawn (possibly add a range field to state which defaults to null and updates whenever a new range is picked)
         this.state = {
             data: this.props.setDefaultState({type: 'municipality', name: '%'}),
-            context: 'the DVRPC region'
+            context: 'the DVRPC region',
+            localUpdate: false
         }
+    }
+
+    componentDidUpdate(prevProps) {
+
+        // turn off local update for new searches so that the charts update with props instead of local state
+        if(this.props.context !== prevProps.context && this.state.localUpdate) {
+            const localUpdate = false
+            this.setState({localUpdate})
+        }
+
+        // it's possible that once a range is established, users will want that to persist throughout searches
+        // in that case, range will exist on local state and all instances of makeCharts will pass this.state.range
+            // default value will be null so that the default state can load with the full range
     }
 
     updateChartRange = e => {
@@ -38,13 +52,17 @@ class Sidebar extends Component {
         // send the inputs to makeCharts 
         const data = charts.makeCharts(this.props.data, range)
 
-        // tell the component to re-render? oof
+        // tell render to listen to state instead of props
+        const localUpdate = true
 
+        // setState to trigger a re-render
+        this.setState({data, localUpdate})
     }
 
     render() {
-        // process the churts
-        let data = this.props.data ? charts.makeCharts(this.props.data) : charts.makePlaceholders()        
+
+        // process the churts (possibly add this.state.range to the props version of charts.makeCharts if we want range to persist throughout searches)
+        let data = this.state.localUpdate ? this.state.data : charts.makeCharts(this.props.data)
         let area = this.props.context || this.state.context
         const severityOptions = charts.barOptions('Injury type', 'Number of persons')
 
