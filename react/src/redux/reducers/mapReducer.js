@@ -64,12 +64,15 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
     const api = `https://a.michaelruane.com/api/crash-data/v1/sidebarInfo?type=${type}&value=${name}`
     const stream = await fetch(api, getOptions)
 
+    console.log('stream is ', stream)
+
     // error handling - pass the failure message + the boundary object to give context to the displayed error response
     if(!stream.ok) {
         const failObj = { fail: stream.statusText, boundaryObj }
         dispatch(get_data_from_keyword(failObj))
     }else{
         const response = await stream.json()
+        console.log('respone is ', response)
         dispatch(get_data_from_keyword(response))
     }
 }

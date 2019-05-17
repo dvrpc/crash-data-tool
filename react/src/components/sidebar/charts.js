@@ -41,7 +41,7 @@ const severity = data => {
 // Mode Chart data
 const mode = data => {
     return {
-        labels: ['Pedestrians', 'Bicyclists', 'Vehicle Occupants'],
+        labels: ['Bicyclists', 'Vehicle Occupants', 'Pedestrians'],
         datasets: [{
             data,
             backgroundColor: ['#6457a6', '#dd403a','#c6e0ff']
@@ -70,18 +70,9 @@ const makePlaceholders = () => {
     const modeChart = mode([0,0,0])
     return { collisionTypeChart, severityChart, modeChart }
 }
-// using the API response to build the actual charts
-const makeCharts = data => {
-    let severityChart, modeChart, collisionTypeChart;
 
-    const output = {
-        mode: [],
-        severity: [],
-        type: []
-    }
-
-    // with the current split, we need to loop through every year of data, and loop through the values in those years to extract and combine each number...
-    // @TODO: improve this. If Marco/Kevin approve, redo the API response to aggregates instead of yearly breakdown, otherwise figure out a better way to extract the data
+// default function that takes all available years of data and formats it to be consuemd by chart functions
+const useAllYears = (data, output) => {
     for(var year in data){
         const x = data[year]
 
@@ -98,6 +89,31 @@ const makeCharts = data => {
             })
         })
     }
+
+    return output
+}
+
+// accepts a custom range and formats specified years of data into a format that can be consuemd by chart functions
+const useSetRange = (data, range, output) => {
+    
+    return output
+}
+
+// using the API response to build the actual charts
+const makeCharts = (data, range) => {
+    let severityChart, modeChart, collisionTypeChart;
+
+    let output = {
+        mode: [],
+        severity: [],
+        type: []
+    }
+
+    console.log('data is ', data)
+
+    // determine whether to build chart data for all years or a specified range of years
+    range ? output = {...useSetRange(data, range, output)} : output = useAllYears(data, output)
+
 
     severityChart = severity(output.severity)
     modeChart = mode(output.mode)
