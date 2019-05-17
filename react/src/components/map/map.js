@@ -165,13 +165,16 @@ class Map extends Component {
     // function to reset map to default view on
     resetControl = () => this.map.flyTo({center: [-75.2273, 40.071], zoom: 8.2})
 
-    // 
+    // reveal the list of layer toggles (right now it's just crash circle type)
     toggleLayerToggles = e => {
         const wrapper = e.target
+
+        // handle event bubbling
+        if(wrapper.id !== 'toggle-wrapper') return
+
         const children = wrapper.children
         const length = children.length
         
-        // @TODO: make the reveal a transition instead of a display/no display jawn
         for(var i = 0; i < length; i++){
             children[i].classList.toggle('hidden')
         }
@@ -179,10 +182,21 @@ class Map extends Component {
 
     // function to toggle which circles are on the map (defaults to KSI)
     toggleCircleType = e => {
-        // get a handle on the selected radio button's id
         const id = e.target.id
+        let filter;
 
-        // update the crash circle filter bassed off of the id
+        // create a filter based on the selected radio input
+        if(id === 'All') {
+            filter = null
+        }else {
+            filter = ['any', 
+                ['==', ['get', 'max_sever'], '1'],
+                ['==', ['get', 'max_sever'], '2'],
+            ]
+        }
+
+        // update the crash circle filter
+        this.map.setFilter('crash-circles', filter)
     }
 
     render() {
@@ -221,7 +235,6 @@ class Map extends Component {
     }
 }
 
-// to receive co-ordinates for the new map center
 const mapStateToProps = state => {
     return {
         center: state.center,
