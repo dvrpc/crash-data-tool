@@ -58,7 +58,7 @@ class Sidebar extends Component {
                         <legend>Select Charts Data Range: </legend>
                         <div id="crash-range-input-wrapper">
                             <label htmlFor="from">From: </label>
-                            <select id="crash-range-select" name="from">
+                            <select id="crash-select-from" name="from">
                                 <option value="2012">2012</option>
                                 <option value="2013">2013</option>
                                 <option value="2014">2014</option>

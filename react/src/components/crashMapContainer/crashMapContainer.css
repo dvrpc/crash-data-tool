@@ -1,4 +1,5 @@
 #crash-map-content-wrapper{
     display: flex;
-    height: 91vh;
+    height: 90vh;
+    margin-bottom: 1vh;
 }
