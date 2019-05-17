@@ -165,6 +165,18 @@ class Map extends Component {
     // function to reset map to default view on
     resetControl = () => this.map.flyTo({center: [-75.2273, 40.071], zoom: 8.2})
 
+    // 
+    toggleLayerToggles = e => {
+        const wrapper = e.target
+        const children = wrapper.children
+        const length = children.length
+        
+        // @TODO: make the reveal a transition instead of a display/no display jawn
+        for(var i = 0; i < length; i++){
+            children[i].classList.toggle('hidden')
+        }
+    }
+
     // function to toggle which circles are on the map (defaults to KSI)
     toggleCircleType = e => {
         // get a handle on the selected radio button's id
@@ -185,18 +197,20 @@ class Map extends Component {
                     </div>
                 </div>
 
-                <div id="toggle-circles" className="shadow overlays">
-                    <h3 className="legend-header centered-text">Toggle Crash Type</h3>
-                    <form id="toggle-circles-form" onChange={this.toggleCircleType}>
-                        <div>
-                            <label htmlFor="KSI">KSI</label>
-                            <input id="KSI" type="radio" value="KSI" name="crash-circle-type" defaultChecked />
-                        </div>
-                        <div>
-                            <label htmlFor="All">All</label>
-                            <input id="All" type="radio" value="All" name="crash-circle-type" />
-                        </div>
-                    </form>
+                <div id="toggle-wrapper" className="shadow overlays" onClick={this.toggleLayerToggles}>
+                    <div id="toggle-circles" className="shadow overlays hidden">
+                        <h3 className="legend-header centered-text">Toggle Crash Type</h3>
+                        <form id="toggle-circles-form" onChange={this.toggleCircleType}>
+                            <div>
+                                <label htmlFor="KSI">KSI</label>
+                                <input id="KSI" type="radio" value="KSI" name="crash-circle-type" defaultChecked />
+                            </div>
+                            <div>
+                                <label htmlFor="All">All</label>
+                                <input id="All" type="radio" value="All" name="crash-circle-type" />
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
                 <div id="default-extent-btn" className="shadow overlays" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
