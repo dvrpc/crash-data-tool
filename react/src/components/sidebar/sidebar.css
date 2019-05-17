@@ -1,3 +1,4 @@
+/* General */
 #sidebar{
     font-size: 14px;
     width: 35vw;
@@ -7,6 +8,13 @@
     margin-right: 1vh;
     overflow-y: auto;
     overflow-x: hidden;
+}
+#sidebar-hr{
+    border: 0;
+    border-top: 1px solid #ddd;
+    height: 0;
+    box-sizing: content-box;
+    clear: both;
 }
 .crash-map-sidebar-subheader{
     margin-top: 8%;
@@ -26,4 +34,19 @@
 }
 #crash-map-sidebar-ul:last-child{
     border-bottom: none;
+}
+
+
+/* Chart Form */
+#update-charts-form{
+    margin-top: 5%;
+}
+#crash-range-input-wrapper{
+    padding: 1% 0;
+}
+#crash-range-select {
+    margin-right: 5%;
+}
+#crash-range-button{
+    float: right;
 }

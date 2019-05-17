@@ -51,15 +51,14 @@ class Sidebar extends Component {
                 <h1 id="crash-map-sidebar-header" className="centered-text">Crash Statistics for {area}</h1>
                     <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. consectetur adipiscing elit.</p>
                 
-                <hr />
+                <hr id="sidebar-hr" />
 
                 <form id="update-charts-form" onSubmit={this.updateChartRange}>
                     <fieldset form="update-charts-form">
-                        <legend>Select Data Range: </legend>
-
-                        <div id="crash-metrics-range-input-wrapper">
-                            <label htmlFor="crash-metrics-from-year">From: </label>
-                            <select name="from">
+                        <legend>Select Charts Data Range: </legend>
+                        <div id="crash-range-input-wrapper">
+                            <label htmlFor="from">From: </label>
+                            <select id="crash-range-select" name="from">
                                 <option value="2012">2012</option>
                                 <option value="2013">2013</option>
                                 <option value="2014">2014</option>
@@ -67,8 +66,7 @@ class Sidebar extends Component {
                                 <option value="2016">2016</option>
                                 <option value="2017">2017</option>
                             </select>
-
-                            <label htmlFor="crash-metrics-to-year">To: </label>
+                            <label htmlFor="to">To: </label>
                             <select name="to">
                                 <option value="2017">2017</option>
                                 <option value="2016">2016</option>
@@ -77,9 +75,9 @@ class Sidebar extends Component {
                                 <option value="2013">2013</option>
                                 <option value="2012">2012</option>
                             </select>
+                            <button id="crash-range-button" type="submit">Update</button>
                         </div>
                     </fieldset>
-                    <button type="submit">Update</button>
                 </form>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crash Severity</h2>

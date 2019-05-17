@@ -51,7 +51,7 @@ class Search extends Component {
 
         return (
             <form id="search-form" onSubmit={ this.submitSearch }>
-                <fieldset name="type" form="search-form">
+                <fieldset className="search-form-fieldset" name="type" form="search-form">
                     <label htmlFor="select-search-type">Search By: </label>
                     <select name="type" id="select-search-type" onChange={ this.selectSearch }>
                         <option value="address">Address</option>
@@ -61,13 +61,13 @@ class Search extends Component {
                     </select>
                 </fieldset>
                 {selectedSearch ? (
-                    <fieldset name="boundary" form="search-form">
+                    <fieldset className="search-form-fieldset" name="boundary" form="search-form">
                         <select name="boundary" id="search-type">
                             { selectedSearch.map(e => <option key={e}>{e}</option>) }
                         </select>
                     </fieldset>
                     ) : (
-                    <fieldset name="address" form="search-form">
+                    <fieldset className="search-form-fieldset" name="address" form="search-form">
                         <input name="address" type="text" />
                     </fieldset>
                     )

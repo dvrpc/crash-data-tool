@@ -12,7 +12,7 @@
     display: flex;
     align-items: center;
 }
-fieldset{
+.search-form-fieldset{
     border: none;
     margin: 0;
     padding: 0;
