@@ -24,10 +24,10 @@ class Sidebar extends Component {
 
         let range = {from: 0, to: 0}
         const form = e.target
-        const data = new FormData(form)
+        const formData = new FormData(form)
         
         //get the inputs from the dropdowns
-        for(var [key, input] of data.entries()) {
+        for(var [key, input] of formData.entries()) {
             if(key === 'from') {
                 range.from = input
             }else{
@@ -35,9 +35,11 @@ class Sidebar extends Component {
             }
         }
 
-        console.log('selected range is ', range)
-
         // send the inputs to makeCharts 
+        const data = charts.makeCharts(this.props.data, range)
+
+        // tell the component to re-render? oof
+
     }
 
     render() {
@@ -54,7 +56,7 @@ class Sidebar extends Component {
                 <hr id="sidebar-hr" />
 
                 <form id="update-charts-form" onSubmit={this.updateChartRange}>
-                    <fieldset form="update-charts-form">
+                    <fieldset id="update-charts-fieldset" form="update-charts-form">
                         <legend>Select Charts Data Range: </legend>
                         <div id="crash-range-input-wrapper">
                             <label htmlFor="from">From: </label>

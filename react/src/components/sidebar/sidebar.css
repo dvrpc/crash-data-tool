@@ -41,6 +41,9 @@
 #update-charts-form{
     margin-top: 5%;
 }
+#update-charts-fieldset{
+    background: #fcfcfc;
+}
 #crash-range-input-wrapper{
     padding: 1% 0;
 }

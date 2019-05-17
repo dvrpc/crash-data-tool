@@ -71,23 +71,28 @@ const makePlaceholders = () => {
     return { collisionTypeChart, severityChart, modeChart }
 }
 
-// default function that takes all available years of data and formats it to be consuemd by chart functions
+// transform db response into a format the charting functions can consume
+const formatData = (year, data, output) => {
+    const x = data[year]
+    
+    Object.keys(x).forEach(key => {
+    
+        const innerObj = x[key]
+    
+        Object.keys(innerObj).forEach((innerKey, index) => {
+            if(output[key][index] > -1){
+                output[key][index] += innerObj[innerKey]
+            }else{
+                output[key].push(innerObj[innerKey])
+            }
+        })
+    })
+}
+
+// default call that formats all available years of data
 const useAllYears = (data, output) => {
     for(var year in data){
-        const x = data[year]
-
-        Object.keys(x).forEach(key => {
-
-            const innerObj = x[key]
-
-            Object.keys(innerObj).forEach((innerKey, index) => {
-                if(output[key][index] > -1){
-                    output[key][index] += innerObj[innerKey]
-                }else{
-                    output[key].push(innerObj[innerKey])
-                }
-            })
-        })
+        formatData(year, data, output)
     }
 
     return output
@@ -95,7 +100,12 @@ const useAllYears = (data, output) => {
 
 // accepts a custom range and formats specified years of data into a format that can be consuemd by chart functions
 const useSetRange = (data, range, output) => {
-    
+    for(var year in data){
+        if(year >= range.from && year <= range.to){
+            formatData(year, data, output)
+        }
+    }
+
     return output
 }
 
@@ -109,12 +119,9 @@ const makeCharts = (data, range) => {
         type: []
     }
 
-    console.log('data is ', data)
-
     // determine whether to build chart data for all years or a specified range of years
-    range ? output = {...useSetRange(data, range, output)} : output = useAllYears(data, output)
-
-
+    range ? output = useSetRange(data, range, output) : output = useAllYears(data, output)
+    
     severityChart = severity(output.severity)
     modeChart = mode(output.mode)
     collisionTypeChart = collisionType(output.type)
