@@ -19,6 +19,27 @@ class Sidebar extends Component {
         }
     }
 
+    updateChartRange = e => {
+        e.preventDefault()
+
+        let range = {from: 0, to: 0}
+        const form = e.target
+        const data = new FormData(form)
+        
+        //get the inputs from the dropdowns
+        for(var [key, input] of data.entries()) {
+            if(key === 'from') {
+                range.from = input
+            }else{
+                range.to = input
+            }
+        }
+
+        console.log('selected range is ', range)
+
+        // send the inputs to makeCharts 
+    }
+
     render() {
         // process the churts
         let data = this.props.data ? charts.makeCharts(this.props.data) : charts.makePlaceholders()        
@@ -30,6 +51,37 @@ class Sidebar extends Component {
                 <h1 id="crash-map-sidebar-header" className="centered-text">Crash Statistics for {area}</h1>
                     <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. consectetur adipiscing elit.</p>
                 
+                <hr />
+
+                <form id="update-charts-form" onSubmit={this.updateChartRange}>
+                    <fieldset form="update-charts-form">
+                        <legend>Select Data Range: </legend>
+
+                        <div id="crash-metrics-range-input-wrapper">
+                            <label htmlFor="crash-metrics-from-year">From: </label>
+                            <select name="from">
+                                <option value="2012">2012</option>
+                                <option value="2013">2013</option>
+                                <option value="2014">2014</option>
+                                <option value="2015">2015</option>
+                                <option value="2016">2016</option>
+                                <option value="2017">2017</option>
+                            </select>
+
+                            <label htmlFor="crash-metrics-to-year">To: </label>
+                            <select name="to">
+                                <option value="2017">2017</option>
+                                <option value="2016">2016</option>
+                                <option value="2015">2015</option>
+                                <option value="2014">2014</option>
+                                <option value="2013">2013</option>
+                                <option value="2012">2012</option>
+                            </select>
+                        </div>
+                    </fieldset>
+                    <button type="submit">Update</button>
+                </form>
+
                 <h2 className="centered-text crash-map-sidebar-subheader">Crash Severity</h2>
                     <Bar data={data.severityChart} options={severityOptions}/>
                     <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.</p>
