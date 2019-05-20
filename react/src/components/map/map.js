@@ -39,16 +39,51 @@ class Map extends Component {
             // add regional boundaries
             this.map.addLayer(layers.countyOutline)
 
-            // @TODO: add municipality layers at X zoom level, remove it at Y level (default or higher)
+            // add municipal boundaries
             this.map.addLayer(layers.municipalityOutline)
 
             // add crash data layers
             this.map.addLayer(layers.crashHeat)
             this.map.addLayer(layers.crashCircles)
 
+            // need this from the mapbox example
+            let hoveredMuni = null
+            
+            // add interactivity to municipalities
+            this.map.on('mousemove', 'municipality-outline', e => {
+                // escape if zoom level isn't right
+
+                console.log('hit the jawn with ', e.features)
+
+                if(e.features.length > 0 ) {
+                    
+                    // update old hover jawn
+                    if(hoveredMuni) {
+                        this.map.setFeatureState(
+                            {source: 'Boundaries', sourceLayer: 'municipality-outline', geoid: hoveredMuni},
+                            {hover: false}
+                        )
+                    }
+
+                    hoveredMuni = e.features[0].properties.geoid
+
+                    console.log('hovered muni is ', hoveredMuni)
+    
+                    this.map.setFeatureState(
+                        {source: 'Boundaries', sourceLayer: 'municipality-outline', geoid: hoveredMuni},
+                        {hover: true}
+                    )
+                }
+            })
+
+            this.map.on('mouseleave', 'municipality-outline', e => {
+                
+            })
+                
             // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
             this.map.on('mousemove', 'crash-circles', e => {
                 this.map.getCanvas().style.cursor = 'pointer'
+
             })
             this.map.on('mouseleave', 'crash-circles', e => {
                 this.map.getCanvas().style = ''
@@ -103,9 +138,6 @@ class Map extends Component {
                     //ReactDOM.createPortal(paginate, popup)
                 }
             })
-
-            // @TODO: add the map update info here once the database is updated. 
-            // something like: if (!this.props.bounding.name){map.onZoomEnd(updateSidebar(newCoords))}
         })
     }
 

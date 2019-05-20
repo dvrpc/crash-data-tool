@@ -25,9 +25,15 @@ const municipalityOutline = {
     type: 'line',
     source: 'Boundaries',
     'source-layer': 'municipalities',
+    minzoom: 8.5,
     paint: {
         'line-width': 0.5,
-        'line-color': '#e3f2fd'
+        // set up muni outlines to have hover effects calculated by map.setFeatureState
+        'line-color': ['case', 
+            ['boolean', ['feature-state', 'hover'], false],
+        '#f7c59f',
+        '#e3f2fd'
+        ]
     }
 }
 
