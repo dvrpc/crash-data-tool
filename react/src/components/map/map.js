@@ -8,6 +8,7 @@ import * as layers from './layers.js'
 import * as popups from './popups.js';
 import { createBoundaryFilter } from './boundaryFilters.js';
 import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding  } from '../../redux/reducers/mapReducer.js'
+import { munis } from '../search/dropdowns.js'
 import './map.css';
 
 class Map extends Component {
@@ -96,7 +97,11 @@ class Map extends Component {
                 const props = e.features[0].properties
                 const id = props.geoid
                 const decodedName = props.name
-                const boundaryObj = {type: 'municipality', name: decodedName}
+
+                // use the dropdown lookup table to convert muni name into pennDOT id
+                let pennID = munis[decodedName]
+            
+                const boundaryObj = {type: 'municipality', name: decodedName, id: pennID}
 
                 // do all the things that search does
                 this.props.setSidebarHeaderContext(decodedName)
@@ -104,7 +109,24 @@ class Map extends Component {
                 this.props.setMapBounding(boundaryObj)
                 this.props.getBoundingBox(id, true)
 
-                // set bounding filters
+                // set bounding filters (@TODO: refactor this into a function b/c it's copy/pasted from the componentDidUpdate jawn rn)
+                const filter = createBoundaryFilter(boundaryObj)
+                const baseFilter = filter.baseFilter
+                const resetFilter = filter.resetFilter
+                const heatFilter = filter.heatFilter
+                const circleFilter = filter.circlesFilter
+    
+                // set the appropriate filters
+                this.map.setFilter(baseFilter.layer, baseFilter.filter)
+                this.map.setFilter(resetFilter.layer, resetFilter.filter)
+                this.map.setFilter(heatFilter.layer, heatFilter.filter)
+                this.map.setFilter(circleFilter.layer, circleFilter.filter)
+                
+                // make the appropraite paint changes
+                this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
+                this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f7c59f')
+                this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
+                this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
             })
 
             // clicking a circle creates a popup w/basic information
