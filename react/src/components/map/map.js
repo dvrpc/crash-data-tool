@@ -7,6 +7,7 @@ import mapboxgl from "mapbox-gl";
 import * as layers from './layers.js'
 import * as popups from './popups.js';
 import { createBoundaryFilter } from './boundaryFilters.js';
+import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding  } from '../../redux/reducers/mapReducer.js'
 import './map.css';
 
 class Map extends Component {
@@ -41,44 +42,45 @@ class Map extends Component {
 
             // add municipal boundaries
             this.map.addLayer(layers.municipalityOutline)
+            this.map.addLayer(layers.municipalityFill)
 
             // add crash data layers
             this.map.addLayer(layers.crashHeat)
             this.map.addLayer(layers.crashCircles)
 
-            // need this from the mapbox example
-            let hoveredMuni = null
-            
-            // add interactivity to municipalities
-            this.map.on('mousemove', 'municipality-outline', e => {
-                // escape if zoom level isn't right
-
-                console.log('hit the jawn with ', e.features)
-
-                if(e.features.length > 0 ) {
+                /* muni hover effect - add back in after VT's are updated & then make it a function b/c counties will use this too
+                    // need this from the mapbox example
+                    let hoveredMuni = null
                     
-                    // update old hover jawn
-                    if(hoveredMuni) {
-                        this.map.setFeatureState(
-                            {source: 'Boundaries', sourceLayer: 'municipality-outline', geoid: hoveredMuni},
-                            {hover: false}
-                        )
-                    }
+                    // add interactivity to municipalities (work on this pending VT updates so we can use setFeatureState)
+                    this.map.on('mousemove', 'municipality-fill', e => {
 
-                    hoveredMuni = e.features[0].properties.geoid
+                        console.log('moved on muni')
+                        // escape if zoom level isn't right
 
-                    console.log('hovered muni is ', hoveredMuni)
-    
-                    this.map.setFeatureState(
-                        {source: 'Boundaries', sourceLayer: 'municipality-outline', geoid: hoveredMuni},
-                        {hover: true}
-                    )
-                }
-            })
+                        if(e.features.length > 0 ) {
+                            
+                            // update old hover jawn
+                            if(hoveredMuni) {
+                                this.map.setFeatureState(
+                                    {source: 'Boundaries', sourceLayer: 'municipality-outline', id: hoveredMuni},
+                                    {hover: false}
+                                )
+                            }
 
-            this.map.on('mouseleave', 'municipality-outline', e => {
-                
-            })
+                            hoveredMuni = +e.features[0].properties.geoid
+            
+                            this.map.setFeatureState(
+                                {source: 'Boundaries', sourceLayer: 'municipality-outline', id: hoveredMuni},
+                                {hover: true}
+                            )
+                        }
+                    })
+
+                    this.map.on('mouseleave', 'municipality-outline', e => {
+                        
+                    })
+                */
                 
             // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
             this.map.on('mousemove', 'crash-circles', e => {
@@ -87,6 +89,22 @@ class Map extends Component {
             })
             this.map.on('mouseleave', 'crash-circles', e => {
                 this.map.getCanvas().style = ''
+            })
+
+            // clicking a municipality triggers the same set of actions as searching by muni
+            this.map.on('click', 'municipality-fill', e => {
+                const props = e.features[0].properties
+                const decodedName = props.name
+                const boundaryObj = {type: 'municipality', name: decodedName}
+
+                // do all the things that search does
+                // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
+                this.props.setSidebarHeaderContext(decodedName)
+                this.props.getData(boundaryObj)
+                this.props.setMapBounding(boundaryObj)
+                
+                // for this one, hit the regular bounding endpoint b/c we have geoid for these jawns
+                //this.props.getBoundingBox(boundary.id)
             })
 
             // clicking a circle creates a popup w/basic information
@@ -187,12 +205,6 @@ class Map extends Component {
     componentWillUnmount() {
         this.map.remove()
     }
-    /*
-        Refactor the legend div to a component that accepts props (determined by zoom level)
-        default state: Title: Crash Density. Scale: same gradient, 0 - 10+ (?)
-        zoom state: Title: Max Injury Severity. Scale: No injury - fatal (this is the current legend)
-        Props to pass: title (h3 text), minRange, maxRange
-    */
 
     // function to reset map to default view on
     resetControl = () => this.map.flyTo({center: [-75.2273, 40.071], zoom: 8.2})
@@ -275,4 +287,13 @@ const mapStateToProps = state => {
     }
 }
 
-export default connect(mapStateToProps, null)(Map);
+const mapDispatchToProps = dispatch => {
+    return {
+        getData: boundaryObj => dispatch(getDataFromKeyword(boundaryObj)),
+        setMapBounding: boundingObj => dispatch(setMapBounding(boundingObj)),
+        setSidebarHeaderContext: area => dispatch(setSidebarHeaderContext(area)),
+        getBoundingBox: id => dispatch(getBoundingBox(id))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Map);

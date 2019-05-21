@@ -28,12 +28,25 @@ const municipalityOutline = {
     minzoom: 8.5,
     paint: {
         'line-width': 0.5,
+        'line-color': '#e3f2fd'
+    }
+}
+
+const municipalityFill = {
+    id: 'municipality-fill',
+    type: 'fill',
+    source: 'Boundaries',
+    'source-layer': 'municipalities',
+    layout: {},
+    minzoom: 8.5,
+    paint: {
+        'fill-color': '#f7c59f',
         // set up muni outlines to have hover effects calculated by map.setFeatureState
-        'line-color': ['case', 
+        'fill-opacity': ['case',
             ['boolean', ['feature-state', 'hover'], false],
-        '#f7c59f',
-        '#e3f2fd'
-        ]
+            1,
+            0
+        ],
     }
 }
 
@@ -128,4 +141,4 @@ const crashCircles = {
     }
 }
 
-export { countyOutline, municipalityOutline, crashHeat, crashCircles }
+export { countyOutline, municipalityOutline, municipalityFill, crashHeat, crashCircles }
