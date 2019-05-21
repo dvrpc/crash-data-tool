@@ -94,17 +94,17 @@ class Map extends Component {
             // clicking a municipality triggers the same set of actions as searching by muni
             this.map.on('click', 'municipality-fill', e => {
                 const props = e.features[0].properties
+                const id = props.geoid
                 const decodedName = props.name
                 const boundaryObj = {type: 'municipality', name: decodedName}
 
                 // do all the things that search does
-                // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
                 this.props.setSidebarHeaderContext(decodedName)
                 this.props.getData(boundaryObj)
                 this.props.setMapBounding(boundaryObj)
-                
-                // for this one, hit the regular bounding endpoint b/c we have geoid for these jawns
-                //this.props.getBoundingBox(boundary.id)
+                this.props.getBoundingBox(id, true)
+
+                // set bounding filters
             })
 
             // clicking a circle creates a popup w/basic information
@@ -176,6 +176,7 @@ class Map extends Component {
             this.map.fitBounds(this.props.bbox)
         }
 
+        // refactor this into two bounding function so that the click event can call it too
         if(this.props.bounding) {
             const boundingObj = this.props.bounding
             const filter = createBoundaryFilter(boundingObj)
@@ -292,7 +293,7 @@ const mapDispatchToProps = dispatch => {
         getData: boundaryObj => dispatch(getDataFromKeyword(boundaryObj)),
         setMapBounding: boundingObj => dispatch(setMapBounding(boundingObj)),
         setSidebarHeaderContext: area => dispatch(setSidebarHeaderContext(area)),
-        getBoundingBox: id => dispatch(getBoundingBox(id))
+        getBoundingBox: (id, clicked) => dispatch(getBoundingBox(id, clicked))
     }
 }
 

@@ -83,14 +83,19 @@ export const setMapBounding = bounding => dispatch => {
 
 export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
 
-export const getBoundingBox = id => async dispatch => {
+// add line here to accept geoid jawns
+export const getBoundingBox = (id, clicked) => async dispatch => {
     let featureServer;
+    let codeType;
 
     // 0 for Municipalities, 1 for Counties
     id.length > 2 ? featureServer = 0 : featureServer = 1
 
+    // determine if the bounding request came from search or map click
+    clicked ? codeType = `GEOID_10=${id}` : codeType = `DOT_CODE=${id}`
+
     // boundary query string w/appropriate featureServer & id
-    const api = `https://services1.arcgis.com/LWtWv6q6BJyKidj8/ArcGIS/rest/services/DVRPC_Boundaries/FeatureServer/${featureServer}/query?where=DOT_CODE=${id}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=pgeojson`
+    const api = `https://services1.arcgis.com/LWtWv6q6BJyKidj8/ArcGIS/rest/services/DVRPC_Boundaries/FeatureServer/${featureServer}/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=pgeojson`
 
     const stream = await fetch(api, postOptions)
     
