@@ -94,6 +94,11 @@ class Map extends Component {
 
             // clicking a municipality triggers the same set of actions as searching by muni
             this.map.on('click', 'municipality-fill', e => {
+
+                // short out if a user clicks on a crash circle
+                const circleTest = this.map.queryRenderedFeatures(e.point)[0]
+                if(circleTest.source === 'Crashes') return 
+
                 const props = e.features[0].properties
                 const id = props.geoid
                 const decodedName = props.name

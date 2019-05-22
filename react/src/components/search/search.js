@@ -48,7 +48,6 @@ class Search extends Component {
 
     render() {
         const selectedSearch = this.state.selectedSearch
-        console.log('selectedsearch is ', selectedSearch)
 
         return (
             <form id="search-form" onSubmit={ this.submitSearch }>
