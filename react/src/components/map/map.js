@@ -109,24 +109,8 @@ class Map extends Component {
                 this.props.setMapBounding(boundaryObj)
                 this.props.getBoundingBox(id, true)
 
-                // set bounding filters (@TODO: refactor this into a function b/c it's copy/pasted from the componentDidUpdate jawn rn)
-                const filter = createBoundaryFilter(boundaryObj)
-                const baseFilter = filter.baseFilter
-                const resetFilter = filter.resetFilter
-                const heatFilter = filter.heatFilter
-                const circleFilter = filter.circlesFilter
-    
-                // set the appropriate filters
-                this.map.setFilter(baseFilter.layer, baseFilter.filter)
-                this.map.setFilter(resetFilter.layer, resetFilter.filter)
-                this.map.setFilter(heatFilter.layer, heatFilter.filter)
-                this.map.setFilter(circleFilter.layer, circleFilter.filter)
-                
-                // make the appropraite paint changes
-                this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
-                this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f7c59f')
-                this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
-                this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
+                // set bounding filters
+                this.setBoundary(boundaryObj)
             })
 
             // clicking a circle creates a popup w/basic information
@@ -201,35 +185,18 @@ class Map extends Component {
         // refactor this into two bounding function so that the click event can call it too
         if(this.props.bounding) {
             const boundingObj = this.props.bounding
-            const filter = createBoundaryFilter(boundingObj)
-            const baseFilter = filter.baseFilter
-            const resetFilter = filter.resetFilter
-            const heatFilter = filter.heatFilter
-            const circleFilter = filter.circlesFilter
-
-            // set the appropriate filters
-            this.map.setFilter(baseFilter.layer, baseFilter.filter)
-            this.map.setFilter(resetFilter.layer, resetFilter.filter)
-            this.map.setFilter(heatFilter.layer, heatFilter.filter)
-            this.map.setFilter(circleFilter.layer, circleFilter.filter)
-            
-            // make the appropraite paint changes
-            this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
-            this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f7c59f')
-            this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
-            this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
+            this.setBoundary(boundingObj)
         }else{
             // @TODO: remove the bounding box filter whenever a user goes back to an address search
             console.log('add in the code to remove filters ')
         }
-
     }
 
     componentWillUnmount() {
         this.map.remove()
     }
 
-    // function to reset map to default view on
+    // reset map to default view on
     resetControl = () => this.map.flyTo({center: [-75.2273, 40.071], zoom: 8.2})
 
     // reveal the list of layer toggles (right now it's just crash circle type)
@@ -247,7 +214,7 @@ class Map extends Component {
         }
     }
 
-    // function to toggle which circles are on the map (defaults to KSI)
+    // toggle which circles are on the map (defaults to KSI)
     toggleCircleType = e => {
         const id = e.target.id
         let filter;
@@ -264,6 +231,27 @@ class Map extends Component {
 
         // update the crash circle filter
         this.map.setFilter('crash-circles', filter)
+    }
+
+    // apply boundary filters and map styles
+    setBoundary = boundaryObj => {
+        const filter = createBoundaryFilter(boundaryObj)
+        const baseFilter = filter.baseFilter
+        const resetFilter = filter.resetFilter
+        const heatFilter = filter.heatFilter
+        const circleFilter = filter.circlesFilter
+
+        // set the appropriate filters
+        this.map.setFilter(baseFilter.layer, baseFilter.filter)
+        this.map.setFilter(resetFilter.layer, resetFilter.filter)
+        this.map.setFilter(heatFilter.layer, heatFilter.filter)
+        this.map.setFilter(circleFilter.layer, circleFilter.filter)
+        
+        // make the appropraite paint changes
+        this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
+        this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f7c59f')
+        this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
+        this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
     }
 
     render() {
