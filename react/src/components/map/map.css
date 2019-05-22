@@ -79,7 +79,6 @@
 
 /* Remove Boundary Overlay */
 #remove-boundary-btn{
-    /* display: none */
     bottom: 10px;
     left: calc(50% - 33px);
     right: auto;

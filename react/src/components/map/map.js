@@ -6,7 +6,7 @@ import mapboxgl from "mapbox-gl";
 
 import * as layers from './layers.js'
 import * as popups from './popups.js';
-import { createBoundaryFilter } from './boundaryFilters.js';
+import { createBoundaryFilter, removeBoundaryFilter } from './boundaryFilters.js';
 import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding  } from '../../redux/reducers/mapReducer.js'
 import { munis } from '../search/dropdowns.js'
 import './map.css';
@@ -111,6 +111,7 @@ class Map extends Component {
 
                 // set bounding filters
                 this.setBoundary(boundaryObj)
+                this.showBoundaryOverlay()
             })
 
             // clicking a circle creates a popup w/basic information
@@ -186,6 +187,7 @@ class Map extends Component {
         if(this.props.bounding) {
             const boundingObj = this.props.bounding
             this.setBoundary(boundingObj)
+            this.showBoundaryOverlay()
         }else{
             // @TODO: remove the bounding box filter whenever a user goes back to an address search
             console.log('add in the code to remove filters ')
@@ -254,9 +256,28 @@ class Map extends Component {
         this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
     }
 
-    removeBoundary = e => {
+    // reveal the boundary overlay when a boundary is established
+    showBoundaryOverlay = () => this.boundaryOverlay.classList.remove('hidden')
 
-        // update aria attributes (aria-hidden)
+    removeBoundary = () => {
+        // toggle overlay visibility
+        this.boundaryOverlay.classList.add('hidden')
+
+        // update map filters and paint properties
+        // @TODO: a smarter way that only jawns the jawns
+        const { county, muni, circles, heat } = removeBoundaryFilter()
+
+        this.map.setFilter(county.layer, county.filter)
+        this.map.setFilter(muni.layer, muni.filter)
+        this.map.setFilter(circles.layer, circles.filter)
+        this.map.setFilter(heat.layer, heat.filter)
+
+        this.map.setPaintProperty(county.layer, 'line-width', county.paint.width)
+        this.map.setPaintProperty(county.layer, 'line-color', county.paint.color)
+        this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
+        this.map.setPaintProperty(muni.layer, 'line-color', muni.paint.color)
+
+        // update sidebar information
     }
 
     render() {
@@ -291,7 +312,7 @@ class Map extends Component {
                     <img id="default-extent-img" src='https://www.dvrpc.org/img/banner/new/bug-favicon.png' alt='DVRPC logo' />
                 </div>
 
-                <button type="button" id="remove-boundary-btn" className="shadow overlays" aria-label="remove boundary">
+                <button type="button" id="remove-boundary-btn" className="shadow overlays hidden" aria-label="remove boundary" aria-hidden="true" ref={el => this.boundaryOverlay = el} onClick={this.removeBoundary}>
                     remove boundary <span id="remove-boundary-x">x</span> 
                 </button>
             </main>

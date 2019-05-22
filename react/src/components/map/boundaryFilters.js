@@ -44,4 +44,40 @@ const createBoundaryFilter = boundingObj => {
     return filter
 }
 
-export { createBoundaryFilter }
+const removeBoundaryFilter = () => {
+    return {
+        county: {
+            layer: 'county-outline',
+            filter: ['==', 'dvrpc', 'Yes'],
+            paint: {
+                width: 2.5,
+                color: '#fafafa'
+            }
+        },
+        muni: {
+            layer: 'municipality-outline',
+            filter: null,
+            paint: {
+                width: 0.5,
+                color: '#e3f2fd'
+            }
+        },
+        // need to be smart here about remove the boundary filter but keeping the ksi/otherwise filter...
+        circles: {
+            layer: 'crash-circles',
+            filter: ['any', 
+            ['==', ['get', 'max_sever'], '1'],
+            ['==', ['get', 'max_sever'], '2'],
+        ]
+        },
+        heat: {
+            layer: 'crash-heat',
+            filter: ['any', 
+            ['==', ['get', 'max_sever'], '1'],
+            ['==', ['get', 'max_sever'], '2'],
+        ]
+        }
+    }
+}
+
+export { createBoundaryFilter, removeBoundaryFilter }
