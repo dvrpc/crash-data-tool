@@ -61,7 +61,7 @@ export default function mapReducer(state = [], action) {
 /****** DISPATCHERS ******/
 export const getDataFromKeyword = boundaryObj => async dispatch => {
     const { type, name } = boundaryObj
-    const api = `https://a.michaelruane.com/api/crash-data/v1/sidebarInfo?type=${type}&value=${name}`
+    const api = `https://alpha.dvrpc.org/api/crash-data/v1/sidebarInfo?type=${type}&value=${name}`
     const stream = await fetch(api, getOptions)
 
     // error handling - pass the failure message + the boundary object to give context to the displayed error response
