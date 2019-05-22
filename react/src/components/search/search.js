@@ -10,7 +10,7 @@ class Search extends Component {
     constructor(props){
         super(props)
         this.state = {
-            selectedSearch: false
+            selectedSearch: ['Pennsylvania', 'New Jersey']
         }
     }
     
@@ -48,16 +48,17 @@ class Search extends Component {
 
     render() {
         const selectedSearch = this.state.selectedSearch
+        console.log('selectedsearch is ', selectedSearch)
 
         return (
             <form id="search-form" onSubmit={ this.submitSearch }>
                 <fieldset className="search-form-fieldset" name="type" form="search-form">
                     <label htmlFor="select-search-type">Search By: </label>
                     <select name="type" id="select-search-type" onChange={ this.selectSearch }>
-                        <option value="address">Address</option>
+                        <option value="state">State</option>
                         <option value="county">County</option>
                         <option value="municipality">Municipality</option>
-                        <option value="state">State</option>
+                        <option value="address">Address</option>
                     </select>
                 </fieldset>
                 {selectedSearch ? (
