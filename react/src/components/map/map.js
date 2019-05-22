@@ -183,14 +183,11 @@ class Map extends Component {
             this.map.fitBounds(this.props.bbox)
         }
 
-        // refactor this into two bounding function so that the click event can call it too
+        // add boundaries and their corresponding filters/styles/sidebar stats
         if(this.props.bounding) {
             const boundingObj = this.props.bounding
             this.setBoundary(boundingObj)
             this.showBoundaryOverlay()
-        }else{
-            // @TODO: remove the bounding box filter whenever a user goes back to an address search
-            console.log('add in the code to remove filters ')
         }
     }
 
@@ -237,17 +234,15 @@ class Map extends Component {
 
     // apply boundary filters and map styles
     setBoundary = boundaryObj => {
-        const filter = createBoundaryFilter(boundaryObj)
-        const baseFilter = filter.baseFilter
-        const resetFilter = filter.resetFilter
-        const heatFilter = filter.heatFilter
-        const circleFilter = filter.circlesFilter
+
+        // derive layer styles from boundaryObj
+        const { baseFilter, resetFilter, circlesFilter, heatFilter } = createBoundaryFilter(boundaryObj)
 
         // set the appropriate filters
         this.map.setFilter(baseFilter.layer, baseFilter.filter)
         this.map.setFilter(resetFilter.layer, resetFilter.filter)
         this.map.setFilter(heatFilter.layer, heatFilter.filter)
-        this.map.setFilter(circleFilter.layer, circleFilter.filter)
+        this.map.setFilter(circlesFilter.layer, circlesFilter.filter)
         
         // make the appropraite paint changes
         this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
@@ -259,12 +254,17 @@ class Map extends Component {
     // reveal the boundary overlay when a boundary is established
     showBoundaryOverlay = () => this.boundaryOverlay.classList.remove('hidden')
 
+    // hide the boundary overlay and reset map filters, styles and sidebar info to default
     removeBoundary = () => {
         // toggle overlay visibility
         this.boundaryOverlay.classList.add('hidden')
 
+        // update sidebar information
+        const regionalStats = {type: 'municipality', name: '%'}
+        this.props.setDefaultState(regionalStats)
+        this.props.setSidebarHeaderContext('the DVRPC region')
+
         // update map filters and paint properties
-        // @TODO: a smarter way that only jawns the jawns
         const { county, muni, circles, heat } = removeBoundaryFilter()
 
         this.map.setFilter(county.layer, county.filter)
@@ -276,8 +276,6 @@ class Map extends Component {
         this.map.setPaintProperty(county.layer, 'line-color', county.paint.color)
         this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
         this.map.setPaintProperty(muni.layer, 'line-color', muni.paint.color)
-
-        // update sidebar information
     }
 
     render() {
@@ -333,7 +331,8 @@ const mapDispatchToProps = dispatch => {
         getData: boundaryObj => dispatch(getDataFromKeyword(boundaryObj)),
         setMapBounding: boundingObj => dispatch(setMapBounding(boundingObj)),
         setSidebarHeaderContext: area => dispatch(setSidebarHeaderContext(area)),
-        getBoundingBox: (id, clicked) => dispatch(getBoundingBox(id, clicked))
+        getBoundingBox: (id, clicked) => dispatch(getBoundingBox(id, clicked)),
+        setDefaultState: region => dispatch(getDataFromKeyword(region)),
     }
 }
 
