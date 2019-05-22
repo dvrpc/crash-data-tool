@@ -254,6 +254,11 @@ class Map extends Component {
         this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
     }
 
+    removeBoundary = e => {
+
+        // update aria attributes (aria-hidden)
+    }
+
     render() {
         return (
             <main id="crashMap" ref={el => this.crashMap = el}>
@@ -266,7 +271,7 @@ class Map extends Component {
                     </div>
                 </div>
 
-                <div id="toggle-wrapper" className="shadow overlays" onClick={this.toggleLayerToggles}>
+                <div id="toggle-wrapper" className="shadow overlays" aria-label="Toggle layers" onClick={this.toggleLayerToggles}>
                     <div id="toggle-circles" className="shadow overlays hidden">
                         <h3 className="legend-header centered-text">Toggle Crash Type</h3>
                         <form id="toggle-circles-form" onChange={this.toggleCircleType}>
@@ -285,6 +290,10 @@ class Map extends Component {
                 <div id="default-extent-btn" className="shadow overlays" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
                     <img id="default-extent-img" src='https://www.dvrpc.org/img/banner/new/bug-favicon.png' alt='DVRPC logo' />
                 </div>
+
+                <button type="button" id="remove-boundary-btn" className="shadow overlays" aria-label="remove boundary">
+                    remove boundary <span id="remove-boundary-x">x</span> 
+                </button>
             </main>
         );
     }

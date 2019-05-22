@@ -33,7 +33,7 @@
 }
 
 
-/* Toggle Circles  */
+/* Toggle Circles Overlay  */
 #toggle-wrapper{
     height: 20px;
     width: 20px;
@@ -60,7 +60,8 @@
     justify-content: space-around;
 }
 
-/* Default Extent Control */
+
+/* Default Extent Control Overlay */
 #default-extent-btn{
     height: 20px;
     width: 20px;
@@ -75,6 +76,28 @@
     height: 100%;
 }
 
+
+/* Remove Boundary Overlay */
+#remove-boundary-btn{
+    /* display: none */
+    bottom: 10px;
+    left: calc(50% - 33px);
+    right: auto;
+    padding: 6px 10px;
+    border: none;
+}
+#remove-boundary-btn:hover{
+    cursor: pointer;
+}
+#remove-boundary-x{
+    background: #424b54;
+    color: #f6efee;
+    font-weight: 700;
+    border-radius: 50%;
+    padding: 0 5px 3px 5px;
+    font-size: 0.9em;
+    margin-left: 3px;
+}
 
 /* Popups */
 .mapboxgl-popup{
