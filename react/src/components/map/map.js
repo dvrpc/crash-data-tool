@@ -12,6 +12,13 @@ import { munis } from '../search/dropdowns.js'
 import './map.css';
 
 class Map extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            boundary: false
+        }
+    }
+
     componentDidMount() {
         mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
         
@@ -52,42 +59,18 @@ class Map extends Component {
             // status of the hovered municipality
             let hoveredMuni = null
             
-            // add interactivity to municipalities (work on this pending VT updates so we can use setFeatureState)
+            // add hover effect to municipalities
             this.map.on('mousemove', 'municipality-fill', e => hoveredMuni = this.hoverMuniFill(e, hoveredMuni))
             this.map.on('mouseleave', 'municipality-fill', () => hoveredMuni = this.removeMuniFill(hoveredMuni))
 
             // clicking a municipality triggers the same set of actions as searching by muni
-            this.map.on('click', 'municipality-fill', e => {
-
-                // short out if a user clicks on a crash circle
-                const circleTest = this.map.queryRenderedFeatures(e.point)[0]
-                if(circleTest.source === 'Crashes') return 
-
-                const props = e.features[0].properties
-                const id = props.geoid
-                const decodedName = props.name
-
-                // use the dropdown lookup table to convert muni name into pennDOT id
-                let pennID = munis[decodedName]
-            
-                const boundaryObj = {type: 'municipality', name: decodedName, id: pennID}
-
-                // do all the things that search does
-                this.props.setSidebarHeaderContext(decodedName)
-                this.props.getData(boundaryObj)
-                this.props.setMapBounding(boundaryObj)
-                this.props.getBoundingBox(id, true)
-
-                // set bounding filters
-                this.setBoundary(boundaryObj)
-                this.showBoundaryOverlay()
-            })
+            this.map.on('click', 'municipality-fill', e => this.clickMuni(e))
                 
             // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
-            this.map.on('mousemove', 'crash-circles', e => {
+            this.map.on('mousemove', 'crash-circles', () => {
                 this.map.getCanvas().style.cursor = 'pointer'
             })
-            this.map.on('mouseleave', 'crash-circles', e => {
+            this.map.on('mouseleave', 'crash-circles', () => {
                 this.map.getCanvas().style = ''
             })
 
@@ -161,7 +144,7 @@ class Map extends Component {
         }
 
         // add boundaries and their corresponding filters/styles/sidebar stats
-        if(this.props.bounding) {
+        if(this.props.bounding !== prevProps.bounding) {
             const boundingObj = this.props.bounding
             this.setBoundary(boundingObj)
             this.showBoundaryOverlay()
@@ -172,7 +155,10 @@ class Map extends Component {
         this.map.remove()
     }
 
-    // reset map to default view on
+    /*****************/
+    // Class Methods //
+    /*****************/
+    // reset map to default view
     resetControl = () => this.map.flyTo({center: [-75.2273, 40.071], zoom: 8.2})
 
     // reveal the list of layer toggles (right now it's just crash circle type)
@@ -211,6 +197,10 @@ class Map extends Component {
 
     // apply boundary filters and map styles
     setBoundary = boundaryObj => {
+        
+        // update boundary state to prevent hover effects when boundaries are present
+        if(!this.state.boundary) this.setState({boundary: true})
+
         // derive layer styles from boundaryObj
         const { baseFilter, resetFilter, circlesFilter, heatFilter } = createBoundaryFilter(boundaryObj)
 
@@ -252,13 +242,16 @@ class Map extends Component {
         this.map.setPaintProperty(county.layer, 'line-color', county.paint.color)
         this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
         this.map.setPaintProperty(muni.layer, 'line-color', muni.paint.color)
+
+        // update boundary state to allow hover effects now that boundaries are removed
+        if(this.state.boundary) this.setState({boundary: false})
     }
 
     // add fill effect when hovering over a municipality
-    // @TODO: do not apply the hover fill if a boundary is currently active. Add a local state field that flips on setBoundary and removeBoundary
     hoverMuniFill = (e, hoveredMuni) => {
-        // escape if zoom level isn't right
-        if(this.map.getZoom() < 8.4) return
+
+        // escape if zoom level isn't right or if a boundary is set
+        if(this.map.getZoom() < 8.4 || this.state.boundary) return
 
         this.map.getCanvas().style.cursor = 'pointer'
 
@@ -288,6 +281,7 @@ class Map extends Component {
 
     // remove fill effect when hovering over a new municipality or leaving the region
     removeMuniFill = hoveredMuni => {
+
         // escape if zoom level isn't right
         if(this.map.getZoom() < 8.4) return
 
@@ -307,6 +301,37 @@ class Map extends Component {
         hoveredMuni = null
 
         return hoveredMuni
+    }
+
+    // draw a boundary, zoom to, filter crash data and update sidebar on muni click
+    clickMuni = e => {
+
+        // short out if a user clicks on a crash circle
+        const circleTest = this.map.queryRenderedFeatures(e.point)[0]
+        if(circleTest.source === 'Crashes') return 
+
+        const props = e.features[0].properties
+        const id = props.geoid
+        const decodedName = props.name
+        const featureId = e.features[0].id
+
+        // use the dropdown lookup table to convert muni name into pennDOT id
+        let pennID = munis[decodedName]
+
+        const boundaryObj = {type: 'municipality', name: decodedName, id: pennID}
+
+        // do all the things that search does
+        this.props.setSidebarHeaderContext(decodedName)
+        this.props.getData(boundaryObj)
+        this.props.setMapBounding(boundaryObj)
+        this.props.getBoundingBox(id, true)
+
+        // set bounding filters
+        this.setBoundary(boundaryObj)
+        this.showBoundaryOverlay()
+
+        // use featureId to remove the muni fill that hovering created
+        this.removeMuniFill(featureId)
     }
 
     render() {
