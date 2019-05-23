@@ -195,6 +195,9 @@ class Map extends Component {
         this.map.setFilter('crash-circles', filter)
     }
 
+    // reveal the boundary overlay when a boundary is established
+    showBoundaryOverlay = () => this.boundaryOverlay.classList.remove('hidden')
+
     // apply boundary filters and map styles
     setBoundary = boundaryObj => {
         
@@ -216,9 +219,6 @@ class Map extends Component {
         this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
         this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
     }
-
-    // reveal the boundary overlay when a boundary is established
-    showBoundaryOverlay = () => this.boundaryOverlay.classList.remove('hidden')
 
     // hide the boundary overlay and reset map filters, styles and sidebar info to default
     removeBoundary = () => {
