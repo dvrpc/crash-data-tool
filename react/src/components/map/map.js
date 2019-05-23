@@ -49,48 +49,12 @@ class Map extends Component {
             this.map.addLayer(layers.crashHeat)
             this.map.addLayer(layers.crashCircles)
 
-                /* muni hover effect - add back in after VT's are updated & then make it a function b/c counties will use this too
-                    // need this from the mapbox example
-                    let hoveredMuni = null
-                    
-                    // add interactivity to municipalities (work on this pending VT updates so we can use setFeatureState)
-                    this.map.on('mousemove', 'municipality-fill', e => {
-
-                        console.log('moved on muni')
-                        // escape if zoom level isn't right
-
-                        if(e.features.length > 0 ) {
-                            
-                            // update old hover jawn
-                            if(hoveredMuni) {
-                                this.map.setFeatureState(
-                                    {source: 'Boundaries', sourceLayer: 'municipality-outline', id: hoveredMuni},
-                                    {hover: false}
-                                )
-                            }
-
-                            hoveredMuni = +e.features[0].properties.geoid
+            // status of the hovered municipality
+            let hoveredMuni = null
             
-                            this.map.setFeatureState(
-                                {source: 'Boundaries', sourceLayer: 'municipality-outline', id: hoveredMuni},
-                                {hover: true}
-                            )
-                        }
-                    })
-
-                    this.map.on('mouseleave', 'municipality-outline', e => {
-                        
-                    })
-                */
-                
-            // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
-            this.map.on('mousemove', 'crash-circles', e => {
-                this.map.getCanvas().style.cursor = 'pointer'
-
-            })
-            this.map.on('mouseleave', 'crash-circles', e => {
-                this.map.getCanvas().style = ''
-            })
+            // add interactivity to municipalities (work on this pending VT updates so we can use setFeatureState)
+            this.map.on('mousemove', 'municipality-fill', e => hoveredMuni = this.hoverMuniFill(e, hoveredMuni))
+            this.map.on('mouseleave', 'municipality-fill', () => hoveredMuni = this.removeMuniFill(hoveredMuni))
 
             // clicking a municipality triggers the same set of actions as searching by muni
             this.map.on('click', 'municipality-fill', e => {
@@ -117,6 +81,14 @@ class Map extends Component {
                 // set bounding filters
                 this.setBoundary(boundaryObj)
                 this.showBoundaryOverlay()
+            })
+                
+            // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
+            this.map.on('mousemove', 'crash-circles', e => {
+                this.map.getCanvas().style.cursor = 'pointer'
+            })
+            this.map.on('mouseleave', 'crash-circles', e => {
+                this.map.getCanvas().style = ''
             })
 
             // clicking a circle creates a popup w/basic information
@@ -239,7 +211,6 @@ class Map extends Component {
 
     // apply boundary filters and map styles
     setBoundary = boundaryObj => {
-
         // derive layer styles from boundaryObj
         const { baseFilter, resetFilter, circlesFilter, heatFilter } = createBoundaryFilter(boundaryObj)
 
@@ -281,6 +252,61 @@ class Map extends Component {
         this.map.setPaintProperty(county.layer, 'line-color', county.paint.color)
         this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
         this.map.setPaintProperty(muni.layer, 'line-color', muni.paint.color)
+    }
+
+    // add fill effect when hovering over a municipality
+    // @TODO: do not apply the hover fill if a boundary is currently active. Add a local state field that flips on setBoundary and removeBoundary
+    hoverMuniFill = (e, hoveredMuni) => {
+        // escape if zoom level isn't right
+        if(this.map.getZoom() < 8.4) return
+
+        this.map.getCanvas().style.cursor = 'pointer'
+
+        if(e.features.length > 0 ) {
+            
+            // // update old hover jawn
+            if(hoveredMuni) {
+                this.map.setFeatureState(
+                    {source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
+                    {hover: false}
+                )
+            }
+
+            hoveredMuni = +e.features[0].id
+            
+            // handle edge cases where hoveredMuni is null or NaN (I think this check is only necessary right now b/c it sometimes serves the old VT's and sometimes doesn't. Can be removed eventually)
+            if(hoveredMuni) {
+                this.map.setFeatureState(
+                    {source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
+                    {hover: true}
+                )
+            }
+        }
+
+        return hoveredMuni
+    }
+
+    // remove fill effect when hovering over a new municipality or leaving the region
+    removeMuniFill = hoveredMuni => {
+        // escape if zoom level isn't right
+        if(this.map.getZoom() < 8.4) return
+
+        this.map.getCanvas().style.cursor = ''
+
+        // for some reason it needs to handle municipality-fill and municipalities
+            // municipality-fill handles updating fill effect within the munis
+            // municipalities handles the literal edge cases i.e. if you move your mouse outside the region
+        if(hoveredMuni) {
+            this.map.setFeatureState({source: 'Boundaries', sourceLayer: 'municipality-fill', id: hoveredMuni},
+            {hover: false})
+
+            this.map.setFeatureState({source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
+            {hover: false})
+        }
+
+        hoveredMuni = null
+
+        return hoveredMuni
     }
 
     render() {

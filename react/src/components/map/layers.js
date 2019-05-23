@@ -44,7 +44,7 @@ const municipalityFill = {
         // set up muni outlines to have hover effects calculated by map.setFeatureState
         'fill-opacity': ['case',
             ['boolean', ['feature-state', 'hover'], false],
-            1,
+            0.9,
             0
         ],
     }
