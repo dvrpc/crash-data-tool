@@ -335,14 +335,29 @@ class Map extends Component {
     }
 
     render() {
+        // @TODO: dynamic legend. Default to below for heatmap
+        // at circles zoom level, replace with this:
+        /*
+            <div id="legend" className="shadow overlays">
+                <h3 className="legend-header centered-text">Max Injury Severity</h3>
+                <span id="legend-gradient"></span>
+                <div className="legend-text">
+                    <span>No Injury</span>
+                    <span>Fatal</span>
+                </div>
+            </div>
+            with this style for #legend-gradient:
+            background: linear-gradient(to right, #f7f7f7 1%, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #d62839);
+        */
         return (
             <main id="crashMap" ref={el => this.crashMap = el}>
                 <div id="legend" className="shadow overlays">
-                    <h3 className="legend-header centered-text">Max Injury Severity</h3>
+                    <h3 className="legend-header centered-text">Number of Crashes</h3>
                     <span id="legend-gradient"></span>
                     <div className="legend-text">
-                        <span>No Injury</span>
-                        <span>Fatal</span>
+                        <span>1</span>
+                        <span>4</span>
+                        <span>8+</span>
                     </div>
                 </div>
 
