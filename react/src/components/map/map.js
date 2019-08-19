@@ -15,7 +15,8 @@ class Map extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            boundary: false
+            boundary: false,
+            heatZoom: true
         }
     }
 
@@ -65,7 +66,32 @@ class Map extends Component {
 
             // clicking a municipality triggers the same set of actions as searching by muni
             this.map.on('click', 'municipality-fill', e => this.clickMuni(e))
-                
+            
+            // update legend depending on zoom level (heatmap vs crash circles)
+            this.map.on('zoomend', () => {
+                const zoom = this.map.getZoom()
+
+                // this.legendTitle
+                // this.legendLabel
+                // this.legendGradient
+
+                if(zoom >= 11 && this.state.heatZoom) {
+                    
+                    // update legend title, gradient and labels
+                    this.legendTitle.textContent = 'Crash Severity'
+                    console.log('legend gradient BEFORE ', this.legendGradient.style)
+                    this.legendGradient.style.background = 'linearGradient(to right, #f8eeed, #f9dad7, #f7b9b3, #f39993, #d62839);'
+                    console.log('legend gradient ', this.legendGradient.style)
+                    // flip heatzoom state to avoid recalculating all these numbers if the user stays zooming within the circle zoom threshold
+                    this.setState({heatZoom: false})
+                }else{
+
+                    this.legendTitle.textContent = 'Number of Crashes'
+                    this.legendGradient.style.background = 'linear-gradient(to right, #f8eeed, #f9dad7, #f7b9b3, #f39993, #d62839);'
+                    this.setState({heatZoom: true})
+                }
+            })
+
             // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
             this.map.on('mousemove', 'crash-circles', () => {
                 this.map.getCanvas().style.cursor = 'pointer'
@@ -352,9 +378,9 @@ class Map extends Component {
         return (
             <main id="crashMap" ref={el => this.crashMap = el}>
                 <div id="legend" className="shadow overlays">
-                    <h3 className="legend-header centered-text">Number of Crashes</h3>
-                    <span id="legend-gradient"></span>
-                    <div className="legend-text">
+                    <h3 className="legend-header centered-text" ref={el => this.legendTitle = el}>Number of Crashes</h3>
+                    <span id="legend-gradient" ref={el => this.legendGradient = el}></span>
+                    <div className="legend-text" ref={el => this.legendLabel = el}>
                         <span>1</span>
                         <span>4</span>
                         <span>8+</span>

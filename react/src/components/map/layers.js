@@ -55,7 +55,7 @@ const crashHeat = {
     type: 'heatmap',
     source: 'Crashes',
     'source-layer': 'pa-crash',
-    maxzoom: 13,
+    maxzoom: 11,
     // KSI: Killed or severely injured
     filter: ['any', 
         ['==', ['get', 'max_sever'], '1'],
@@ -74,14 +74,14 @@ const crashHeat = {
             ['linear'],
             ['zoom'],
             8.2, 1.3,
-            13, 3
+            11, 3
         ],
         'heatmap-radius': [
             'interpolate',
             ['linear'],
             ['zoom'],
             8.2, 2.5,
-            13, 3
+            11, 3
         ],
         'heatmap-color': [
             'interpolate',
@@ -103,7 +103,7 @@ const crashCircles = {
     type: 'circle',
     source: 'Crashes',
     'source-layer': 'pa-crash',
-    minzoom: 13,
+    minzoom: 11,
     filter: ['any', 
         ['==', ['get', 'max_sever'], '1'],
         ['==', ['get', 'max_sever'], '2'],
@@ -128,14 +128,14 @@ const crashCircles = {
             'interpolate',
             ['linear'],
             ['zoom'],
-            13, 5,
+            11, 5,
             22, 20
         ],
         'circle-opacity': [
             'interpolate',
             ['linear'],
             ['zoom'],
-            13, 0.7,
+            11, 0.7,
             22, 1
         ]
     }
