@@ -15,8 +15,8 @@ class Map extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            boundary: false,
-            heatZoom: true
+            boundary: null,
+            heatZoom: true,
         }
     }
 
@@ -67,7 +67,7 @@ class Map extends Component {
             // clicking a municipality triggers the same set of actions as searching by muni
             this.map.on('click', 'municipality-fill', e => this.clickMuni(e))
             
-            // update legend depending on zoom level (heatmap vs crash circles). use state.heatZoom state to avoid repainting if the user stays within the circle zoom threshold
+            // update legend depending on zoom level (heatmap vs crash circles). use state.heatZoom state to avoid repainting if the user stays within the circle or heatmap zoom ranges
             this.map.on('zoomend', () => {
                 const zoom = this.map.getZoom()
 
@@ -76,7 +76,9 @@ class Map extends Component {
                     this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7 1%, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #d62839)'
                     this.legendLabel.innerHTML = '<span>No Injury</span><span>Fatal</span>'
                     this.setState({heatZoom: false})
-                }else{
+                }
+
+                if(zoom < 11 && !this.state.heatZoom){
                     this.legendTitle.textContent = 'Number of Crashes'
                     this.legendGradient.style.background = 'linear-gradient(to right, #f8eeed, #f9dad7, #f7b9b3, #f39993, #d62839)'
                     this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
@@ -198,16 +200,22 @@ class Map extends Component {
     toggleCircleType = e => {
         const id = e.target.id
         let filter;
+        const existingFilter = this.state.boundary
+        console.log('existing crash circles filter is ', existingFilter)
 
         // create a filter based on the selected radio input
         if(id === 'All') {
-            filter = null
+            filter = existingFilter ? existingFilter : null
         }else {
-            filter = ['any', 
+            // @TODO: find a way to incorporate existingFilter here (when applicable)
+            filter = [
+                'any',
                 ['==', ['get', 'max_sever'], '1'],
                 ['==', ['get', 'max_sever'], '2'],
             ]
         }
+
+        console.log('filter is ', filter)
 
         // update the crash circle filter
         this.map.setFilter('crash-circles', filter)
@@ -219,9 +227,6 @@ class Map extends Component {
     // apply boundary filters and map styles
     setBoundary = boundaryObj => {
         
-        // update boundary state to prevent hover effects when boundaries are present
-        if(!this.state.boundary) this.setState({boundary: true})
-
         // derive layer styles from boundaryObj
         const { baseFilter, resetFilter, circlesFilter, heatFilter } = createBoundaryFilter(boundaryObj)
 
@@ -229,6 +234,8 @@ class Map extends Component {
         this.map.setFilter(baseFilter.layer, baseFilter.filter)
         this.map.setFilter(resetFilter.layer, resetFilter.filter)
         this.map.setFilter(heatFilter.layer, heatFilter.filter)
+        
+        // @TODO: add the KSI filter here (starts at line 212. Try adding it to the boundaryFilters.js jawn at circlesFilter.filter)
         this.map.setFilter(circlesFilter.layer, circlesFilter.filter)
         
         // make the appropraite paint changes
@@ -236,6 +243,9 @@ class Map extends Component {
         this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f7c59f')
         this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
         this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
+
+        // update boundary state to prevent hover effects when boundaries are present & so the ksi/all toggle can stay within the set bounds
+        this.setState({boundary: circlesFilter.filter})
     }
 
     // hide the boundary overlay and reset map filters, styles and sidebar info to default
@@ -262,7 +272,7 @@ class Map extends Component {
         this.map.setPaintProperty(muni.layer, 'line-color', muni.paint.color)
 
         // update boundary state to allow hover effects now that boundaries are removed
-        if(this.state.boundary) this.setState({boundary: false})
+        this.setState({boundary: null})
     }
 
     // add fill effect when hovering over a municipality

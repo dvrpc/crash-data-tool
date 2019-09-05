@@ -34,7 +34,6 @@ const createBoundaryFilter = boundingObj => {
             layer: 'crash-circles',
             filter: ['==', tileType, id]
         },
-        // @TODO: adjust the heatmap weight/intensity/radius so that boundaries don't all look like massive red blobs
         heatFilter: {
             layer: 'crash-heat',
             filter: ['==', tileType, id]
