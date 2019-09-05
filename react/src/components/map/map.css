@@ -27,7 +27,7 @@
     margin-top: 10px;
     background: linear-gradient(to right, #f8eeed, #f9dad7, #f7b9b3, #f39993, #d62839);
 }
-.legend-text{
+#legend-text{
     display: flex;
     justify-content: space-between;
 }

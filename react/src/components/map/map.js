@@ -67,27 +67,19 @@ class Map extends Component {
             // clicking a municipality triggers the same set of actions as searching by muni
             this.map.on('click', 'municipality-fill', e => this.clickMuni(e))
             
-            // update legend depending on zoom level (heatmap vs crash circles)
+            // update legend depending on zoom level (heatmap vs crash circles). use state.heatZoom state to avoid repainting if the user stays within the circle zoom threshold
             this.map.on('zoomend', () => {
                 const zoom = this.map.getZoom()
 
-                // this.legendTitle
-                // this.legendLabel
-                // this.legendGradient
-
                 if(zoom >= 11 && this.state.heatZoom) {
-                    
-                    // update legend title, gradient and labels
                     this.legendTitle.textContent = 'Crash Severity'
-                    console.log('legend gradient BEFORE ', this.legendGradient.style)
-                    this.legendGradient.style.background = 'linearGradient(to right, #f8eeed, #f9dad7, #f7b9b3, #f39993, #d62839);'
-                    console.log('legend gradient ', this.legendGradient.style)
-                    // flip heatzoom state to avoid recalculating all these numbers if the user stays zooming within the circle zoom threshold
+                    this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7 1%, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #d62839)'
+                    this.legendLabel.innerHTML = '<span>No Injury</span><span>Fatal</span>'
                     this.setState({heatZoom: false})
                 }else{
-
                     this.legendTitle.textContent = 'Number of Crashes'
-                    this.legendGradient.style.background = 'linear-gradient(to right, #f8eeed, #f9dad7, #f7b9b3, #f39993, #d62839);'
+                    this.legendGradient.style.background = 'linear-gradient(to right, #f8eeed, #f9dad7, #f7b9b3, #f39993, #d62839)'
+                    this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
                     this.setState({heatZoom: true})
                 }
             })
@@ -361,26 +353,12 @@ class Map extends Component {
     }
 
     render() {
-        // @TODO: dynamic legend. Default to below for heatmap
-        // at circles zoom level, replace with this:
-        /*
-            <div id="legend" className="shadow overlays">
-                <h3 className="legend-header centered-text">Max Injury Severity</h3>
-                <span id="legend-gradient"></span>
-                <div className="legend-text">
-                    <span>No Injury</span>
-                    <span>Fatal</span>
-                </div>
-            </div>
-            with this style for #legend-gradient:
-            background: linear-gradient(to right, #f7f7f7 1%, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #d62839);
-        */
         return (
             <main id="crashMap" ref={el => this.crashMap = el}>
                 <div id="legend" className="shadow overlays">
                     <h3 className="legend-header centered-text" ref={el => this.legendTitle = el}>Number of Crashes</h3>
                     <span id="legend-gradient" ref={el => this.legendGradient = el}></span>
-                    <div className="legend-text" ref={el => this.legendLabel = el}>
+                    <div id="legend-text" ref={el => this.legendLabel = el}>
                         <span>1</span>
                         <span>4</span>
                         <span>8+</span>
