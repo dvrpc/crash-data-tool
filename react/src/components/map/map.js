@@ -226,9 +226,50 @@ class Map extends Component {
             }
         }
 
-        // this is ALMOST done. It only falls apart if a user seelcts 'All' from the circles toggle and then clicks a municipality. That will default to KSI.
-            // need to communicate with setBoundary to let it know if it's all or KSI. 
-            // part of a general larger problem of the KSI/All filter not applying everywhere when it's selected.
+        // @TODO: roadmap for filter update is here
+        // UPDATE filter state to global
+        /*
+            The possible filter states are as follows:
+                DEFAULT (KSI no boundary):
+                    ['any', 
+                        ['==', 'max_sever', '1'],
+                        ['==', 'max_sever', '2'],
+                    ]
+
+                BOUNDARY (KSI):
+                    ['all',
+                        ['==', tileType, id],
+                        ['>', 'max_sever', '0'],
+                        ['<', 'max_sever', '3']    
+                    ]
+                
+                BOUNDARY (ALL):
+                    ['==', tileType, id]
+            
+
+            These filters should exist on global state because the following components need to consume them:
+                map
+                sidebar
+                charts
+            The global map filter can exist as one object because circles and heatmaps use the same one - i.e. only need a filterState rather than a heatFilter and crashFilter
+            
+            The following edits need to be made:
+                Edits to boundaryFilters.js:
+                    Remove circlesFilter and heatFilter from both setBoundaryFilter and removeBoundaryFilter
+                Edits to map.js
+                    setBoundary and removeBoundary will only filter the county/municipality lines and will update the store state of map filter
+                    toggleCircleType will update the store state of map filter
+                    componentDidUpdate will consume the updated filter and then call this.map.setFilter on circles and heatmaps with the response
+                Edits to sidebar/charts.js
+                    sidebar.js reads circle and heat filter state from the store
+                    charts.makeCharts will accept a parameter for circle and heat filters and use that to filter down the outputs
+                    sidebar.js intro paragraph <span id="activeCrashTypes"> textContent will update to reflect KSI or All types
+                Edits to store/reducer
+                    Create a reducer for filter state. Plug it into map.js and sidebar.js
+                        map.js will read and write to the filter reducer
+                        sidebar.js will only read from the filter reducer
+                    Output will be one of the three filter states defined above. 
+        */
 
 
         // update the crash circle filter

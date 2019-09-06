@@ -16,6 +16,9 @@
     box-sizing: content-box;
     clear: both;
 }
+#activeCrashTypes{
+    font-weight: 700;
+}
 .crash-map-sidebar-subheader{
     margin-top: 8%;
 }

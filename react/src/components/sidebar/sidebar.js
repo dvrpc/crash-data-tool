@@ -69,7 +69,7 @@ class Sidebar extends Component {
         return (
             <section id="sidebar">
                 <h1 id="crash-map-sidebar-header" className="centered-text">Crash Statistics for {area}</h1>
-                    <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. consectetur adipiscing elit.</p>
+                    <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. The following charts are showing results for <span id="activeCrashTypes">Killed or Severely Injured (KSI)</span> crash types.</p>
                 
                 <hr id="sidebar-hr" />
 
