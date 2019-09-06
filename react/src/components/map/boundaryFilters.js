@@ -32,7 +32,11 @@ const createBoundaryFilter = boundingObj => {
         },
         circlesFilter: {
             layer: 'crash-circles',
-            filter: ['==', tileType, id]
+            filter: ["all",
+                ['==', tileType, id],
+                ['>', 'max_sever', '0'],
+                ['<', 'max_sever', '3'],
+            ]
         },
         heatFilter: {
             layer: 'crash-heat',
@@ -65,15 +69,15 @@ const removeBoundaryFilter = () => {
         circles: {
             layer: 'crash-circles',
             filter: ['any', 
-            ['==', ['get', 'max_sever'], '1'],
-            ['==', ['get', 'max_sever'], '2'],
+            ['==', 'max_sever', '1'],
+            ['==', 'max_sever', '2'],
         ]
         },
         heat: {
             layer: 'crash-heat',
             filter: ['any', 
-            ['==', ['get', 'max_sever'], '1'],
-            ['==', ['get', 'max_sever'], '2'],
+            ['==', 'max_sever', '1'],
+            ['==', 'max_sever', '2'],
         ]
         }
     }

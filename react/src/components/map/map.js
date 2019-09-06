@@ -199,23 +199,37 @@ class Map extends Component {
     // toggle which circles are on the map (defaults to KSI)
     toggleCircleType = e => {
         const id = e.target.id
-        let filter;
+        let filter, geoFilter, tileType, geoID;
         const existingFilter = this.state.boundary
-        console.log('existing crash circles filter is ', existingFilter)
+        
+        if(existingFilter) {
+            geoFilter = existingFilter[1]
+            tileType = geoFilter[1]
+            geoID = geoFilter[2]
+        }
 
         // create a filter based on the selected radio input
         if(id === 'All') {
-            filter = existingFilter ? existingFilter : null
+            filter = geoFilter ? geoFilter : null
         }else {
-            // @TODO: find a way to incorporate existingFilter here (when applicable)
-            filter = [
-                'any',
-                ['==', ['get', 'max_sever'], '1'],
-                ['==', ['get', 'max_sever'], '2'],
-            ]
+            if(geoFilter){
+                filter = ['all',
+                    ['==', tileType, geoID],
+                    ['>', 'max_sever', '0'],
+                    ['<', 'max_sever', '3'],
+                ]
+            }else{
+                filter = ['any', 
+                    ['==', ['get', 'max_sever'], '1'],
+                    ['==', ['get', 'max_sever'], '2'],
+                ]
+            }
         }
 
-        console.log('filter is ', filter)
+        // this is ALMOST done. It only falls apart if a user seelcts 'All' from the circles toggle and then clicks a municipality. That will default to KSI.
+            // need to communicate with setBoundary to let it know if it's all or KSI. 
+            // part of a general larger problem of the KSI/All filter not applying everywhere when it's selected.
+
 
         // update the crash circle filter
         this.map.setFilter('crash-circles', filter)
@@ -233,9 +247,7 @@ class Map extends Component {
         // set the appropriate filters
         this.map.setFilter(baseFilter.layer, baseFilter.filter)
         this.map.setFilter(resetFilter.layer, resetFilter.filter)
-        this.map.setFilter(heatFilter.layer, heatFilter.filter)
-        
-        // @TODO: add the KSI filter here (starts at line 212. Try adding it to the boundaryFilters.js jawn at circlesFilter.filter)
+        this.map.setFilter(heatFilter.layer, heatFilter.filter)        
         this.map.setFilter(circlesFilter.layer, circlesFilter.filter)
         
         // make the appropraite paint changes
