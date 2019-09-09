@@ -21,6 +21,7 @@ const SET_MAP_CENTER = 'SET_MAP_CENTER'
 const SET_MAP_BOUNDING = 'SET_MAP_BOUNDING'
 const SET_SIDEBAR_HEADER_CONTEXT = 'SET_SIDEBAR_HEADER_CONTEXT'
 const GET_BOUNDING_BOX = 'GET_BOUNDING_BOX'
+const SET_MAP_FILTER = 'SET_MAP_FILTER'
 
 
 /*****************************/
@@ -29,7 +30,8 @@ const get_data_from_keyword = data => ({ type: GET_DATA_FROM_KEYWORD, data })
 const set_map_center = center => ({ type: SET_MAP_CENTER, center })
 const set_map_bounding = bounding => ({ type: SET_MAP_BOUNDING, bounding })
 const set_sidebar_header_context = area => ( { type: SET_SIDEBAR_HEADER_CONTEXT, area })
-const get_bounding_box = bbox => ( { type: GET_BOUNDING_BOX, bbox } )
+const get_bounding_box = bbox => ({ type: GET_BOUNDING_BOX, bbox })
+const set_map_filter = filter => ({ type: SET_MAP_FILTER, filter })
 
 
 /***********************/
@@ -51,6 +53,10 @@ export default function mapReducer(state = [], action) {
         case GET_BOUNDING_BOX:
             const bbox = action.bbox
             return Object.assign({}, state, { bbox })
+        case SET_MAP_FILTER:
+            const filter = action.filter
+            console.log('filter at reducer ', filter)
+            return Object.assign({}, state, { filter })
         default:
             return state
     }
@@ -107,5 +113,40 @@ export const getBoundingBox = (id, clicked) => async dispatch => {
     }else {
         // error handling
         alert('esri bbox call failed ', stream)
+    }
+}
+
+export const setMapFilter = filter => dispatch => {
+    // example filter obj:
+    // {
+    //     filterType: 'default' (or 'ksi boundary' or 'all'),
+    //     tileType,
+    //     id
+    // }
+    console.log('filter is ', filter)
+
+    const ksiNoBoundary = ['any', 
+        ['==', 'max_sever', '1'],
+        ['==', 'max_sever', '2'],
+    ]
+    const ksiBoundary = (tileType, id) => {
+        const filter = ['all',
+            ['==', tileType, id],
+            ['>', 'max_sever', '0'],
+            ['<', 'max_sever', '3']    
+        ]
+        return filter
+    }
+    const all = (tileType, id) => ['==', tileType, id]
+
+    switch(filter.type) {
+        case 'ksi boundary':
+            dispatch(set_map_filter(ksiBoundary(filter.tileType, filter.id)))
+            return
+        case 'all':
+            dispatch(set_map_filter(all(filter.tileType, filter.id)))
+            return
+        default:
+            dispatch(set_map_filter(ksiNoBoundary))
     }
 }

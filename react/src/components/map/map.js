@@ -7,7 +7,7 @@ import mapboxgl from "mapbox-gl";
 import * as layers from './layers.js'
 import * as popups from './popups.js';
 import { createBoundaryFilter, removeBoundaryFilter } from './boundaryFilters.js';
-import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding  } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter  } from '../../redux/reducers/mapReducer.js'
 import { munis } from '../search/dropdowns.js'
 import './map.css';
 
@@ -21,6 +21,13 @@ class Map extends Component {
     }
 
     componentDidMount() {
+
+        // test the map filter reducer
+        const testFilter = {
+            filterType: 'default'
+        }
+        this.props.setMapFilter(testFilter)
+
         mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
         
         this.map = new mapboxgl.Map({
@@ -460,7 +467,8 @@ const mapStateToProps = state => {
     return {
         center: state.center,
         bounding: state.bounding,
-        bbox: state.bbox
+        bbox: state.bbox,
+        filter: state.filter
     }
 }
 
@@ -471,6 +479,7 @@ const mapDispatchToProps = dispatch => {
         setSidebarHeaderContext: area => dispatch(setSidebarHeaderContext(area)),
         getBoundingBox: (id, clicked) => dispatch(getBoundingBox(id, clicked)),
         setDefaultState: region => dispatch(getDataFromKeyword(region)),
+        setMapFilter: filter => dispatch(setMapFilter(filter))
     }
 }
 
