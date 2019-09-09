@@ -4,7 +4,6 @@ const createBoundaryFilter = boundingObj => {
 
     let tileType, resetBaseLayer, resetBaseFilter, resetLineWidth, resetColor;
 
-    // handle 
     if(type === 'municipality'){
         tileType = 'm'
         resetBaseLayer = 'county'
@@ -30,6 +29,7 @@ const createBoundaryFilter = boundingObj => {
             width: resetLineWidth,
             color: resetColor
         },
+        // @TODO: remove 
         circlesFilter: {
             layer: 'crash-circles',
             filter: ["all",
@@ -65,7 +65,7 @@ const removeBoundaryFilter = () => {
                 color: '#e3f2fd'
             }
         },
-        // need to be smart here about remove the boundary filter but keeping the ksi/otherwise filter...
+        // @TODO: remove
         circles: {
             layer: 'crash-circles',
             filter: ['any', 

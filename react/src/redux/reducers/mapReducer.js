@@ -123,7 +123,6 @@ export const setMapFilter = filter => dispatch => {
     //     tileType,
     //     id
     // }
-    console.log('filter is ', filter)
 
     const ksiNoBoundary = ['any', 
         ['==', 'max_sever', '1'],
@@ -137,14 +136,17 @@ export const setMapFilter = filter => dispatch => {
         ]
         return filter
     }
-    const all = (tileType, id) => ['==', tileType, id]
+    const allBoundary = (tileType, id) => ['==', tileType, id]
 
-    switch(filter.type) {
+    switch(filter.filterType) {
+        case 'all':
+            dispatch(set_map_filter(allBoundary(filter.tileType, filter.id)))
+            return
+        case 'all no boundary':
+            dispatch(set_map_filter(null))
+            return
         case 'ksi boundary':
             dispatch(set_map_filter(ksiBoundary(filter.tileType, filter.id)))
-            return
-        case 'all':
-            dispatch(set_map_filter(all(filter.tileType, filter.id)))
             return
         default:
             dispatch(set_map_filter(ksiNoBoundary))

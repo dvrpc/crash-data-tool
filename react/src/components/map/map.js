@@ -21,13 +21,6 @@ class Map extends Component {
     }
 
     componentDidMount() {
-
-        // test the map filter reducer
-        const testFilter = {
-            filterType: 'default'
-        }
-        this.props.setMapFilter(testFilter)
-
         mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
         
         this.map = new mapboxgl.Map({
@@ -176,6 +169,17 @@ class Map extends Component {
             this.setBoundary(boundingObj)
             this.showBoundaryOverlay()
         }
+
+        // @TODO: add heat and circle filter state check here. Eventually add a check for equality so it's not constantly repainting the filter
+        // use state.filter and apply it to both heat and circles
+        console.log('filter state at did update ', this.props.filter)
+        console.log('prev props filter state ', prevProps.filter)
+        if(this.props.filter){
+            const filter = this.props.filter
+            this.map.setFilter('crash-circles', filter)
+            this.map.setFilter('crash-heat', filter)
+        }
+
     }
 
     componentWillUnmount() {
@@ -208,6 +212,7 @@ class Map extends Component {
         const id = e.target.id
         let filter, geoFilter, tileType, geoID;
         const existingFilter = this.state.boundary
+        console.log('existing filter is ', existingFilter)
         
         if(existingFilter) {
             geoFilter = existingFilter[1]
@@ -252,6 +257,9 @@ class Map extends Component {
                 
                 BOUNDARY (ALL):
                     ['==', tileType, id]
+
+                NO BOUNDARY (ALL):
+                    null
             
 
             These filters should exist on global state because the following components need to consume them:
@@ -276,11 +284,16 @@ class Map extends Component {
                         map.js will read and write to the filter reducer
                         sidebar.js will only read from the filter reducer
                     Output will be one of the three filter states defined above. 
+                Edits to Search.js
+                    dispatch to the store
         */
-
 
         // update the crash circle filter
         this.map.setFilter('crash-circles', filter)
+
+        // @TODO: create local state object for toggle state. Defaults to 'ksi no boundary'
+        /* update it in conjunction with the value of boundary.. fuck this is convoluted
+        */
     }
 
     // reveal the boundary overlay when a boundary is established
@@ -295,8 +308,8 @@ class Map extends Component {
         // set the appropriate filters
         this.map.setFilter(baseFilter.layer, baseFilter.filter)
         this.map.setFilter(resetFilter.layer, resetFilter.filter)
-        this.map.setFilter(heatFilter.layer, heatFilter.filter)        
-        this.map.setFilter(circlesFilter.layer, circlesFilter.filter)
+        //this.map.setFilter(heatFilter.layer, heatFilter.filter)        
+        //this.map.setFilter(circlesFilter.layer, circlesFilter.filter)
         
         // make the appropraite paint changes
         this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
@@ -305,6 +318,7 @@ class Map extends Component {
         this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
 
         // update boundary state to prevent hover effects when boundaries are present & so the ksi/all toggle can stay within the set bounds
+        // @TODO: replace the value of boundary to the three 
         this.setState({boundary: circlesFilter.filter})
     }
 
@@ -320,6 +334,13 @@ class Map extends Component {
 
         // update map filters and paint properties
         const { county, muni, circles, heat } = removeBoundaryFilter()
+
+        // @TODO: replace the circle and heat map filter stuff with this dispatch
+        // test the map filter reducer
+        // const testFilter = {
+        //     filterType: 'default'
+        // }
+        // this.props.setMapFilter(testFilter)
 
         this.map.setFilter(county.layer, county.filter)
         this.map.setFilter(muni.layer, muni.filter)
@@ -406,13 +427,20 @@ class Map extends Component {
         // use the dropdown lookup table to convert muni name into pennDOT id
         let pennID = munis[decodedName]
 
+        // @TODO: remove id from boundaryObj
         const boundaryObj = {type: 'municipality', name: decodedName, id: pennID}
+        console.log('boundary state at clickMuni ', this.state.boundary)
+        
+        // @TODO: replace filterType value w/local state for the toggle. Ideally it'll be filterType: this.state.toggleStatus : 'ksi boundary'
+        const filterObj = {filterType: 'ksi boundary', tileType: 'm', id: pennID}
+        console.log('boundary obj ', boundaryObj)
 
         // do all the things that search does
         this.props.setSidebarHeaderContext(decodedName)
         this.props.getData(boundaryObj)
         this.props.setMapBounding(boundaryObj)
         this.props.getBoundingBox(id, true)
+        this.props.setMapFilter(filterObj)
 
         // set bounding filters
         this.setBoundary(boundaryObj)
