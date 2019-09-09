@@ -8,11 +8,7 @@ import Footer from '../footer/footer.js'
 import './sidebar.css';
 
 // @TODO for global filter state:
-// Edits to sidebar/charts.js
-// sidebar.js reads circle and heat filter state from the store
-// charts.makeCharts will accept a parameter for circle and heat filters and use that to filter down the outputs
-// sidebar.js intro paragraph <span id="activeCrashTypes"> textContent will update to reflect KSI or All types
-
+// charts.makeCharts will accept a parameter for filter state and use that to filter down the outputs
 
 
 class Sidebar extends Component {
@@ -33,6 +29,13 @@ class Sidebar extends Component {
         if(this.props.context !== prevProps.context && this.state.localUpdate) {
             const localUpdate = false
             this.setState({localUpdate})
+        }
+
+        // update crash type context
+        if(this.props.filter){
+            const check = this.props.filter[0]
+            // this is a brittle hack but it works as long as the filters dont change...
+            this.activeCrashTypes.textContent = check === 'any' || check === 'all' ? 'Killed or Severely Injured (KSI)' : 'All'
         }
 
         // it's possible that once a range is established, users will want that to persist throughout searches
@@ -76,7 +79,7 @@ class Sidebar extends Component {
         return (
             <section id="sidebar">
                 <h1 id="crash-map-sidebar-header" className="centered-text">Crash Statistics for {area}</h1>
-                    <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. The following charts are showing results for <span id="activeCrashTypes">Killed or Severely Injured (KSI)</span> crash types.</p>
+                    <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. The following charts are showing results for <span id="activeCrashTypes" ref={el => this.activeCrashTypes = el}>Killed or Severely Injured (KSI)</span> crash types.</p>
                 
                 <hr id="sidebar-hr" />
 
@@ -142,7 +145,8 @@ class Sidebar extends Component {
 const mapStateToProps = state => {
     return {
         data: state.data,
-        context: state.area
+        context: state.area,
+        filter: state.filter
     }
 }
 
