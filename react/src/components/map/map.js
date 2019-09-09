@@ -208,6 +208,9 @@ class Map extends Component {
     }
 
     // toggle which circles are on the map (defaults to KSI)
+    // @TODO: change this function to do two things:
+        // update local state with toggle info
+        // dispatch filter with toggle info
     toggleCircleType = e => {
         const id = e.target.id
         let filter, geoFilter, tileType, geoID;
@@ -303,13 +306,11 @@ class Map extends Component {
     setBoundary = boundaryObj => {
         
         // derive layer styles from boundaryObj
-        const { baseFilter, resetFilter, circlesFilter, heatFilter } = createBoundaryFilter(boundaryObj)
+        const { baseFilter, resetFilter} = createBoundaryFilter(boundaryObj)
 
         // set the appropriate filters
         this.map.setFilter(baseFilter.layer, baseFilter.filter)
         this.map.setFilter(resetFilter.layer, resetFilter.filter)
-        //this.map.setFilter(heatFilter.layer, heatFilter.filter)        
-        //this.map.setFilter(circlesFilter.layer, circlesFilter.filter)
         
         // make the appropraite paint changes
         this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
@@ -318,8 +319,8 @@ class Map extends Component {
         this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
 
         // update boundary state to prevent hover effects when boundaries are present & so the ksi/all toggle can stay within the set bounds
-        // @TODO: replace the value of boundary to the three 
-        this.setState({boundary: circlesFilter.filter})
+        // @TODO: replace the value of boundary to the tileType options the reducer expects
+        this.setState({boundary: true})
     }
 
     // hide the boundary overlay and reset map filters, styles and sidebar info to default
@@ -333,19 +334,16 @@ class Map extends Component {
         this.props.setSidebarHeaderContext('the DVRPC region')
 
         // update map filters and paint properties
-        const { county, muni, circles, heat } = removeBoundaryFilter()
+        const { county, muni} = removeBoundaryFilter()
 
-        // @TODO: replace the circle and heat map filter stuff with this dispatch
-        // test the map filter reducer
-        // const testFilter = {
-        //     filterType: 'default'
-        // }
-        // this.props.setMapFilter(testFilter)
+        // @TODO: use toggle state to get the correct filter type (either 'ksi no boundary' or 'all no boundary')
+        const filterObj = {filterType: 'ksi no boundary'}
+
+        // set store filter state
+        this.props.setMapFilter(filterObj)
 
         this.map.setFilter(county.layer, county.filter)
         this.map.setFilter(muni.layer, muni.filter)
-        this.map.setFilter(circles.layer, circles.filter)
-        this.map.setFilter(heat.layer, heat.filter)
 
         this.map.setPaintProperty(county.layer, 'line-width', county.paint.width)
         this.map.setPaintProperty(county.layer, 'line-color', county.paint.color)
@@ -427,13 +425,10 @@ class Map extends Component {
         // use the dropdown lookup table to convert muni name into pennDOT id
         let pennID = munis[decodedName]
 
-        // @TODO: remove id from boundaryObj
-        const boundaryObj = {type: 'municipality', name: decodedName, id: pennID}
-        console.log('boundary state at clickMuni ', this.state.boundary)
+        const boundaryObj = {type: 'municipality', name: decodedName}
         
         // @TODO: replace filterType value w/local state for the toggle. Ideally it'll be filterType: this.state.toggleStatus : 'ksi boundary'
         const filterObj = {filterType: 'ksi boundary', tileType: 'm', id: pennID}
-        console.log('boundary obj ', boundaryObj)
 
         // do all the things that search does
         this.props.setSidebarHeaderContext(decodedName)
