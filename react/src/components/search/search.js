@@ -6,6 +6,11 @@ import * as form from './handleForm.js'
 
 import './search.css'
 
+// @TODO for store filter:
+/* 
+    dispatch to the store
+*/
+
 class Search extends Component {
     constructor(props){
         super(props)

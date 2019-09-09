@@ -7,6 +7,13 @@ import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
 import './sidebar.css';
 
+// @TODO for global filter state:
+// Edits to sidebar/charts.js
+// sidebar.js reads circle and heat filter state from the store
+// charts.makeCharts will accept a parameter for circle and heat filters and use that to filter down the outputs
+// sidebar.js intro paragraph <span id="activeCrashTypes"> textContent will update to reflect KSI or All types
+
+
 
 class Sidebar extends Component {
     constructor(props) {

@@ -55,7 +55,6 @@ export default function mapReducer(state = [], action) {
             return Object.assign({}, state, { bbox })
         case SET_MAP_FILTER:
             const filter = action.filter
-            console.log('filter at reducer ', filter)
             return Object.assign({}, state, { filter })
         default:
             return state
@@ -117,13 +116,6 @@ export const getBoundingBox = (id, clicked) => async dispatch => {
 }
 
 export const setMapFilter = filter => dispatch => {
-    // example filter obj:
-    // {
-    //     filterType: 'default' (or 'ksi boundary' or 'all'),
-    //     tileType,
-    //     id
-    // }
-
     const ksiNoBoundary = ['any', 
         ['==', 'max_sever', '1'],
         ['==', 'max_sever', '2'],
@@ -143,7 +135,8 @@ export const setMapFilter = filter => dispatch => {
             dispatch(set_map_filter(allBoundary(filter.tileType, filter.id)))
             return
         case 'all no boundary':
-            dispatch(set_map_filter(null))
+            // set to 'none' here b/c if null is used it doesn't pass the if(this.props.filter) check on map did update
+            dispatch(set_map_filter('none'))
             return
         case 'ksi boundary':
             dispatch(set_map_filter(ksiBoundary(filter.tileType, filter.id)))
