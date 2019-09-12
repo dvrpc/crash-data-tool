@@ -35,7 +35,7 @@ const setPopup = popupInfo => {
     popupInfo.severity = severityLookup[popupInfo.severity]
 
     return `
-        <h3 class="crash-popup-header">CRN: ${popupInfo.crn}</h3>
+        <h3 class="crash-popup-header">Crash Record Number: ${popupInfo.crn}</h3>
         <hr />
         <p>Collision Type: ${popupInfo.collision_type}</p>
         <p>Max Severity: ${popupInfo.severity}</p>
