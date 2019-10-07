@@ -12,15 +12,30 @@ class Homepage extends Component {
     render() {
     return (
         <div id="homepage">
-            <h1 id="homepage-header">DVRPC Crash Data Toolkit</h1>
+            <header>
+                <img id="header-logo" src="https://www.dvrpc.org/PhotosAndLogos/img/dvrpc_logo_white.png" alt="logo" />
+            </header>
+
+            {/* banner */}
+            <h1 id="homepage-h1">DVRPC Crash Data Toolkit</h1>
+            <div id="banner">
+            </div>
 
             <section id="crash-apps-container">
-                <div className="crash-app" onClick={this.clickJawn}>
+                <figure className="crash-app" onClick={this.clickJawn}>
+                    <img src="https://cdn3.iconfinder.com/data/icons/data-science-set-01-1/65/6-512.png" alt="trendsw" className="crash-app-img" />
+                    <figcaption>Trends</figcaption>
+                </figure>
+
+                <figure className="crash-app" onClick={this.clickJawn}>
                     <img src="https://thumbs.gfycat.com/PastEssentialCero-small.gif" alt="hot rod" className="crash-app-img" />
-                    <p className="crash-app-p">
-                        click here for the crash data web viewer
-                    </p>
-                </div>
+                    <figcaption>Crash Map</figcaption>
+                </figure>
+
+                <figure className="crash-app" onClick={this.clickJawn}>
+                    <img src="https://cdn3.iconfinder.com/data/icons/data-science-set-01-1/65/6-512.png" alt="jawns" className="crash-app-img" />
+                    <figcaption>Jawns</figcaption>
+                </figure>
             </section>
 
             <footer>
