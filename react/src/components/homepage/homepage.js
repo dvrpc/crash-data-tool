@@ -21,7 +21,7 @@ class Homepage extends Component {
 
             <section id="crash-apps-container">
                 <figure className="crash-app" onClick={this.clickJawn}>
-                    <img src="https://cdn3.iconfinder.com/data/icons/data-science-set-01-1/65/6-512.png" alt="trendsw" className="crash-app-img" />
+                    <img src="https://previews.123rf.com/images/rondale/rondale1702/rondale170200144/72112575-crash-comic-text-bubble-vector-isolated-color-icon.jpg" alt="trendsw" className="crash-app-img" />
                     <figcaption>
                         Trends <br />
                         <small>God creates dinosaurs. God destroys dinosaurs. God creates Man. Man destroys God. Man creates Dinosaurs.</small>
@@ -37,9 +37,9 @@ class Homepage extends Component {
                 </figure>
 
                 <figure className="crash-app" onClick={this.clickJawn}>
-                    <img src="https://cdn3.iconfinder.com/data/icons/data-science-set-01-1/65/6-512.png" alt="jawns" className="crash-app-img" />
+                    <img src="https://cdn3.vectorstock.com/i/1000x1000/95/77/crash-sound-effect-vector-6259577.jpg" alt="jawns" className="crash-app-img" />
                     <figcaption>
-                        Jawns<br />
+                        The 3rd Tool<br />
                         <small>God creates dinosaurs. God destroys dinosaurs. God creates Man. Man destroys God. Man creates Dinosaurs.</small>
                     </figcaption>
                 </figure>

@@ -41,10 +41,11 @@ header{
 
 /* Content */
 #crash-apps-container{
-    padding: 8% 2%;
+    padding: calc(7% + 30px) 2% 7% 2%;
     display: flex;
     justify-content: space-between;
-    background: #edf2f4;
+    /* light blue: edf2f4 */
+    background: #f7f7f7;
 }
 .crash-app{
     position: relative;
