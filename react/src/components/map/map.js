@@ -79,6 +79,7 @@ class Map extends Component {
                     this.setState({heatZoom: false})
                 }
 
+                // @TODO: add (KSI) or (All) depending on toggle state
                 if(zoom < 11 && !this.state.heatZoom){
                     this.legendTitle.textContent = 'Number of Crashes'
                     this.legendGradient.style.background = 'linear-gradient(to right, #f8eeed, #f9dad7, #f7b9b3, #f39993, #d62839)'
