@@ -9,12 +9,17 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
+
+#crash-map-sidebar-header {
+    margin: 2% 0;
+}
 #sidebar-hr{
     border: 0;
     border-top: 1px solid #ddd;
     height: 0;
     box-sizing: content-box;
     clear: both;
+    margin: 2% 0;
 }
 #activeCrashTypes{
     font-weight: 700;

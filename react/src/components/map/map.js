@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import ReactPaginate from 'react-paginate';
 import { connect } from 'react-redux'
 import mapboxgl from "mapbox-gl";
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
 
 import * as layers from './layers.js'
 import * as popups from './popups.js';
@@ -31,9 +32,19 @@ class Map extends Component {
             zoom: 8.2
         })
 
+        // initialize the drawn jawn
+        const draw = new MapboxDraw({
+            displayControlsDefault: false,
+            controls: {
+                polygon: true,
+                trash: true
+            }
+        })
+
         // add navigation + custom return to default button
         const navControl = new mapboxgl.NavigationControl()
         this.map.addControl(navControl)
+        this.map.addControl(draw, 'top-right')
 
         // add DVRPC regional outlines + crash data heat map
         this.map.on('load', () => {
