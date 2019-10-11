@@ -11,9 +11,23 @@
     color: #f6efee;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+}
+#seearch-by-label, #search-form select, #search-form input[type="text"] {
+    margin-right: 10px;
 }
 .search-form-fieldset{
     border: none;
     margin: 0;
     padding: 0;
+}
+#search-form select, #search-form input {
+    border-radius: 3px;
+    border: none;
+}
+#search-form select {
+    padding: 3px 6px;
+}
+#search-form input {
+    padding: 4px 8px;
 }

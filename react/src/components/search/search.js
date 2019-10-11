@@ -57,7 +57,7 @@ class Search extends Component {
         return (
             <form id="search-form" onSubmit={ this.submitSearch }>
                 <fieldset className="search-form-fieldset" name="type" form="search-form">
-                    <label htmlFor="select-search-type">Search By: </label>
+                    <label id="seearch-by-label" htmlFor="select-search-type">Search By: </label>
                     <select name="type" id="select-search-type" onChange={ this.selectSearch }>
                         <option value="state">State</option>
                         <option value="county">County</option>
