@@ -25,6 +25,7 @@ class Map extends Component {
     componentDidMount() {
         mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
         
+        // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
             style: 'mapbox://styles/mapbox/dark-v9',
@@ -32,16 +33,19 @@ class Map extends Component {
             zoom: 8.2
         })
 
-        // initialize the drawn jawn
+        // initialize the draw tool
         const draw = new MapboxDraw({
             displayControlsDefault: false,
             controls: {
+                // this works but it doesn't override the other map click events. 
+                // @TODO: when polygon is active, disable the other click events (muni area click) and then turn them back on when the boundary is removed
                 polygon: true,
-                trash: true
+                // consider not having the trash button and linking that behavior to the 'remove boundary' overylay to keep it consistent w/the other boundaries
+                trash: false
             }
         })
 
-        // add navigation + custom return to default button
+        // add navigation, draw tool, extent and filter buttons
         const navControl = new mapboxgl.NavigationControl()
         this.map.addControl(navControl)
         this.map.addControl(draw, 'top-right')
@@ -157,6 +161,22 @@ class Map extends Component {
                 }
             })
         })
+
+        // Drawing Events
+
+        // this fires after the polygon is done (i.e. double click to close polygon)
+        this.map.on('draw.create', e => {
+            const bbox = e.features[0].geometry.coordinates[0]
+            console.log('bbox after creating a polygon ', bbox)
+            // @TODO: use bbox to make the standard setBounding calls (refactor into a shared function for draw.create and draw.update)
+        })
+
+        // this first when the polygon updates (for our use case, if it's moved via dragging)
+        this.map.on('draw.update', e => {
+            const bbox = e.features[0].geometry.coordinates[0]
+            console.log('bbox after moving a polygon ', bbox)
+            // @TODO: use bbox to make the standard setBounding calls (refactor into a shared function for draw.create and draw.update)
+        })
     }
 
     componentDidUpdate(prevProps) {
@@ -260,13 +280,16 @@ class Map extends Component {
         // toggle overlay visibility
         this.boundaryOverlay.classList.add('hidden')
 
+        // @TODO: check for presence of a mapbox Draw polygon and trash it 
+        // something like if(mapboxDraw) mapboxDraw.deleteAll()
+
         // update sidebar information
         const regionalStats = {type: 'municipality', name: '%'}
         this.props.setDefaultState(regionalStats)
         this.props.setSidebarHeaderContext('the DVRPC region')
 
         // update map filters and paint properties
-        const { county, muni} = removeBoundaryFilter()
+        const { county, muni } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
         let newFilterType = this.state.toggle === 'All' ? 'all no boundary' : 'ksi no boundary'
