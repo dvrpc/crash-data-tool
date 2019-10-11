@@ -81,7 +81,8 @@ class Map extends Component {
             this.map.on('mouseleave', 'municipality-fill', () => hoveredMuni = this.removeMuniFill(hoveredMuni))
 
             // clicking a municipality triggers the same set of actions as searching by muni
-            this.map.on('click', 'municipality-fill', e => this.clickMuni(e))
+            const onClickRef = this.map.on('click', 'municipality-fill', e => this.clickMuni(e))
+            console.log('return from muni click handler ', onClickRef)
             
             // update legend depending on zoom level (heatmap vs crash circles). use state.heatZoom state to avoid repainting if the user stays within the circle or heatmap zoom ranges
             this.map.on('zoomend', () => {
@@ -163,12 +164,26 @@ class Map extends Component {
         })
 
         // Drawing Events
+        // disable previous map click events whenever the draw tool is selected
+        this.map.on('draw.modechange', e => {
+            console.log('fired mode change ', e)
+            
+            // remove muni-fill click event
+            // this will only work if 'this.clickMuni' is the same function reference used to assign this.map.on('click'): https://github.com/mapbox/mapbox-gl-js/issues/5049
+            // @TODO: either find a way to pass the reference here, or just set a new click handler that does nothing?
+            this.map.off('click', 'municipality-fill', this.clickMuni)
+
+        })
 
         // this fires after the polygon is done (i.e. double click to close polygon)
         this.map.on('draw.create', e => {
             const bbox = e.features[0].geometry.coordinates[0]
             console.log('bbox after creating a polygon ', bbox)
             // @TODO: use bbox to make the standard setBounding calls (refactor into a shared function for draw.create and draw.update)
+
+            // add the 'remove boundary' jawn
+            // @TODO: consider adding a local state param here to let this.removeBoundaryOverlay() know it needs to delete the drawn polygon
+            this.showBoundaryOverlay()
         })
 
         // this first when the polygon updates (for our use case, if it's moved via dragging)
