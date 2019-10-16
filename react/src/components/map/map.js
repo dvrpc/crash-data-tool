@@ -171,20 +171,23 @@ class Map extends Component {
 
         // this fires after the polygon is done (i.e. double click to close polygon)
         this.map.on('draw.create', e => {
+            
+            // get bbox for filtering - no need to call fitBounds b/c if a user is drawing a polygon they already have the view they want
             const bbox = e.features[0].geometry.coordinates[0]
 
             // add the 'remove boundary' overlay
             this.showBoundaryOverlay()
 
-            // setBoundary expects an object w/name and boundary type i.e. {name: 'upper salford township', type: 'municipality'}
-            // filtering crashes will not be possible until geography is added to the vector tiles which...
-            //this.setBoundary(bbox)
+            /* filter circles/heat
+                @TODO: add geography to the vector tiles...
+                draw.create wont call this.setBoundary because the conditions are different - we just want to filter out the irrelevant crashes. No need to update any of muni/county stuff
+                once geography is added, this will just be a matter of adding a filter to crash-circles and crash-heat for everything within bbox
+            */
         })
 
         // this fires when the polygon updates (for our use case, if it's moved via dragging)
         this.map.on('draw.update', e => {
-            const bbox = e.features[0].geometry.coordinates[0]
-            // @TODO: use bbox to make the standard setBounding calls (refactor into a shared function for draw.create and draw.update)
+            // @TODO: this will do the same stuff that draw.create does so once draw.create is working, turn it into a class method that draw.create and draw.update can invoke
         })
     }
 
@@ -269,6 +272,12 @@ class Map extends Component {
 
     // apply boundary filters and map styles
     setBoundary = boundaryObj => {
+        
+        // testing polygon
+        if(this.state.polygon){
+            console.log('boundary object is ', boundaryObj)
+            return
+        }
         
         // derive layer styles from boundaryObj
         const { baseFilter, resetFilter} = createBoundaryFilter(boundaryObj)
@@ -362,9 +371,7 @@ class Map extends Component {
 
         this.map.getCanvas().style.cursor = ''
 
-        // for some reason it needs to handle municipality-fill and municipalities
-            // municipality-fill handles updating fill effect within the munis
-            // municipalities handles the literal edge cases i.e. if you move your mouse outside the region
+        // handle municipality-fill (fill effect within munis) and municipalities (edge cases - moving your mouse outside the region or on borders)
         if(hoveredMuni) {
             this.map.setFeatureState({source: 'Boundaries', sourceLayer: 'municipality-fill', id: hoveredMuni},
             {hover: false})
