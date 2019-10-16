@@ -19,7 +19,17 @@ class Map extends Component {
             boundary: null,
             heatZoom: true,
             toggle: 'ksi',
-            polygon: false
+            polygon: false,
+            
+            // draw is on local state so that removeBoundary() can access the instance of MapboxDraw to call draw.deleteAll()
+            draw: new MapboxDraw({
+                displayControlsDefault: false,
+                controls: {
+                    polygon: true,
+                    // disable trash because we want the polygons and muni/county boundaries to follow the same flow (i.e. use the 'remove boundary' overlay for both)
+                    trash: false
+                }
+            })
         }
     }
 
@@ -38,22 +48,10 @@ class Map extends Component {
             zoom: 8.2
         })
 
-        // initialize the draw tool
-        const draw = new MapboxDraw({
-            displayControlsDefault: false,
-            controls: {
-                // this works but it doesn't override the other map click events. 
-                // @TODO: when polygon is active, disable the other click events (muni area click) and then turn them back on when the boundary is removed
-                polygon: true,
-                // consider not having the trash button and linking that behavior to the 'remove boundary' overylay to keep it consistent w/the other boundaries
-                trash: false
-            }
-        })
-
         // add navigation, draw tool, extent and filter buttons
         const navControl = new mapboxgl.NavigationControl()
         this.map.addControl(navControl)
-        this.map.addControl(draw, 'top-right')
+        this.map.addControl(this.state.draw, 'top-right')
 
         // add DVRPC regional outlines + crash data heat map
         this.map.on('load', () => {
@@ -168,46 +166,22 @@ class Map extends Component {
         })
 
         // Drawing Events
-
-        // fires when draw polygon is clicked to pause all other event listeners
-        this.map.on('draw.modechange', e => {
-            console.log('fired mode change ', e)
-
-            // short out if mode change is called after drawing is done
-            if(e.mode !== 'draw_polygon') return
-
-            // flip polygon state to short out the municipal event listeners
-                // hoverMuniFill & clickMuni need the escape clause based on polygon state
-            this.setState({polygon: true})
-
-            // disable municipality and circle hover effects (cursor update + municipality fill)
-            // this.map.off('hover', 'municipality-fill')
-            // this.map.off('hover', 'crash-circles')
-            
-            // // disable municipality and circle click events
-            // this.map.off('click', 'municipality-fill', this.clickMuni)
-            // this.map.off('click', 'crash-circles')
-
-
-            // ^ for all the above, `this.map.off` requires the specific instance of the callback to be passed so that it knows to remove it. 
-                // If `this.map.off` is the solution, will need to find a way to keep a reference to each instance for map listener callbacks.
-                // Will also need to re-apply them to each layer whenever a drawn polygon is removed from the map...
-        })
+        // mutes other map other event listeners when the polygon draw tool is selected (shorts out when user finishes drawing b/c that also calls this function)
+        this.map.on('draw.modechange', e => e.mode !== 'draw_polygon' ? null : this.setState({polygon: true}))
 
         // this fires after the polygon is done (i.e. double click to close polygon)
         this.map.on('draw.create', e => {
             const bbox = e.features[0].geometry.coordinates[0]
 
             // add the 'remove boundary' overlay
-            // @TODO: consider adding a local state param here to let this.removeBoundaryOverlay() know it needs to delete the drawn polygon
             this.showBoundaryOverlay()
 
             // setBoundary expects an object w/name and boundary type i.e. {name: 'upper salford township', type: 'municipality'}
-            // filtering crashes will be hard - how to filter by geography? new function or update setBoundaryFilter() from boundaryFilters.js? 
+            // filtering crashes will not be possible until geography is added to the vector tiles which...
             //this.setBoundary(bbox)
         })
 
-        // this first when the polygon updates (for our use case, if it's moved via dragging)
+        // this fires when the polygon updates (for our use case, if it's moved via dragging)
         this.map.on('draw.update', e => {
             const bbox = e.features[0].geometry.coordinates[0]
             // @TODO: use bbox to make the standard setBounding calls (refactor into a shared function for draw.create and draw.update)
@@ -315,8 +289,8 @@ class Map extends Component {
         // toggle overlay visibility
         this.boundaryOverlay.classList.add('hidden')
 
-        // @TODO: check for presence of a mapbox Draw polygon and trash it 
-        // something like if(mapboxDraw) mapboxDraw.deleteAll()
+        // check for presence of a mapbox Draw polygon and trash it
+        if(this.state.polygon) this.state.draw.deleteAll()
 
         // update sidebar information
         const regionalStats = {type: 'municipality', name: '%'}
@@ -341,8 +315,11 @@ class Map extends Component {
         this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
         this.map.setPaintProperty(muni.layer, 'line-color', muni.paint.color)
 
-        // update boundary state to allow hover effects now that boundaries are removed
-        this.setState({boundary: null})
+        // update boundary state to allow hover effects now that boundaries are removed & update polygon state to enable normal event listener interaction
+        this.setState({
+            boundary: null,
+            polygon: false
+        })
     }
 
     // add fill effect when hovering over a municipality
