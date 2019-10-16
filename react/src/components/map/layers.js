@@ -40,11 +40,11 @@ const municipalityFill = {
     layout: {},
     minzoom: 8.5,
     paint: {
-        'fill-color': '#f7c59f',
+        'fill-outline-color': '#f7c59f',
         // set up muni outlines to have hover effects calculated by map.setFeatureState
         'fill-opacity': ['case',
             ['boolean', ['feature-state', 'hover'], false],
-            0.9,
+            1,
             0
         ],
     }

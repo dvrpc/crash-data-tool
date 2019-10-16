@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import ReactPaginate from 'react-paginate';
 import { connect } from 'react-redux'
 import mapboxgl from "mapbox-gl";
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
 
 import * as layers from './layers.js'
 import * as popups from './popups.js';
@@ -17,23 +18,40 @@ class Map extends Component {
         this.state = {
             boundary: null,
             heatZoom: true,
-            toggle: 'ksi'
+            toggle: 'ksi',
+            polygon: false,
+            
+            // draw is on local state so that removeBoundary() can access the instance of MapboxDraw to call draw.deleteAll()
+            draw: new MapboxDraw({
+                displayControlsDefault: false,
+                controls: {
+                    polygon: true,
+                    // disable trash because we want the polygons and muni/county boundaries to follow the same flow (i.e. use the 'remove boundary' overlay for both)
+                    trash: false
+                }
+            })
         }
     }
 
     componentDidMount() {
         mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
         
+        // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            style: 'mapbox://styles/mapbox/dark-v9',
+            /* Possible styles:
+                dark: mapbox://styles/mapbox/dark-v9?optimize=true
+                navigation guidance night: mapbox://styles/mapbox/navigation-guidance-night-v2?optimize=true
+            */
+            style: 'mapbox://styles/mapbox/navigation-guidance-night-v2?optimize=true',
             center: [-75.2273, 40.071],
             zoom: 8.2
         })
 
-        // add navigation + custom return to default button
+        // add navigation, draw tool, extent and filter buttons
         const navControl = new mapboxgl.NavigationControl()
         this.map.addControl(navControl)
+        this.map.addControl(this.state.draw, 'top-right')
 
         // add DVRPC regional outlines + crash data heat map
         this.map.on('load', () => {
@@ -146,6 +164,31 @@ class Map extends Component {
                 }
             })
         })
+
+        // Drawing Events
+        // mutes other map other event listeners when the polygon draw tool is selected (shorts out when user finishes drawing b/c that also calls this function)
+        this.map.on('draw.modechange', e => e.mode !== 'draw_polygon' ? null : this.setState({polygon: true}))
+
+        // this fires after the polygon is done (i.e. double click to close polygon)
+        this.map.on('draw.create', e => {
+            
+            // get bbox for filtering - no need to call fitBounds b/c if a user is drawing a polygon they already have the view they want
+            const bbox = e.features[0].geometry.coordinates[0]
+
+            // add the 'remove boundary' overlay
+            this.showBoundaryOverlay()
+
+            /* filter circles/heat
+                @TODO: add geography to the vector tiles...
+                draw.create wont call this.setBoundary because the conditions are different - we just want to filter out the irrelevant crashes. No need to update any of muni/county stuff
+                once geography is added, this will just be a matter of adding a filter to crash-circles and crash-heat for everything within bbox
+            */
+        })
+
+        // this fires when the polygon updates (for our use case, if it's moved via dragging)
+        this.map.on('draw.update', e => {
+            // @TODO: this will do the same stuff that draw.create does so once draw.create is working, turn it into a class method that draw.create and draw.update can invoke
+        })
     }
 
     componentDidUpdate(prevProps) {
@@ -230,6 +273,12 @@ class Map extends Component {
     // apply boundary filters and map styles
     setBoundary = boundaryObj => {
         
+        // testing polygon
+        if(this.state.polygon){
+            console.log('boundary object is ', boundaryObj)
+            return
+        }
+        
         // derive layer styles from boundaryObj
         const { baseFilter, resetFilter} = createBoundaryFilter(boundaryObj)
 
@@ -249,13 +298,16 @@ class Map extends Component {
         // toggle overlay visibility
         this.boundaryOverlay.classList.add('hidden')
 
+        // check for presence of a mapbox Draw polygon and trash it
+        if(this.state.polygon) this.state.draw.deleteAll()
+
         // update sidebar information
         const regionalStats = {type: 'municipality', name: '%'}
         this.props.setDefaultState(regionalStats)
         this.props.setSidebarHeaderContext('the DVRPC region')
 
         // update map filters and paint properties
-        const { county, muni} = removeBoundaryFilter()
+        const { county, muni } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
         let newFilterType = this.state.toggle === 'All' ? 'all no boundary' : 'ksi no boundary'
@@ -272,15 +324,18 @@ class Map extends Component {
         this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
         this.map.setPaintProperty(muni.layer, 'line-color', muni.paint.color)
 
-        // update boundary state to allow hover effects now that boundaries are removed
-        this.setState({boundary: null})
+        // update boundary state to allow hover effects now that boundaries are removed & update polygon state to enable normal event listener interaction
+        this.setState({
+            boundary: null,
+            polygon: false
+        })
     }
 
     // add fill effect when hovering over a municipality
     hoverMuniFill = (e, hoveredMuni) => {
 
-        // escape if zoom level isn't right or if a boundary is set
-        if(this.map.getZoom() < 8.4 || this.state.boundary) return
+        // escape if zoom level isn't right, if a boundary is set or if the user is drawing a polygon
+        if(this.map.getZoom() < 8.4 || this.state.boundary || this.state.polygon) return
 
         this.map.getCanvas().style.cursor = 'pointer'
 
@@ -316,9 +371,7 @@ class Map extends Component {
 
         this.map.getCanvas().style.cursor = ''
 
-        // for some reason it needs to handle municipality-fill and municipalities
-            // municipality-fill handles updating fill effect within the munis
-            // municipalities handles the literal edge cases i.e. if you move your mouse outside the region
+        // handle municipality-fill (fill effect within munis) and municipalities (edge cases - moving your mouse outside the region or on borders)
         if(hoveredMuni) {
             this.map.setFeatureState({source: 'Boundaries', sourceLayer: 'municipality-fill', id: hoveredMuni},
             {hover: false})
@@ -334,6 +387,9 @@ class Map extends Component {
 
     // draw a boundary, zoom to, filter crash data and update sidebar on muni click
     clickMuni = e => {
+
+        // short out if the user is drawing polygons
+        if(this.state.polygon) return
 
         // short out if a user clicks on a crash circle
         const circleTest = this.map.queryRenderedFeatures(e.point)[0]

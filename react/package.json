@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@mapbox/mapbox-gl-draw": "^1.1.2",
     "@mapbox/mapbox-gl-geocoder": "^3.1.6",
     "apollo-boost": "^0.1.28",
     "chart.js": "^2.8.0",
