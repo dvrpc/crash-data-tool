@@ -18,7 +18,8 @@ class Map extends Component {
         this.state = {
             boundary: null,
             heatZoom: true,
-            toggle: 'ksi'
+            toggle: 'ksi',
+            polygon: false
         }
     }
 
@@ -28,7 +29,11 @@ class Map extends Component {
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            style: 'mapbox://styles/mapbox/dark-v9',
+            /* Possible styles:
+                dark: mapbox://styles/mapbox/dark-v9?optimize=true
+                navigation guidance night: mapbox://styles/mapbox/navigation-guidance-night-v2?optimize=true
+            */
+            style: 'mapbox://styles/mapbox/navigation-guidance-night-v2?optimize=true',
             center: [-75.2273, 40.071],
             zoom: 8.2
         })
@@ -81,8 +86,7 @@ class Map extends Component {
             this.map.on('mouseleave', 'municipality-fill', () => hoveredMuni = this.removeMuniFill(hoveredMuni))
 
             // clicking a municipality triggers the same set of actions as searching by muni
-            const onClickRef = this.map.on('click', 'municipality-fill', e => this.clickMuni(e))
-            console.log('return from muni click handler ', onClickRef)
+            this.map.on('click', 'municipality-fill', e => this.clickMuni(e))
             
             // update legend depending on zoom level (heatmap vs crash circles). use state.heatZoom state to avoid repainting if the user stays within the circle or heatmap zoom ranges
             this.map.on('zoomend', () => {
@@ -164,32 +168,48 @@ class Map extends Component {
         })
 
         // Drawing Events
-        // disable previous map click events whenever the draw tool is selected
+
+        // fires when draw polygon is clicked to pause all other event listeners
         this.map.on('draw.modechange', e => {
             console.log('fired mode change ', e)
-            
-            // remove muni-fill click event
-            // this will only work if 'this.clickMuni' is the same function reference used to assign this.map.on('click'): https://github.com/mapbox/mapbox-gl-js/issues/5049
-            // @TODO: either find a way to pass the reference here, or just set a new click handler that does nothing?
-            this.map.off('click', 'municipality-fill', this.clickMuni)
 
+            // short out if mode change is called after drawing is done
+            if(e.mode !== 'draw_polygon') return
+
+            // flip polygon state to short out the municipal event listeners
+                // hoverMuniFill & clickMuni need the escape clause based on polygon state
+            this.setState({polygon: true})
+
+            // disable municipality and circle hover effects (cursor update + municipality fill)
+            // this.map.off('hover', 'municipality-fill')
+            // this.map.off('hover', 'crash-circles')
+            
+            // // disable municipality and circle click events
+            // this.map.off('click', 'municipality-fill', this.clickMuni)
+            // this.map.off('click', 'crash-circles')
+
+
+            // ^ for all the above, `this.map.off` requires the specific instance of the callback to be passed so that it knows to remove it. 
+                // If `this.map.off` is the solution, will need to find a way to keep a reference to each instance for map listener callbacks.
+                // Will also need to re-apply them to each layer whenever a drawn polygon is removed from the map...
         })
 
         // this fires after the polygon is done (i.e. double click to close polygon)
         this.map.on('draw.create', e => {
             const bbox = e.features[0].geometry.coordinates[0]
-            console.log('bbox after creating a polygon ', bbox)
-            // @TODO: use bbox to make the standard setBounding calls (refactor into a shared function for draw.create and draw.update)
 
-            // add the 'remove boundary' jawn
+            // add the 'remove boundary' overlay
             // @TODO: consider adding a local state param here to let this.removeBoundaryOverlay() know it needs to delete the drawn polygon
             this.showBoundaryOverlay()
+
+            // setBoundary expects an object w/name and boundary type i.e. {name: 'upper salford township', type: 'municipality'}
+            // filtering crashes will be hard - how to filter by geography? new function or update setBoundaryFilter() from boundaryFilters.js? 
+            //this.setBoundary(bbox)
         })
 
         // this first when the polygon updates (for our use case, if it's moved via dragging)
         this.map.on('draw.update', e => {
             const bbox = e.features[0].geometry.coordinates[0]
-            console.log('bbox after moving a polygon ', bbox)
             // @TODO: use bbox to make the standard setBounding calls (refactor into a shared function for draw.create and draw.update)
         })
     }
@@ -328,8 +348,8 @@ class Map extends Component {
     // add fill effect when hovering over a municipality
     hoverMuniFill = (e, hoveredMuni) => {
 
-        // escape if zoom level isn't right or if a boundary is set
-        if(this.map.getZoom() < 8.4 || this.state.boundary) return
+        // escape if zoom level isn't right, if a boundary is set or if the user is drawing a polygon
+        if(this.map.getZoom() < 8.4 || this.state.boundary || this.state.polygon) return
 
         this.map.getCanvas().style.cursor = 'pointer'
 
@@ -383,6 +403,9 @@ class Map extends Component {
 
     // draw a boundary, zoom to, filter crash data and update sidebar on muni click
     clickMuni = e => {
+
+        // short out if the user is drawing polygons
+        if(this.state.polygon) return
 
         // short out if a user clicks on a crash circle
         const circleTest = this.map.queryRenderedFeatures(e.point)[0]
