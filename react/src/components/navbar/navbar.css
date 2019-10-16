@@ -23,3 +23,11 @@
     background: #f6efee;
     color: #424b54;
 }
+
+/* Media Queries */
+@media all and (max-width: 800px) {
+    #navbar {
+        margin-bottom: 0;
+        padding: 5px 10px;
+    }
+}

@@ -61,3 +61,13 @@
 #crash-range-button{
     float: right;
 }
+
+
+/* Media Queries */
+@media all and (max-width: 800px) {
+    #sidebar{
+        width: calc(100% - 20px);
+        height: 55%;
+        padding: 15px 10px;
+    }
+}

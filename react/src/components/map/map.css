@@ -108,3 +108,11 @@
 .crash-popup-header{
     text-align: center;
 }
+
+/* Media Queries */
+@media all and (max-width: 800px) {
+    #crashMap {
+        width: 100%;
+        height: 70vh;
+    }
+}

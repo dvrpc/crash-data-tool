@@ -26,3 +26,11 @@ h2{
 .hidden{
   display: none;
 }
+
+
+/* Media Queries */
+@media all and (max-width: 800px) {
+  body{
+    font-size: 14px;
+  }
+}

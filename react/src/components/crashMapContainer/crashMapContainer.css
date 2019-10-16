@@ -2,3 +2,11 @@
     display: flex;
     height: 91vh;
 }
+
+/* Media queries */
+@media all and (max-width: 800px) {
+    #crash-map-content-wrapper {
+        height: 92vh;
+        flex-direction: column-reverse;
+    }
+}

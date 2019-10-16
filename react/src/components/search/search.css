@@ -31,3 +31,8 @@
 #search-form input {
     padding: 4px 8px;
 }
+
+
+/* Media Queries */
+@media all and (max-width: 800px) {
+}
