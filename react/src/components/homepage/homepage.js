@@ -19,31 +19,35 @@ class Homepage extends Component {
             <h1 id="homepage-h1">DVRPC Crash Data Toolkit</h1>
             <div id="banner"></div>
 
-            <section id="crash-apps-container">
-                <figure className="crash-app" onClick={this.clickJawn}>
-                    <img src="https://previews.123rf.com/images/rondale/rondale1702/rondale170200144/72112575-crash-comic-text-bubble-vector-isolated-color-icon.jpg" alt="trendsw" className="crash-app-img" />
-                    <figcaption>
-                        Trends <br />
-                        <small>God creates dinosaurs. God destroys dinosaurs. God creates Man. Man destroys God. Man creates Dinosaurs.</small>
-                    </figcaption>
-                </figure>
+            <main id="crash-toolkit-main">
+                <section id="crash-apps-container">
+                    <figure className="crash-app" onClick={this.clickJawn}>
+                        <img src="https://previews.123rf.com/images/rondale/rondale1702/rondale170200144/72112575-crash-comic-text-bubble-vector-isolated-color-icon.jpg" alt="trendsw" className="crash-app-img" />
+                        <figcaption>
+                            Trends <br />
+                            <small>God creates dinosaurs. God destroys dinosaurs. God creates Man. Man destroys God. Man creates Dinosaurs.</small>
+                        </figcaption>
+                    </figure>
 
-                <figure className="crash-app" onClick={this.clickJawn}>
-                    <img src="https://thumbs.gfycat.com/PastEssentialCero-small.gif" alt="hot rod" className="crash-app-img" />
-                    <figcaption>
-                        Crash Map <br />
-                        <small>God creates dinosaurs. God destroys dinosaurs. God creates Man. Man destroys God. Man creates Dinosaurs.</small>
-                    </figcaption>
-                </figure>
+                    <figure className="crash-app" onClick={this.clickJawn}>
+                        <img src="https://thumbs.gfycat.com/PastEssentialCero-small.gif" alt="hot rod" className="crash-app-img" />
+                        <figcaption>
+                            Crash Map <br />
+                            <small>God creates dinosaurs. God destroys dinosaurs. God creates Man. Man destroys God. Man creates Dinosaurs.</small>
+                        </figcaption>
+                    </figure>
 
-                <figure className="crash-app" onClick={this.clickJawn}>
-                    <img src="https://cdn3.vectorstock.com/i/1000x1000/95/77/crash-sound-effect-vector-6259577.jpg" alt="jawns" className="crash-app-img" />
-                    <figcaption>
-                        The 3rd Tool<br />
-                        <small>God creates dinosaurs. God destroys dinosaurs. God creates Man. Man destroys God. Man creates Dinosaurs.</small>
-                    </figcaption>
-                </figure>
-            </section>
+                    <figure className="crash-app" onClick={this.clickJawn}>
+                        <img src="https://cdn3.vectorstock.com/i/1000x1000/95/77/crash-sound-effect-vector-6259577.jpg" alt="jawns" className="crash-app-img" />
+                        <figcaption>
+                            The 3rd Tool<br />
+                            <small>God creates dinosaurs. God destroys dinosaurs. God creates Man. Man destroys God. Man creates Dinosaurs.</small>
+                        </figcaption>
+                    </figure>
+                </section>
+                
+                {/* Add text section here (or above crash-apps-container) once it's provided */}
+            </main>
 
             <footer>
                 <div id="footer-words">

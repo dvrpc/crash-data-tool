@@ -171,18 +171,25 @@ class Map extends Component {
 
         // this fires after the polygon is done (i.e. double click to close polygon)
         this.map.on('draw.create', e => {
-            
             // get bbox for filtering - no need to call fitBounds b/c if a user is drawing a polygon they already have the view they want
             const bbox = e.features[0].geometry.coordinates[0]
 
-            // add the 'remove boundary' overlay
-            this.showBoundaryOverlay()
+            // the problem here is that map.queryRenderedFeatures accepts an array of screen co-ordinates, not latlng co-ordinates which is what bbox is...
+            const features = this.map.queryRenderedFeatures(
+                bbox,
+                { layers: ['crash-circles']}
+            )
+
+            console.log('features within the polygon ', features)
 
             /* filter circles/heat
                 @TODO: add geography to the vector tiles...
                 draw.create wont call this.setBoundary because the conditions are different - we just want to filter out the irrelevant crashes. No need to update any of muni/county stuff
                 once geography is added, this will just be a matter of adding a filter to crash-circles and crash-heat for everything within bbox
             */
+
+            // add the 'remove boundary' overlay
+            this.showBoundaryOverlay()
         })
 
         // this fires when the polygon updates (for our use case, if it's moved via dragging)

@@ -40,12 +40,25 @@ header{
 
 
 /* Content */
-#crash-apps-container{
-    padding: calc(7% + 30px) 2% 7% 2%;
-    display: flex;
-    justify-content: space-between;
+#crash-toolkit-main{
+    padding: 4% 2%;
     /* light blue: edf2f4 */
     background: #f7f7f7;
+}
+#crash-toolkit-intro{
+    font-size: 1.1rem;
+    width: 700px;
+    margin: 0 auto;
+}
+.first-letter{
+    font-size: 1.6rem;
+    color: rgb(0, 19, 38);
+}
+#crash-apps-container{
+    display: flex;
+    justify-content: space-between;
+    /* compensate for the absolutely positioned circles */
+    margin-top: 70px;
 }
 .crash-app{
     position: relative;
@@ -56,6 +69,7 @@ header{
     padding: 3.5% 1%;
     text-align: center;
     width: 22%;
+    max-width: 300px;
     min-height: 185px;
     /* 
         10% lighter than nav/footer: rgba(0, 19, 38, 0.1)
