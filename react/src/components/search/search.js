@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { getDataFromKeyword, setMapCenter, setMapBounding, setSidebarHeaderContext, getBoundingBox } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setMapCenter, setMapBounding, setSidebarHeaderContext, getBoundingBox, setMapFilter } from '../../redux/reducers/mapReducer.js'
 import * as form from './handleForm.js'
 
 import './search.css'
@@ -42,7 +42,14 @@ class Search extends Component {
             const boundary = output.boundary
 
             let decodedName = boundary.type === 'county' ? decodeURI(boundary.name) + ' County' : decodeURI(boundary.name)
+            let tileType = boundary.type[0]
 
+            // let map local state fill in the correct filterType
+            const filterObj = {filterType: '', tileType, id: boundary.id}
+            
+            // add filter obj to boundary obj
+            boundary.filter = filterObj
+            
             // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
             this.props.setSidebarHeaderContext(decodedName)
             this.props.getData(boundary)
@@ -89,7 +96,8 @@ const mapDispatchToProps = dispatch => {
         setMapCenter: coords => dispatch(setMapCenter(coords)),
         setMapBounding: boundingObj => dispatch(setMapBounding(boundingObj)),
         setSidebarHeaderContext: area => dispatch(setSidebarHeaderContext(area)),
-        getBoundingBox: id => dispatch(getBoundingBox(id))
+        getBoundingBox: id => dispatch(getBoundingBox(id)),
+        setMapFilter: filter => dispatch(setMapFilter(filter))
     }
 }
 

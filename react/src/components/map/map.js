@@ -175,18 +175,24 @@ class Map extends Component {
             const bbox = e.features[0].geometry.coordinates[0]
 
             // the problem here is that map.queryRenderedFeatures accepts an array of screen co-ordinates, not latlng co-ordinates which is what bbox is...
+            // using this would mean getting the mouses x/y co-ordinates on mouse click, but if the drawn polygon requires the user to move the map at any point it will break down
+            // so this is not a good option 
             const features = this.map.queryRenderedFeatures(
                 bbox,
                 { layers: ['crash-circles']}
             )
 
             console.log('features within the polygon ', features)
+            const circles = this.map.getLayer('crash-circles')
+            console.log('circles layer ', circles)
 
-            /* filter circles/heat
-                @TODO: add geography to the vector tiles...
-                draw.create wont call this.setBoundary because the conditions are different - we just want to filter out the irrelevant crashes. No need to update any of muni/county stuff
-                once geography is added, this will just be a matter of adding a filter to crash-circles and crash-heat for everything within bbox
-            */
+            // switching to TURF.js: https://turfjs.org/docs/#pointsWithinPolygon
+                // get bbox (line 175)
+                // call pointsWithinPolygon for all circles + bbox
+                    // the challenge here is efficiently getting the geometry for all circles...
+                // setFilter for circles and heat to those returned from pointsWithinPolygon
+
+            // var polygonCircls = turf.pointsWithinPolygon(circles-layer, bbox)
 
             // add the 'remove boundary' overlay
             this.showBoundaryOverlay()
@@ -220,6 +226,15 @@ class Map extends Component {
             const boundingObj = this.props.bounding
             this.setBoundary(boundingObj)
             this.showBoundaryOverlay()
+
+            // update map filter & circle toggle state when coming from search
+            if(boundingObj.filter) {
+                const toggleFilter = boundingObj.filter
+                toggleFilter.filterType = this.state.toggle === 'All' ? 'all' : 'ksi'
+
+                this.props.setMapFilter(toggleFilter)
+                this.setState({boundary: toggleFilter})
+            }
         }
 
         // update map filter if necessary
@@ -263,7 +278,7 @@ class Map extends Component {
         const hasBoundary = this.state.boundary
         
         if(hasBoundary) {
-            id === 'All' ? hasBoundary.filterType = 'all' : hasBoundary.filterType = 'ksi boundary'
+            id === 'All' ? hasBoundary.filterType = 'all' : hasBoundary.filterType = 'ksi'
             this.props.setMapFilter(hasBoundary)
         }else{
             let filterObj = id === 'All' ? {filterType: 'all no boundary'} : {filterType: 'ksi no boundary'}
@@ -410,7 +425,7 @@ class Map extends Component {
 
         // update filter object w/muni id + toggle state
         let pennID = munis[decodedName]
-        let newFilterType = this.state.toggle === 'All' ? 'all' : 'ksi boundary'
+        let newFilterType = this.state.toggle === 'All' ? 'all' : 'ksi'
         const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID}
 
         // do all the things that search does
@@ -444,7 +459,7 @@ class Map extends Component {
                     </div>
                 </div>
 
-                <div id="toggle-wrapper" className="shadow overlays" aria-label="Toggle layers" onClick={this.toggleLayerToggles}>
+                <div id="toggle-wrapper" className="shadow overlays custom-toggle" aria-label="Toggle layers" onClick={this.toggleLayerToggles}>
                     <div id="toggle-circles" className="shadow overlays hidden">
                         <h3 className="legend-header centered-text">Toggle Crash Type</h3>
                         <form id="toggle-circles-form" onChange={this.toggleCircleType}>
@@ -460,7 +475,7 @@ class Map extends Component {
                     </div>
                 </div>
 
-                <div id="default-extent-btn" className="shadow overlays" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
+                <div id="default-extent-btn" className="shadow overlays custom-toggle" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
                     <img id="default-extent-img" src='https://www.dvrpc.org/img/banner/new/bug-favicon.png' alt='DVRPC logo' />
                 </div>
 

@@ -138,7 +138,7 @@ export const setMapFilter = filter => dispatch => {
             // set to 'none' here b/c if null is used it doesn't pass the if(this.props.filter) check on map did update
             dispatch(set_map_filter('none'))
             return
-        case 'ksi boundary':
+        case 'ksi':
             dispatch(set_map_filter(ksiBoundary(filter.tileType, filter.id)))
             return
         default:
