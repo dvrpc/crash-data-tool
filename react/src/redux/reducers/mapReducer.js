@@ -23,6 +23,10 @@ const SET_SIDEBAR_HEADER_CONTEXT = 'SET_SIDEBAR_HEADER_CONTEXT'
 const GET_BOUNDING_BOX = 'GET_BOUNDING_BOX'
 const SET_MAP_FILTER = 'SET_MAP_FILTER'
 
+// @TODO: polygon jawn
+const GET_POLYGON_CRNS = 'GET_POLYGON_CRNS'
+const GET_POLYGON_CRASHES = 'GET_POLYGON_CRASHES'
+
 
 /*****************************/
 /****** ACTION CREATORS ******/
@@ -32,6 +36,10 @@ const set_map_bounding = bounding => ({ type: SET_MAP_BOUNDING, bounding })
 const set_sidebar_header_context = area => ( { type: SET_SIDEBAR_HEADER_CONTEXT, area })
 const get_bounding_box = bbox => ({ type: GET_BOUNDING_BOX, bbox })
 const set_map_filter = filter => ({ type: SET_MAP_FILTER, filter })
+
+// @TODO: polygon jawn
+const get_polygon_crns = polyCRNS => ({ type: GET_POLYGON_CRNS, polyCRNS })
+const get_polygon_crashes = polyCrashes => ({ type: GET_POLYGON_CRASHES, polyCrashes})
 
 
 /***********************/
@@ -56,6 +64,14 @@ export default function mapReducer(state = [], action) {
         case SET_MAP_FILTER:
             const filter = action.filter
             return Object.assign({}, state, { filter })
+
+        // @TODO: polygon jawn
+        case GET_POLYGON_CRNS:
+            const polyCRNS = action.polyCRNS
+            return Object.assign({}, state, { polyCRNS })
+        case GET_POLYGON_CRASHES:
+            const polyCrashes = action.polyCrashes
+            return Object.assign({}, state, { polyCrashes })
         default:
             return state
     }
@@ -110,7 +126,7 @@ export const getBoundingBox = (id, clicked) => async dispatch => {
 
         dispatch(get_bounding_box(bbox))
     }else {
-        // error handling
+        // error handling @TODO this, but better (remove alert)
         alert('esri bbox call failed ', stream)
     }
 }
@@ -143,5 +159,32 @@ export const setMapFilter = filter => dispatch => {
             return
         default:
             dispatch(set_map_filter(ksiNoBoundary))
+    }
+}
+
+// @TODO: polygon jawn
+export const getPolygonCrashes = bbox => async dispatch => {
+    console.log('hit the getPolygonCrashes reducer')
+    
+    // return b/c none of this is real, yet
+    return
+
+    const api = `www.supersickpolygonendpoint.gov.edu/polygon/${bbox}`
+
+    const stream = await fetch(api, postOptions)
+
+    // sidebar needs all the info, map just needs CRN so figure out a good way to serve both efficiently
+    // one way would be for the back-end to return both in an object like so: {crashesForMap: [array of CRNS], crashesForSidebar: [full crash info]}
+    // and then dispatch separately - one w/the CRN array for map.js and one with the full info for sidebar.js
+        // that way map only listens for the array of CRN's in mapStatetoProps and sidebar only listens for the full array in mapStateToProps
+    if(stream.ok) {
+        const response = await stream.json()
+        const crashesForMap = response.crashesForMap // just an array of CRN's to be passed as a mapbox filter
+        const crashesForSidebar = response.crashesForSidebar // full array of crash info to populate the sidebar
+
+        dispatch(get_polygon_crns(crashesForMap))
+        dispatch(get_polygon_crashes(crashesForSidebar))
+    }else {
+        console.log('get crashes from polygon failed because ', stream)
     }
 }

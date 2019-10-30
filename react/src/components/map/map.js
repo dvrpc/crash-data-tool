@@ -8,7 +8,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import * as layers from './layers.js'
 import * as popups from './popups.js';
 import { createBoundaryFilter, removeBoundaryFilter } from './boundaryFilters.js';
-import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter  } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter, getPolygonCrashes  } from '../../redux/reducers/mapReducer.js'
 import { munis } from '../search/dropdowns.js'
 import './map.css';
 
@@ -171,36 +171,28 @@ class Map extends Component {
 
         // this fires after the polygon is done (i.e. double click to close polygon)
         this.map.on('draw.create', e => {
-            // get bbox for filtering - no need to call fitBounds b/c if a user is drawing a polygon they already have the view they want
+            
+            // get polygon bbox
             const bbox = e.features[0].geometry.coordinates[0]
 
-            // the problem here is that map.queryRenderedFeatures accepts an array of screen co-ordinates, not latlng co-ordinates which is what bbox is...
-            // using this would mean getting the mouses x/y co-ordinates on mouse click, but if the drawn polygon requires the user to move the map at any point it will break down
-            // so this is not a good option 
-            const features = this.map.queryRenderedFeatures(
-                bbox,
-                { layers: ['crash-circles']}
-            )
+            // NEW SOLUTION: ENDPOINT FOR POLYGONS
+            /*
+                The sidebar will need to grab the crashes that exist within the bbox anyways, so it makes
+                more sense to just create an endpoint that accepts a bounding box and uses postGIS to grab
+                the circles within the bbox. It can then spit back a rich JSON with sidebar info, from which
+                the ID's of circles/heat can be extracted and passed along as a filter for the map.
 
-            console.log('features within the polygon ', features)
-            const circles = this.map.getLayer('crash-circles')
-            console.log('circles layer ', circles)
-
-            // switching to TURF.js: https://turfjs.org/docs/#pointsWithinPolygon
-                // get bbox (line 175)
-                // call pointsWithinPolygon for all circles + bbox
-                    // the challenge here is efficiently getting the geometry for all circles...
-                // setFilter for circles and heat to those returned from pointsWithinPolygon
-
-            // var polygonCircls = turf.pointsWithinPolygon(circles-layer, bbox)
-
-            // add the 'remove boundary' overlay
+                */
+            // @TODO: polygon jawn. 
+            this.props.getPolygonCrashes(bbox)
             this.showBoundaryOverlay()
         })
 
         // this fires when the polygon updates (for our use case, if it's moved via dragging)
         this.map.on('draw.update', e => {
-            // @TODO: this will do the same stuff that draw.create does so once draw.create is working, turn it into a class method that draw.create and draw.update can invoke
+            console.log('called draw update')
+            const bbox = e.features[0].geometry.coordinates[0]
+            this.props.getPolygonCrashes(bbox)
         })
     }
 
@@ -240,6 +232,22 @@ class Map extends Component {
         // update map filter if necessary
         if(this.props.filter && this.props.filter !== prevProps.filter){
             let filter = this.props.filter === 'none' ? null : this.props.filter
+            this.map.setFilter('crash-circles', filter)
+            this.map.setFilter('crash-heat', filter)
+        }
+
+        // @TODO: polygon jawns
+        if(this.props.polyCRNS) {
+            console.log('map.js polyCRNs at didUpdate')
+
+            return // return b/c none of this is real, yet
+            
+            console.log('array of crashes within the polygon ', this.props.polyCRNS)
+            const polyCRNS = this.props.polyCRNS
+
+            // will need to consider the current state of KSI/All when this is actually up and running
+            const filter = ['in', 'id', polyCRNS]
+
             this.map.setFilter('crash-circles', filter)
             this.map.setFilter('crash-heat', filter)
         }
@@ -492,7 +500,9 @@ const mapStateToProps = state => {
         center: state.center,
         bounding: state.bounding,
         bbox: state.bbox,
-        filter: state.filter
+        filter: state.filter,
+        // @TODO: polygon jawn
+        polyCRNS: state.polyCRNS
     }
 }
 
@@ -503,7 +513,9 @@ const mapDispatchToProps = dispatch => {
         setSidebarHeaderContext: area => dispatch(setSidebarHeaderContext(area)),
         getBoundingBox: (id, clicked) => dispatch(getBoundingBox(id, clicked)),
         setDefaultState: region => dispatch(getDataFromKeyword(region)),
-        setMapFilter: filter => dispatch(setMapFilter(filter))
+        setMapFilter: filter => dispatch(setMapFilter(filter)),
+        // @TODO: polygon jawn
+        getPolygonCrashes: bbox => dispatch(getPolygonCrashes(bbox))
     }
 }
 
