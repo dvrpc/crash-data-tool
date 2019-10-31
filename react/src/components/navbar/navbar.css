@@ -1,28 +1,38 @@
 #navbar{
     height: 8vh;
     background: #424b54;
-    padding: 0 10px;
+    padding: 0 1vw;
     margin-bottom: 1vh;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 #crash-map-nav-home{
-    text-decoration: none;
-    color: #f6efee
-}
-#crash-map-nav-button{
-    height: 50%;
     color: #f6efee;
-    background: transparent;
-    border: 2px solid #f6efee;
-    border-radius: 3px;
+    text-decoration: none;
+    margin-right: 20px;
 }
-#crash-map-nav-button:hover{
+#navbar-start-content{
+    display: flex;
+}
+
+/* Information Modal Button */
+#crash-map-nav-info-btn {
+    color: #f6efee;
+    /* border: 2px solid #f6efee; */
+    border-color: #f6efee;
+    border-radius: 50%;
+    background: none;
+    font-size: 1rem;
+    font-weight: 900;
+    padding: 2px 9px;
+}
+#crash-map-nav-info-btn:hover {
     cursor: pointer;
     background: #f6efee;
     color: #424b54;
 }
+
 
 /* Media Queries */
 @media all and (max-width: 800px) {
