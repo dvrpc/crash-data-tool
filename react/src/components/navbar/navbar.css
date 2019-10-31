@@ -62,7 +62,7 @@
     width: 85%;
     margin-top: 15px;
 }
-#crash-map-modal-active-tab{
+.crash-map-modal-active-tab{
     color: #424b54;
     font-weight: 900 !important;
     border-left: 1px solid #424b54;
@@ -73,7 +73,7 @@
     border-top-right-radius: 3px;
 }
 #crash-map-modal-tabs h3{
-    width: 25%;
+    width: 33.33%;
     padding: 15px 0;
     text-align: center;
     font-weight: 500;
@@ -83,6 +83,9 @@
     width: 85%;
     margin: 0 auto;
     padding: 20px 0;
+}
+#crash-map-modal-content p{
+    margin: 1% 0;
 }
 
 
