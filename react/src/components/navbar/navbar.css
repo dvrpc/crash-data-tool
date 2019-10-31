@@ -29,20 +29,60 @@
     background: #f6efee;
     color: #424b54;
 }
-#crash-map-nav-modal{
-    width: 85%;
-    padding: 20px;
+#crash-map-modal{
+    width: calc(85% - 200px);
+    padding: 0;
     z-index: 5;
     margin: 5% auto 0 auto;
     box-shadow: 0 0 100vh 100vh rgba(0,0,0,0.6);
     border-color: #424b54;
+    border-radius: 3px;
 }
-#crash-map-nav-x{
+#crash-map-modal-x{
     font-size: 1.2rem;
     float: right;
+    border: none;
+    background: transparent;
+    font-weight: 900;
+    color: #f6efee;
 }
-#crash-map-nav-modal h1{
+#crash-map-modal-x:hover, #crash-map-modal-tabs:hover{
+    cursor: pointer;
+}
+#crash-map-modal h2{
     text-align: center;
+    color: #f6efee;
+    background: #424b54;
+    padding: 15px 0;
+}
+#crash-map-modal-tabs{
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    width: 85%;
+    margin-top: 15px;
+}
+#crash-map-modal-active-tab{
+    color: #424b54;
+    font-weight: 900 !important;
+    border-left: 1px solid #424b54;
+    border-right: 1px solid #424b54;
+    border-top: 1px solid #424b54;
+    border-bottom: none !important;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+#crash-map-modal-tabs h3{
+    width: 25%;
+    padding: 15px 0;
+    text-align: center;
+    font-weight: 500;
+    border-bottom: 2px solid #424b54;
+}
+#crash-map-modal-content{
+    width: 85%;
+    margin: 0 auto;
+    padding: 20px 0;
 }
 
 
