@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { Bar, Doughnut } from 'react-chartjs-2';
+import { Bar, Doughnut, Line } from 'react-chartjs-2';
 import { getDataFromKeyword } from '../../redux/reducers/mapReducer.js'
 
 import * as charts from './charts.js'
@@ -111,13 +111,17 @@ class Sidebar extends Component {
                     </fieldset>
                 </form>
 
+                <h2 className="centered-text crash-map-sidebar-subheader">Crashes over Time</h2>
+                    <Line data={data.trendChart}/>
+                    <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem.</p>
+
                 <h2 className="centered-text crash-map-sidebar-subheader">Crash Severity</h2>
                     <Bar data={data.severityChart} options={severityOptions}/>
-                    <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.</p>
+                    <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem.</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Mode</h2>
                     <Doughnut data={data.modeChart} />
-                    <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem. Proin accumsan, nisi ac venenatis vehicula, nisl lorem commodo nibh, nec iaculis sem urna sollicitudin sem.</p>
+                    <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem.</p>
                 
                 <h2 className="centered-text crash-map-sidebar-subheader">Collision Type</h2>
                     <Doughnut data={data.collisionTypeChart} />

@@ -58,6 +58,19 @@ const collisionType = data => {
         }]
     }
 }
+// Crashes over Time chart data
+// @TODO: trend line
+const trend = (data, years) => {
+    console.log('wut ', data)
+    console.log('years ', years)
+    return {
+        labels: years,
+        datasets: [{
+            data,
+            backgroundColor: ['#b7b6c1','#c6e0ff','#dd403a', '#bad1cd', '#f2d1c9', '#e086d3']
+        }]
+    }
+}
 
 
 ////
@@ -68,7 +81,8 @@ const makePlaceholders = () => {
     const collisionTypeChart = collisionType([0,0,0,0,0,0,0,0,0,0])
     const severityChart = severity([0,0,0,0,0])
     const modeChart = mode([0,0,0])
-    return { collisionTypeChart, severityChart, modeChart }
+    const trendChart = trend([0,0,0,0,0,0],[2012,2013,2014,2015,2016,2017])
+    return { collisionTypeChart, severityChart, modeChart, trendChart }
 }
 
 // transform db response into a format the charting functions can consume
@@ -114,22 +128,29 @@ const useSetRange = (data, range, output) => {
 const makeCharts = (data, range) => {    
     if(!data) return makePlaceholders()
 
-    let severityChart, modeChart, collisionTypeChart;
+    let severityChart, modeChart, collisionTypeChart, trendChart;
 
     let output = {
         mode: [],
         severity: [],
-        type: []
+        type: [],
+        trend: []
     }
 
     // determine whether to build chart data for all years or a specified range of years
     range ? output = useSetRange(data, range, output) : output = useAllYears(data, output)
+
+    console.log('range is ', range)
+    console.log('output is ', output)
     
     severityChart = severity(output.severity)
     modeChart = mode(output.mode)
     collisionTypeChart = collisionType(output.type)
 
-    return { severityChart, modeChart, collisionTypeChart }
+    // @TODO: trend line
+    trendChart = trend([2342,2125,2932,4829,3295,5821],[2012,2013,2014,2015,2016,2017])
+
+    return { severityChart, modeChart, collisionTypeChart, trendChart }
 }
 
 export { makeCharts, makePlaceholders, barOptions }
