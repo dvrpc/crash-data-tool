@@ -127,7 +127,7 @@ class Sidebar extends Component {
                     <Doughnut data={data.collisionTypeChart} />
                     <p><strong>Note:</strong> The collision type pie chart is an example of how it would look in the worst case scenario, where the selected area has at least 1 instance of every single collision type.</p>
 
-                <h2 className="centered-text crash-map-sidebar-subheader">A Subheader</h2>
+                <h2 className="centered-text crash-map-sidebar-subheader">A List Subheader</h2>
                     <ul id="crash-map-sidebar-ul" className="shadow">
                         <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
                         <li>Mauris pulvinar sed quam nec finibus. Nulla sed.</li>
@@ -135,11 +135,6 @@ class Sidebar extends Component {
                         <li>Mauris pulvinar sed quam nec finibus. Nulla sed.</li>
                         <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
                     </ul>
-
-                    <p className="sidebar-paragraphs">In tincidunt viverra nisi, sed aliquam risus blandit eget. Donec consequat purus commodo dignissim varius. Nulla eleifend orci ut massa ornare dictum. Phasellus rutrum nisi sed ipsum blandit eleifend. Nulla consequat sollicitudin enim, a fermentum.</p>
-
-                <h2 className="centered-text crash-map-sidebar-subheader">Another Subheader</h2>
-                    <p className="sidebar-paragraphs">This thing comes fully loaded. AM/FM radio, reclining bucket seats, and... power windows. Hey, you know how I'm, like, always trying to save the planet? Here's my chance. Forget the fat lady! You're obsessed with the fat lady! Drive us out of here! Do you have any idea how long it takes those cups to decompose.</p>
 
                 <Footer />
             </section>

@@ -9,7 +9,6 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
-
 #crash-map-sidebar-header {
     margin: 2% 0;
 }
@@ -33,6 +32,7 @@
 #crash-map-sidebar-ul{
     border-radius: 3px;
     padding: 0;
+    margin: 3% 0;
     background: #fff;
     list-style-type: none;
 }
