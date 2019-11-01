@@ -60,15 +60,20 @@ const submitSearch = e => {
 
                 // get the boundary ID for filtering
                 const type = output.boundary.type
-                output.boundary.id = type === 'county' ? counties[input] : munis[input]
-                break
-            // The API is not set up to handle states yet
-            case 'state':
-                query = encodeURIComponent(input)
-                output.coords = geocode(query)
-                output.boundary.name = query
+
+                // handle boundary type
+                if(type === 'state'){
+                    output.coords = geocode(query)
+                    // @TODO: temporary state field to break out of state searchs
+                    output.state = true
+                    // output.boundary.id = states[input]
+                }else {
+                    output.boundary.id = type === 'county' ? counties[input] : munis[input]
+                }
+
                 break
             default:
+                console.log('default case')
                 query = encodeURIComponent(input)
                 output.coords = geocode(query)
                 output.boundary.name = false

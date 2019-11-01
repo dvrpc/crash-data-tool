@@ -1,6 +1,5 @@
 #crash-map-modal{
-    width: calc(85% - 200px);
-    max-width: 900px;
+    width: 800px;
     padding: 0;
     z-index: 5;
     margin: 5% auto 0 auto;
@@ -30,7 +29,7 @@
     justify-content: space-between;
     margin: 0 auto;
     width: 85%;
-    margin-top: 15px;
+    margin-top: 20px;
 }
 .crash-map-modal-active-tab{
     color: #424b54;

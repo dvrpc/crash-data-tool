@@ -29,6 +29,12 @@ class Search extends Component {
     submitSearch = e => {
         const output = form.submitSearch(e)
 
+        // @TODO: short out for state searches for now since they aren't real yet
+        if(output.state) {
+            alert('search by state isnt set up yet, please try again with municipalities, counties or address')
+            return
+        }
+
         // push the new map center when applicable (address search only)
         if(output.coords) {
             output.coords.then(result => {
