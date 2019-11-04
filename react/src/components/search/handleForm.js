@@ -66,14 +66,13 @@ const submitSearch = e => {
                     output.coords = geocode(query)
                     // @TODO: temporary state field to break out of state searchs
                     output.state = true
-                    // output.boundary.id = states[input]
+                    output.boundary.id = input
                 }else {
                     output.boundary.id = type === 'county' ? counties[input] : munis[input]
                 }
 
                 break
             default:
-                console.log('default case')
                 query = encodeURIComponent(input)
                 output.coords = geocode(query)
                 output.boundary.name = false

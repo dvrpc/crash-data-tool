@@ -2,7 +2,7 @@
 // Functions to process chart data
 ////
 // General bar chart options
-const barOptions = (xlabel, ylabel) =>{
+const chartOptions = (xlabel, ylabel) =>{
     return {
         legend: {
             display: false
@@ -61,13 +61,10 @@ const collisionType = data => {
 // Crashes over Time chart data
 // @TODO: trend line
 const trend = (data, years) => {
-    console.log('wut ', data)
-    console.log('years ', years)
     return {
         labels: years,
         datasets: [{
-            data,
-            backgroundColor: ['#b7b6c1','#c6e0ff','#dd403a', '#bad1cd', '#f2d1c9', '#e086d3']
+            data
         }]
     }
 }
@@ -139,18 +136,15 @@ const makeCharts = (data, range) => {
 
     // determine whether to build chart data for all years or a specified range of years
     range ? output = useSetRange(data, range, output) : output = useAllYears(data, output)
-
-    console.log('range is ', range)
-    console.log('output is ', output)
     
     severityChart = severity(output.severity)
     modeChart = mode(output.mode)
     collisionTypeChart = collisionType(output.type)
 
-    // @TODO: trend line
-    trendChart = trend([2342,2125,2932,4829,3295,5821],[2012,2013,2014,2015,2016,2017])
+    // @TODO: trend line fields will be added to API response
+    trendChart = trend([2242,2125,2132,2229,1895,1921],[2012,2013,2014,2015,2016,2017])
 
     return { severityChart, modeChart, collisionTypeChart, trendChart }
 }
 
-export { makeCharts, makePlaceholders, barOptions }
+export { makeCharts, makePlaceholders, chartOptions }

@@ -75,7 +75,9 @@ class Sidebar extends Component {
         // @TODO: incoporate polygon response into this decision
         let data = this.state.localUpdate ? this.state.data : charts.makeCharts(this.props.data)
         let area = this.props.context || this.state.context
-        const severityOptions = charts.barOptions('Injury type', 'Number of persons')
+        
+        const severityOptions = charts.chartOptions('Injury type', 'Number of persons')
+        const trendOptions = charts.chartOptions('', 'Number of Crashes')
 
         return (
             <section id="sidebar">
@@ -112,7 +114,7 @@ class Sidebar extends Component {
                 </form>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crashes over Time</h2>
-                    <Line data={data.trendChart}/>
+                    <Line data={data.trendChart} options={trendOptions}/>
                     <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem.</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crash Severity</h2>

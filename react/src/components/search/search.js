@@ -29,7 +29,7 @@ class Search extends Component {
     submitSearch = e => {
         const output = form.submitSearch(e)
 
-        // @TODO: short out for state searches for now since they aren't real yet
+        // @TODO: short out for state searches for now since they aren't real yet (API response isn't set up for these yet)
         if(output.state) {
             alert('search by state isnt set up yet, please try again with municipalities, counties or address')
             return

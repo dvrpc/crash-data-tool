@@ -19,10 +19,9 @@
     cursor: pointer;
 }
 #crash-map-modal h2{
-    text-align: center;
     color: #f6efee;
     background: #424b54;
-    padding: 15px 0;
+    padding: 15px 0 15px 7.5%;
 }
 #crash-map-modal-tabs{
     display: flex;
