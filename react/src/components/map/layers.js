@@ -54,12 +54,12 @@ const crashHeat = {
     id: 'crash-heat',
     type: 'heatmap',
     source: 'Crashes',
-    'source-layer': 'pa-crash',
+    'source-layer': 'crash',
     maxzoom: 11,
     // KSI: Killed or severely injured
     filter: ['any', 
-        ['==', ['get', 'max_sever'], '1'],
-        ['==', ['get', 'max_sever'], '2'],
+        ['==', ['get', 'max_sever'], 1],
+        ['==', ['get', 'max_sever'], 2],
     ],
     paint: {
         'heatmap-weight': [
@@ -102,11 +102,11 @@ const crashCircles = {
     id: 'crash-circles',
     type: 'circle',
     source: 'Crashes',
-    'source-layer': 'pa-crash',
+    'source-layer': 'crash',
     minzoom: 11,
     filter: ['any', 
-        ['==', ['get', 'max_sever'], '1'],
-        ['==', ['get', 'max_sever'], '2'],
+        ['==', ['get', 'max_sever'], 1],
+        ['==', ['get', 'max_sever'], 2],
     ],
     paint: {
         /*
@@ -115,13 +115,13 @@ const crashCircles = {
         'circle-color': [
             'match',
             ['get', 'max_sever'],
-            '0', '#f7f7f7',
-            '1', '#d62839',
-            '2', '#de5260',
-            '3', '#e67e88',
-            '4', '#93c7db',
-            '8', '#6eb5cf',
-            '9', '#4ba3c3',
+            0, '#f7f7f7',
+            1, '#d62839',
+            2, '#de5260',
+            3, '#e67e88',
+            4, '#93c7db',
+            8, '#6eb5cf',
+            9, '#4ba3c3',
             'rgba(255,255,255,0)'
         ],
         'circle-radius': [

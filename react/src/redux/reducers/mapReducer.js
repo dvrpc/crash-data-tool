@@ -82,6 +82,7 @@ export default function mapReducer(state = [], action) {
 /****** DISPATCHERS ******/
 export const getDataFromKeyword = boundaryObj => async dispatch => {
     const { type, name } = boundaryObj
+    // @TODO: update this endpoint for the v2 sidebar endpoint
     const api = `https://alpha.dvrpc.org/api/crash-data/v1/sidebarInfo?type=${type}&value=${name}`
     const stream = await fetch(api, getOptions)
 
@@ -133,14 +134,14 @@ export const getBoundingBox = (id, clicked) => async dispatch => {
 
 export const setMapFilter = filter => dispatch => {
     const ksiNoBoundary = ['any', 
-        ['==', 'max_sever', '1'],
-        ['==', 'max_sever', '2'],
+        ['==', 'max_sever', 1],
+        ['==', 'max_sever', 2],
     ]
     const ksiBoundary = (tileType, id) => {
         const filter = ['all',
             ['==', tileType, id],
-            ['>', 'max_sever', '0'],
-            ['<', 'max_sever', '3']    
+            ['>', 'max_sever', 0],
+            ['<', 'max_sever', 3]    
         ]
         return filter
     }

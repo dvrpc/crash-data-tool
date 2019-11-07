@@ -62,7 +62,7 @@ class Map extends Component {
 
             this.map.addSource("Crashes", {
                 type: 'vector',
-                url: 'https://tiles.dvrpc.org/data/pa-crash.json'
+                url: 'https://tiles.dvrpc.org/data/crash.json'
             })
 
             // add regional boundaries
