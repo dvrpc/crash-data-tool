@@ -82,8 +82,8 @@ export default function mapReducer(state = [], action) {
 /****** DISPATCHERS ******/
 export const getDataFromKeyword = boundaryObj => async dispatch => {
     const { type, name } = boundaryObj
-    // @TODO: update this endpoint for the v2 sidebar endpoint
-    const api = `https://alpha.dvrpc.org/api/crash-data/v1/sidebarInfo?type=${type}&value=${name}`
+    
+    const api = `https://alpha.dvrpc.org/api/crash-data/v2/sidebarInfo?type=${type}&value=${name}`
     const stream = await fetch(api, getOptions)
 
     // error handling - pass the failure message + the boundary object to give context to the displayed error response
@@ -141,7 +141,7 @@ export const setMapFilter = filter => dispatch => {
         const filter = ['all',
             ['==', tileType, id],
             ['>', 'max_sever', 0],
-            ['<', 'max_sever', 3]    
+            ['<', 'max_sever', 3]
         ]
         return filter
     }

@@ -423,7 +423,7 @@ class Map extends Component {
 
         // short out if a user clicks on a crash circle
         const circleTest = this.map.queryRenderedFeatures(e.point)[0]
-        if(circleTest.source === 'Crashes') return 
+        if(circleTest.source === 'Crashes') return
 
         const props = e.features[0].properties
         const id = props.geoid
