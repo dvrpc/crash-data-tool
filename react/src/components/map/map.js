@@ -62,7 +62,7 @@ class Map extends Component {
 
             this.map.addSource("Crashes", {
                 type: 'vector',
-                url: 'https://tiles.dvrpc.org/data/pa-crash.json'
+                url: 'https://tiles.dvrpc.org/data/crash.json'
             })
 
             // add regional boundaries
@@ -209,7 +209,7 @@ class Map extends Component {
         }
 
         // zoom to a bounding box when appropriate (all non-address searches)
-        if(prevProps.bbox !== this.props.bbox) {
+        if(prevProps.bbox !== this.props.bbox && this.props.bbox) {
             this.map.fitBounds(this.props.bbox)
         }
 
@@ -423,7 +423,7 @@ class Map extends Component {
 
         // short out if a user clicks on a crash circle
         const circleTest = this.map.queryRenderedFeatures(e.point)[0]
-        if(circleTest.source === 'Crashes') return 
+        if(circleTest.source === 'Crashes') return
 
         const props = e.features[0].properties
         const id = props.geoid
@@ -440,7 +440,7 @@ class Map extends Component {
         this.props.setSidebarHeaderContext(decodedName)
         this.props.getData(boundaryObj)
         this.props.setMapBounding(boundaryObj)
-        this.props.getBoundingBox(id, true)
+        this.props.getBoundingBox(id)
         this.props.setMapFilter(filterObj)
 
         // set bounding filters
@@ -511,7 +511,7 @@ const mapDispatchToProps = dispatch => {
         getData: boundaryObj => dispatch(getDataFromKeyword(boundaryObj)),
         setMapBounding: boundingObj => dispatch(setMapBounding(boundingObj)),
         setSidebarHeaderContext: area => dispatch(setSidebarHeaderContext(area)),
-        getBoundingBox: (id, clicked) => dispatch(getBoundingBox(id, clicked)),
+        getBoundingBox: id => dispatch(getBoundingBox(id)),
         setDefaultState: region => dispatch(getDataFromKeyword(region)),
         setMapFilter: filter => dispatch(setMapFilter(filter)),
         // @TODO: polygon jawn

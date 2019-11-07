@@ -63,10 +63,13 @@ const submitSearch = e => {
 
                 // handle boundary type
                 if(type === 'state'){
-                    output.coords = geocode(query)
                     // @TODO: temporary state field to break out of state searchs
                     output.state = true
                     output.boundary.id = input
+
+                    // @TODO: don't always geocode - the reason it was only for address searches before was because the mapbox geocoder isn't reliable - names can overlap.
+                    // this wont stay here but remember that geocoded inputs should be reserved for address searches
+                    output.coords = geocode(query)
                 }else {
                     output.boundary.id = type === 'county' ? counties[input] : munis[input]
                 }

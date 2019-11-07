@@ -82,7 +82,8 @@ export default function mapReducer(state = [], action) {
 /****** DISPATCHERS ******/
 export const getDataFromKeyword = boundaryObj => async dispatch => {
     const { type, name } = boundaryObj
-    const api = `https://alpha.dvrpc.org/api/crash-data/v1/sidebarInfo?type=${type}&value=${name}`
+    
+    const api = `https://alpha.dvrpc.org/api/crash-data/v2/sidebarInfo?type=${type}&value=${name}`
     const stream = await fetch(api, getOptions)
 
     // error handling - pass the failure message + the boundary object to give context to the displayed error response
@@ -104,20 +105,20 @@ export const setMapBounding = bounding => dispatch => {
 
 export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
 
-// add line here to accept geoid jawns
-export const getBoundingBox = (id, clicked) => async dispatch => {
+export const getBoundingBox = id => async dispatch => {
+    id = id.toString()
+
     let featureServer;
     let codeType;
 
     // 0 for Municipalities, 1 for Counties
-    id.length > 2 ? featureServer = 0 : featureServer = 1
+    id.length > 5 ? featureServer = 0 : featureServer = 1
 
-    // determine if the bounding request came from search or map click
-    clicked ? codeType = `GEOID_10=${id}` : codeType = `DOT_CODE=${id}`
+    // counties and munis have different code types
+    featureServer ? codeType = `FIPS=${id}` : codeType = `GEOID_10=${id}` 
 
     // boundary query string w/appropriate featureServer & id
     const api = `https://services1.arcgis.com/LWtWv6q6BJyKidj8/ArcGIS/rest/services/DVRPC_Boundaries/FeatureServer/${featureServer}/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=pgeojson`
-
     const stream = await fetch(api, postOptions)
     
     if(stream.ok) {
@@ -133,14 +134,14 @@ export const getBoundingBox = (id, clicked) => async dispatch => {
 
 export const setMapFilter = filter => dispatch => {
     const ksiNoBoundary = ['any', 
-        ['==', 'max_sever', '1'],
-        ['==', 'max_sever', '2'],
+        ['==', 'max_sever', 1],
+        ['==', 'max_sever', 2],
     ]
     const ksiBoundary = (tileType, id) => {
         const filter = ['all',
             ['==', tileType, id],
-            ['>', 'max_sever', '0'],
-            ['<', 'max_sever', '3']    
+            ['>', 'max_sever', 0],
+            ['<', 'max_sever', 3]
         ]
         return filter
     }
@@ -163,6 +164,8 @@ export const setMapFilter = filter => dispatch => {
 }
 
 // @TODO: polygon jawn
+// sean set up the other API to have a 'poly' type so the sidebar part of polygons can be handled there.
+// this jawn will hit a separate endpoint which gets the array of CRN's for map filtering
 export const getPolygonCrashes = bbox => async dispatch => {
     console.log('hit the getPolygonCrashes reducer')
     
