@@ -35,10 +35,10 @@ class Search extends Component {
             return
         }
 
-        // push the new map center when applicable (address search only)
+        // push the new map center when applicable
         if(output.coords) {
             output.coords.then(result => {
-                const center = result.features[0].center    
+                const center = result.features[0].center
                 this.props.setMapCenter(center)
             })
         }
@@ -55,7 +55,7 @@ class Search extends Component {
             
             // add filter obj to boundary obj
             boundary.filter = filterObj
-            
+                        
             // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
             this.props.setSidebarHeaderContext(decodedName)
             this.props.getData(boundary)
