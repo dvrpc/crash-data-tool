@@ -1,9 +1,9 @@
 """
 author: Robert Beatty
 date: March 11, 2019
+modified: November 8, 2019
 purpose: simple REST API to retrieve summary information in DVRPC's crash data tool
 """
-
 
 from flask import Flask, request, abort
 from flask_cors import CORS
@@ -11,8 +11,6 @@ from lib import credentials
 import psycopg2 as psql
 from psycopg2 import sql
 import json
-
-
 
 app = Flask(__name__)
 CORS(app)
@@ -24,12 +22,12 @@ def connectToPsql():
 @TODO:  create documentation page using flask's render_template function to deliver an HTML file
         to give details about how to use the API
 """
-@app.route('/api/crash-data/v1/documentation')
+
+@app.route('/api/crash-data/v2/documentation')
 def docs():
     return '<html><p>this will be the docs page</p></html>'
 
-
-@app.route('/api/crash-data/v1/popupInfo', methods=["GET"])
+@app.route('/api/crash-data/v2/popupInfo', methods=["GET"])
 def get_popup_info():
     ## grab crash id
     id = request.args.get('id')
@@ -39,31 +37,22 @@ def get_popup_info():
     con = connectToPsql()
     cur = con.cursor()
     qry = """
-    SELECT 
-        pa_crash.month,
-        pa_crash.year,
-        pa_type.vehicle_count,
-        pa_type.bicycle,
-        pa_type.ped,
-        pa_type.persons_involved,
-        pa_type.collision_type
-    FROM pa_crash
-    JOIN 
-        pa_severity ON pa_crash.crash_id = pa_severity.crash_id
-    JOIN 
-        pa_type ON pa_crash.crash_id = pa_type.crash_id
-    WHERE 
-        pa_crash.crash_id = {0};
+    SELECT
+        crash.month,
+        crash.year,
+        type.vehicle_count,
+        type.bicycle,
+        type.ped,
+        type.persons_involved,
+        type.collision_type
+    FROM crash
+    JOIN
+        severity ON crash.crash_id = severity.crash_id
+    JOIN
+        type ON crash.crash_id = type.crash_id
+    WHERE
+        crash.crash_id = {0};
 """
-    """
-        skeleton for json return
-        payload['status']: {
-            'status': (success|failed) -- whether or not the query was received in proper format
-            'message': string -- message describing what happened once the request was received
-        }
-        payload['features']: []
-            -- if there is an item in the array, then the 
-    """
     payload = {}
 
     ## is the CRN there?
@@ -97,8 +86,7 @@ def get_popup_info():
     else:
         abort(404)
 
-
-@app.route('/api/crash-data/v1/sidebarInfo', methods=['GET'])
+@app.route('/api/crash-data/v2/sidebarInfo', methods=['GET'])
 def get_sidebar_info():
     ## get args
     args = request.args
@@ -110,21 +98,22 @@ def get_sidebar_info():
         cur = con.cursor()
 
         qry = """
-        SELECT 
-            pa_crash.year, COUNT(pa_crash.crash_id) AS count,
-            SUM(pa_severity.fatal) AS fatalities, SUM(pa_severity.major) AS major_inj, SUM(pa_severity.minor) AS minor_inj, SUM(pa_severity.uninjured) AS uninjured, SUM(pa_severity.unknown) AS unknown,
-            SUM(pa_type.bicycle) AS bike, SUM(pa_type.ped) AS ped, SUM(pa_type.persons_involved) AS persons_involved, pa_type.collision_type AS type
-        FROM pa_crash
-        JOIN pa_severity ON pa_severity.crash_id = pa_crash.crash_id
-        JOIN pa_type ON pa_type.crash_id = pa_crash.crash_id
+        SELECT
+            crash.year, COUNT(crash.crash_id) AS count,
+            SUM(severity.fatal) AS fatalities, SUM(severity.major) AS major_inj, SUM(severity.minor) AS minor_inj, SUM(severity.uninjured) AS uninjured, SUM(severity.unknown) AS unknown,
+            SUM(type.bicycle) AS bike, SUM(type.ped) AS ped, SUM(type.persons_involved) AS persons_involved, type.collision_type AS type
+        FROM crash
+        JOIN severity ON severity.crash_id = crash.crash_id
+	JOIN location ON location.crash_id = crash.crash_id
+	JOIN type ON type.crash_id = crash.crash_id
         WHERE {}
-		GROUP BY pa_crash.year, pa_type.collision_type;
+		GROUP BY crash.year, type.collision_type;
         """
 
         qryRef = {
-            'county': 'pa_crash.county = \'{0}\''.format(args.get('value')),
-            'municipality': 'pa_crash.municipality = \'{0}\''.format(args.get('value')),
-            'address': 'ST_WITHIN((SELECT geom FROM pa_crash), {0})'.format((args.get('value'))) ## replace this with a correct statement when accepting a geometry parameter
+            'county': 'crash.county = \'{0}\''.format(args.get('value')),
+            'municipality': 'crash.municipality LIKE \'{0}\''.format(args.get('value')),
+            'geojson': 'ST_WITHIN(location.geom,ST_GeomFromGeoJSON(\'{0}\'))'.format((args.get('value')))
         }
 
 
@@ -161,3 +150,41 @@ def get_sidebar_info():
             return json.dumps(payload, indent=4)
         except Exception as e:
             abort(404)
+
+@app.route('/api/crash-data/v2/crashId', methods=["GET"])
+def get_geojson_info():
+    ## grab crash id
+    geojson = request.args.get('geojson')
+
+
+    ## connect to db
+    con = connectToPsql()
+    cur = con.cursor()
+    qry = """
+        SELECT
+            crash.crash_id
+        FROM crash
+        JOIN location ON location.crash_id = crash.crash_id
+        WHERE ST_WITHIN(location.geom, ST_GeomFromGeoJSON('{0}'));
+        """
+    payload = {}
+
+    ## is the geojson there?
+    if geojson is not None:
+        ## success message
+        payload['status'] = 200
+        ## try/except block for query
+        try:
+            cur.execute(sql.SQL(qry.format(geojson)))
+            idresults = cur.fetchall()
+            if len(idresults) is not 0:
+                return json.dumps(idresults)
+            else:
+                ## query returns no results
+                abort(422)
+        ## alter payload status/message if query fails
+        except Exception as e:
+            abort(401)
+    ## alter payload message for invalid query
+    else:
+        abort(404)
