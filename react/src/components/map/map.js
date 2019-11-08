@@ -172,19 +172,34 @@ class Map extends Component {
         // this fires after the polygon is done (i.e. double click to close polygon)
         this.map.on('draw.create', e => {
             
-            // get polygon bbox
+            // get & formatt polygon bbox
             const bbox = e.features[0].geometry.coordinates[0]
+            bbox.forEach(coords => {
+                coords[0] = coords[0].toFixed(4)
+                coords[1] = coords[1].toFixed(4)
+            })
 
-            // NEW SOLUTION: ENDPOINT FOR POLYGONS
-            /*
-                The sidebar will need to grab the crashes that exist within the bbox anyways, so it makes
-                more sense to just create an endpoint that accepts a bounding box and uses postGIS to grab
-                the circles within the bbox. It can then spit back a rich JSON with sidebar info, from which
-                the ID's of circles/heat can be extracted and passed along as a filter for the map.
+            const bboxFormatted = encodeURIComponent(JSON.stringify(
+                {
+                    "type":"Polygon",
+                    "coordinates": [bbox],
+                    "crs": {
+                        "type": "name",
+                        "properties": {
+                            "name": "EPSG:4326"
+                        }
+                    }
+                }
+            ))
 
-                */
-            // @TODO: polygon jawn. 
-            this.props.getPolygonCrashes(bbox)
+            // create boundary object for the getData endpoint
+            const boundaryObj = {
+                type: 'geojson',
+                name: bboxFormatted
+            }
+
+            this.props.getPolygonCrashes(bboxFormatted)
+            this.props.getData(boundaryObj)
             this.showBoundaryOverlay()
         })
 
