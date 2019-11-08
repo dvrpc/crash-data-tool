@@ -253,12 +253,10 @@ class Map extends Component {
 
         // @TODO: polygon jawns
         if(this.props.polyCRNS) {
-            console.log('map.js polyCRNs at didUpdate')
-
-            return // return b/c none of this is real, yet
-            
-            console.log('array of crashes within the polygon ', this.props.polyCRNS)
             const polyCRNS = this.props.polyCRNS
+            
+            // the response is currently an array of arrays, update the response to just be an array of values
+            console.log('poly crn ', polyCRNS)
 
             // will need to consider the current state of KSI/All when this is actually up and running
             const filter = ['in', 'id', polyCRNS]
