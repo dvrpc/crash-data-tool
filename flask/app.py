@@ -1,7 +1,7 @@
 """
 author: Robert Beatty
 date: March 11, 2019
-modified: November 8, 2019
+modified: November 12, 2019
 purpose: simple REST API to retrieve summary information in DVRPC's crash data tool
 """
 
@@ -168,7 +168,7 @@ def get_geojson_info():
         WHERE ST_WITHIN(location.geom, ST_GeomFromGeoJSON('{0}'));
         """
     payload = {}
-
+    ids = []
     ## is the geojson there?
     if geojson is not None:
         ## success message
@@ -178,7 +178,9 @@ def get_geojson_info():
             cur.execute(sql.SQL(qry.format(geojson)))
             idresults = cur.fetchall()
             if len(idresults) is not 0:
-                return json.dumps(idresults)
+                for row in idresults:
+                    ids.append(row[0])
+                return jsonify(ids)
             else:
                 ## query returns no results
                 abort(422)
