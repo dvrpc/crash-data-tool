@@ -171,43 +171,17 @@ class Map extends Component {
 
         // this fires after the polygon is done (i.e. double click to close polygon)
         this.map.on('draw.create', e => {
-            
-            // get & formatt polygon bbox
             const bbox = e.features[0].geometry.coordinates[0]
-            bbox.forEach(coords => {
-                coords[0] = coords[0].toFixed(4)
-                coords[1] = coords[1].toFixed(4)
-            })
-
-            const bboxFormatted = encodeURIComponent(JSON.stringify(
-                {
-                    "type":"Polygon",
-                    "coordinates": [bbox],
-                    "crs": {
-                        "type": "name",
-                        "properties": {
-                            "name": "EPSG:4326"
-                        }
-                    }
-                }
-            ))
-
-            // create boundary object for the getData endpoint
-            const boundaryObj = {
-                type: 'geojson',
-                name: bboxFormatted
-            }
-
-            this.props.getPolygonCrashes(bboxFormatted)
-            this.props.getData(boundaryObj)
+            
+            this.handleBbox(bbox)
             this.showBoundaryOverlay()
         })
 
         // this fires when the polygon updates (for our use case, if it's moved via dragging)
         this.map.on('draw.update', e => {
-            console.log('called draw update')
             const bbox = e.features[0].geometry.coordinates[0]
-            this.props.getPolygonCrashes(bbox)
+
+            this.handleBbox(bbox)
         })
     }
 
@@ -251,15 +225,9 @@ class Map extends Component {
             this.map.setFilter('crash-heat', filter)
         }
 
-        // @TODO: polygon jawns
-        if(this.props.polyCRNS) {
-            const polyCRNS = this.props.polyCRNS
-            
-            // the response is currently an array of arrays, update the response to just be an array of values
-            console.log('poly crn ', polyCRNS)
-
+        if(this.props.polyCRNS) {            
             // will need to consider the current state of KSI/All when this is actually up and running
-            const filter = ['in', 'id', polyCRNS]
+            const filter = ['match', ['get', 'id'], this.props.polyCRNS, true, false]
 
             this.map.setFilter('crash-circles', filter)
             this.map.setFilter('crash-heat', filter)
@@ -372,6 +340,8 @@ class Map extends Component {
             boundary: null,
             polygon: false
         })
+
+        console.log('filter at the end of remove boundary call ', this.map.getFilter('crash-circles'))
     }
 
     // add fill effect when hovering over a municipality
@@ -466,6 +436,32 @@ class Map extends Component {
         // update boundary state to prevent hover effects when boundaries are present & so the ksi/all toggle can stay within the set bounds
         this.setState({boundary: filterObj})
     }
+
+    // create bbox object from polygon & hit endpoints w/it
+    handleBbox = bbox => {
+        const bboxFormatted = encodeURIComponent(JSON.stringify(
+            {
+                "type":"Polygon",
+                "coordinates": [bbox],
+                "crs": {
+                    "type": "name",
+                    "properties": {
+                        "name": "EPSG:4326"
+                    }
+                }
+            }
+        ))
+
+        // create boundary object for the getData endpoint
+        const boundaryObj = {
+            type: 'geojson',
+            name: bboxFormatted
+        }
+
+        this.props.getPolygonCrashes(bboxFormatted)
+        this.props.getData(boundaryObj)
+    }
+
 
     render() {
         return (
