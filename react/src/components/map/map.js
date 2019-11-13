@@ -226,10 +226,15 @@ class Map extends Component {
         if(this.props.polyCRNS) {     
             console.log('ksi state ', this.state.toggle)
 
-            // @TODO: incorporate the any/all filters for ksi state into the match for polyCRNS
-            const filter = ['match', 
-                ['get', 'id'], this.props.polyCRNS, true, false
-            ]
+            // old working version w/no ksi 
+            const filter = ['match', ['get', 'id'], this.props.polyCRNS, true, false]
+
+            // @TODO: incorporate the any/all filters for ksi state into the match for polyCRNs
+            // const filter = ['all', 
+            //     ['has', 'id', this.props.polyCRNS],
+            //     ['>', 'max_sever', 0],
+            //     ['<', 'max_sever', 3]
+            // ]
 
             this.map.setFilter('crash-circles', filter)
             this.map.setFilter('crash-heat', filter)
