@@ -8,7 +8,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import * as layers from './layers.js'
 import * as popups from './popups.js';
 import { createBoundaryFilter, removeBoundaryFilter } from './boundaryFilters.js';
-import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter, getPolygonCrashes  } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter, getPolygonCrashes, removePolyCRNS  } from '../../redux/reducers/mapReducer.js'
 import { munis } from '../search/dropdowns.js'
 import './map.css';
 
@@ -172,7 +172,6 @@ class Map extends Component {
         // this fires after the polygon is done (i.e. double click to close polygon)
         this.map.on('draw.create', e => {
             const bbox = e.features[0].geometry.coordinates[0]
-            
             this.handleBbox(bbox)
             this.showBoundaryOverlay()
         })
@@ -180,7 +179,6 @@ class Map extends Component {
         // this fires when the polygon updates (for our use case, if it's moved via dragging)
         this.map.on('draw.update', e => {
             const bbox = e.features[0].geometry.coordinates[0]
-
             this.handleBbox(bbox)
         })
     }
@@ -225,9 +223,13 @@ class Map extends Component {
             this.map.setFilter('crash-heat', filter)
         }
 
-        if(this.props.polyCRNS) {            
-            // will need to consider the current state of KSI/All when this is actually up and running
-            const filter = ['match', ['get', 'id'], this.props.polyCRNS, true, false]
+        if(this.props.polyCRNS) {     
+            console.log('ksi state ', this.state.toggle)
+
+            // @TODO: incorporate the any/all filters for ksi state into the match for polyCRNS
+            const filter = ['match', 
+                ['get', 'id'], this.props.polyCRNS, true, false
+            ]
 
             this.map.setFilter('crash-circles', filter)
             this.map.setFilter('crash-heat', filter)
@@ -309,8 +311,11 @@ class Map extends Component {
         // toggle overlay visibility
         this.boundaryOverlay.classList.add('hidden')
 
-        // check for presence of a mapbox Draw polygon and trash it
-        if(this.state.polygon) this.state.draw.deleteAll()
+        // remove any existing polygons & empty polyCRNS state object
+        if(this.state.polygon){
+            this.state.draw.deleteAll()
+            this.props.removePolyCRNS()
+        }
 
         // update sidebar information
         const regionalStats = {type: 'municipality', name: '%'}
@@ -326,7 +331,6 @@ class Map extends Component {
 
         // set store filter state
         this.props.setMapFilter(filterObj)
-
         this.map.setFilter(county.layer, county.filter)
         this.map.setFilter(muni.layer, muni.filter)
 
@@ -340,8 +344,6 @@ class Map extends Component {
             boundary: null,
             polygon: false
         })
-
-        console.log('filter at the end of remove boundary call ', this.map.getFilter('crash-circles'))
     }
 
     // add fill effect when hovering over a municipality
@@ -510,7 +512,6 @@ const mapStateToProps = state => {
         bounding: state.bounding,
         bbox: state.bbox,
         filter: state.filter,
-        // @TODO: polygon jawn
         polyCRNS: state.polyCRNS
     }
 }
@@ -523,8 +524,8 @@ const mapDispatchToProps = dispatch => {
         getBoundingBox: id => dispatch(getBoundingBox(id)),
         setDefaultState: region => dispatch(getDataFromKeyword(region)),
         setMapFilter: filter => dispatch(setMapFilter(filter)),
-        // @TODO: polygon jawn
-        getPolygonCrashes: bbox => dispatch(getPolygonCrashes(bbox))
+        getPolygonCrashes: bbox => dispatch(getPolygonCrashes(bbox)),
+        removePolyCRNS: () => dispatch(removePolyCRNS())
     }
 }
 

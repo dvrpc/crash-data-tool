@@ -22,10 +22,7 @@ const SET_MAP_BOUNDING = 'SET_MAP_BOUNDING'
 const SET_SIDEBAR_HEADER_CONTEXT = 'SET_SIDEBAR_HEADER_CONTEXT'
 const GET_BOUNDING_BOX = 'GET_BOUNDING_BOX'
 const SET_MAP_FILTER = 'SET_MAP_FILTER'
-
-// @TODO: polygon jawn
 const GET_POLYGON_CRNS = 'GET_POLYGON_CRNS'
-const GET_POLYGON_CRASHES = 'GET_POLYGON_CRASHES'
 
 
 /*****************************/
@@ -36,10 +33,7 @@ const set_map_bounding = bounding => ({ type: SET_MAP_BOUNDING, bounding })
 const set_sidebar_header_context = area => ( { type: SET_SIDEBAR_HEADER_CONTEXT, area })
 const get_bounding_box = bbox => ({ type: GET_BOUNDING_BOX, bbox })
 const set_map_filter = filter => ({ type: SET_MAP_FILTER, filter })
-
-// @TODO: polygon jawn
 const get_polygon_crns = polyCRNS => ({ type: GET_POLYGON_CRNS, polyCRNS })
-const get_polygon_crashes = polyCrashes => ({ type: GET_POLYGON_CRASHES, polyCrashes})
 
 
 /***********************/
@@ -64,14 +58,9 @@ export default function mapReducer(state = [], action) {
         case SET_MAP_FILTER:
             const filter = action.filter
             return Object.assign({}, state, { filter })
-
-        // @TODO: polygon jawn
         case GET_POLYGON_CRNS:
             const polyCRNS = action.polyCRNS
             return Object.assign({}, state, { polyCRNS })
-        case GET_POLYGON_CRASHES:
-            const polyCrashes = action.polyCrashes
-            return Object.assign({}, state, { polyCrashes })
         default:
             return state
     }
@@ -137,6 +126,7 @@ export const setMapFilter = filter => dispatch => {
         ['==', 'max_sever', 1],
         ['==', 'max_sever', 2],
     ]
+
     const ksiBoundary = (tileType, id) => {
         const filter = ['all',
             ['==', tileType, id],
@@ -175,3 +165,6 @@ export const getPolygonCrashes = bbox => async dispatch => {
         console.log('get crashes from polygon failed because ', stream)
     }
 }
+
+// reset the polyCRNS on boundary removal
+export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
