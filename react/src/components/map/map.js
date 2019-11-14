@@ -223,18 +223,20 @@ class Map extends Component {
             this.map.setFilter('crash-heat', filter)
         }
 
+        // apply polygon filter
         if(this.props.polyCRNS) {     
-            console.log('ksi state ', this.state.toggle)
+            const toggleState = this.state.toggle.toLowerCase()
+            let filter;
 
-            // old working version w/no ksi 
-            const filter = ['match', ['get', 'id'], this.props.polyCRNS, true, false]
-
-            // @TODO: incorporate the any/all filters for ksi state into the match for polyCRNs
-            // const filter = ['all', 
-            //     ['has', 'id', this.props.polyCRNS],
-            //     ['>', 'max_sever', 0],
-            //     ['<', 'max_sever', 3]
-            // ]
+            if(toggleState === 'ksi'){
+                filter = ['all', 
+                    ['in', 'id', ...this.props.polyCRNS],
+                    ['>', 'max_sever', 0],
+                    ['<', 'max_sever', 3]
+                ]
+            } else{
+                filter = ['match', ['get', 'id'], this.props.polyCRNS, true, false]
+            }            
 
             this.map.setFilter('crash-circles', filter)
             this.map.setFilter('crash-heat', filter)
