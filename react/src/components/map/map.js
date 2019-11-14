@@ -172,6 +172,7 @@ class Map extends Component {
         // this fires after the polygon is done (i.e. double click to close polygon)
         this.map.on('draw.create', e => {
             const bbox = e.features[0].geometry.coordinates[0]
+            this.props.setSidebarHeaderContext('Selected Area')
             this.handleBbox(bbox)
             this.showBoundaryOverlay()
         })
@@ -179,6 +180,7 @@ class Map extends Component {
         // this fires when the polygon updates (for our use case, if it's moved via dragging)
         this.map.on('draw.update', e => {
             const bbox = e.features[0].geometry.coordinates[0]
+            this.props.setSidebarHeaderContext('Selected Area')
             this.handleBbox(bbox)
         })
     }
