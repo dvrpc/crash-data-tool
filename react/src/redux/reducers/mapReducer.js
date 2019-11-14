@@ -159,7 +159,7 @@ export const getPolygonCrashes = bbox => async dispatch => {
     const stream = await fetch(api, getOptions)
 
     if(stream.ok) {
-        const response = await stream.json()
+        const response = await stream.json()        
         dispatch(get_polygon_crns(response))
     }else {
         console.log('get crashes from polygon failed because ', stream)
