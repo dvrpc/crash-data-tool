@@ -134,40 +134,44 @@ class Map extends Component {
                 }).setLngLat(e.lngLat)
 
                 // get info and set popup contents
-                this.handlePopup(crnArray, index, length).then(html => popup.setHTML(html).addTo(this.map))
+                this.handlePopup(crnArray, index, length).then(html => {
+                    popup.setHTML(html).addTo(this.map)
                 
-                // handle pagination if necessary
-                if (length > 1) {
-                    // get a handle on the buttons
-                    const node = ReactDOM.findDOMNode(this)
-                    let nextPopup, previousPopup
+                    // handle pagination if necessary
+                    if (length > 1) {
+                        let nextPopup, previousPopup
 
-                    const hack = document.getElementById('crash-next-popup')
-                    console.log('hack will work tho... ', hack)
+                        // get a handle on the buttons
+                        const node = ReactDOM.findDOMNode(this)
+                        if (node instanceof HTMLElement) {
+                            const wrapper = node.querySelector('.mapboxgl-popup')
+                            nextPopup = wrapper.querySelector('#crash-next-popup')
+                            previousPopup = wrapper.querySelector('#crash-previous-popup')
+                        }
 
-                    if (node instanceof HTMLElement) {
-                        console.log('node bruh ', node)
-
-                        /// the buttons cant be accessed this way. It's on the node but doesn't querySelect probably b/c of the async nature of this.handlePopup
+                        console.log('index before button click is ', index)
+                        console.log('length before button click is ', length)
+    
+                        // add next click handler
+                        /* @TODO for monday: these work, but only once. 
+                            It seems like the issue is resetting the popup HTML in handlePopup, which creates a clone
+                            but doesn't assign handlers to the next/previous buttons. 
+                        */
+                        nextPopup.onclick = () => {
+                            index += 1 >= length ? index = 0 : index += 1
+                            console.log('clicked next popup and changed index to: ', index)
+                            this.handlePopup(crnArray, index, length).then(html => popup.setHTML(html))
+                        }
+    
+                        // add previous click handler
+                        previousPopup.onclick = () => {
+                            index -= 1 < 0 ? index = length - 1 : index -= 1
+                            console.log('clicked previous popup and changed index to: ', index)
+                            this.handlePopup(crnArray, index, length).then(html => popup.setHTML(html))
+                        }
                     }
-
-                    console.log('next popup btn ', nextPopup)
-                    console.log('previous popup btn ', previousPopup)
-
-                    // add next click handler
-                    // nextPopup.onclick = () => {
-                    //     index -= 1 < 0 ? index = 0 : index -= 1
-                    //     //  removed "addTo(this.map)" b/c the popup is already on, just want to overwrite the content
-                    //     this.handlePopup(crnArray, index, length).then(html => popup.setHTML(html))
-                    // }
-
-                    // // add previous click handler
-                    // previousPopup.onclick = () => {
-                    //     index += 1 >= length ? index = length - 1 : index += 1
-                    //     //  removed "addTo(this.map)" b/c the popup is already on, just want to overwrite the content
-                    //     this.handlePopup(crnArray, index, length).then(html => popup.setHTML(html))
-                    // }
-                }
+                })
+                
             })
         })
 
