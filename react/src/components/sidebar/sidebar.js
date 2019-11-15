@@ -67,8 +67,7 @@ class Sidebar extends Component {
 
     render() {
 
-        // process the churts (possibly add this.state.range to the props version of charts.makeCharts if we want range to persist throughout searches)
-        // @TODO: incoporate polygon response into this decision
+        // process the churts
         let data = this.state.localUpdate ? this.state.data : charts.makeCharts(this.props.data)
         let area = this.props.context || this.state.context
         
@@ -143,7 +142,6 @@ const mapStateToProps = state => {
         data: state.data,
         context: state.area,
         filter: state.filter,
-        polyData: state.polyCRNS
     }
 }
 

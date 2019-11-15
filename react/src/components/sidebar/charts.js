@@ -145,6 +145,8 @@ const useSetRange = (data, range, output) => {
 const makeCharts = (data, range) => {    
     if(!data) return makePlaceholders()
 
+    // @TODO: the KSI toggle invokes this function but the data doesn't change. Need a way to filter before it arrives...
+
     let severityChart, modeChart, collisionTypeChart, trendChart;
 
     let output = {
