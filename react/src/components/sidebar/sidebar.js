@@ -37,10 +37,6 @@ class Sidebar extends Component {
             // this is a brittle hack but it works as long as the filters dont change...
             this.activeCrashTypes.textContent = check === 'any' || check === 'all' ? 'Killed or Severely Injured (KSI)' : 'All'
         }
-
-        // it's possible that once a range is established, users will want that to persist throughout searches
-        // in that case, range will exist on local state and all instances of makeCharts will pass this.state.range
-            // default value will be null so that the default state can load with the full range
     }
 
     updateChartRange = e => {
@@ -92,21 +88,19 @@ class Sidebar extends Component {
                         <div id="crash-range-input-wrapper">
                             <label htmlFor="from">From: </label>
                             <select id="crash-select-from" name="from">
-                                <option value="2012">2012</option>
-                                <option value="2013">2013</option>
                                 <option value="2014">2014</option>
                                 <option value="2015">2015</option>
                                 <option value="2016">2016</option>
                                 <option value="2017">2017</option>
+                                <option value="2018">2018</option>
                             </select>
                             <label htmlFor="to">To: </label>
                             <select name="to">
+                                <option value="2018">2018</option>
                                 <option value="2017">2017</option>
                                 <option value="2016">2016</option>
                                 <option value="2015">2015</option>
                                 <option value="2014">2014</option>
-                                <option value="2013">2013</option>
-                                <option value="2012">2012</option>
                             </select>
                             <button id="crash-range-button" type="submit">Update</button>
                         </div>
@@ -149,9 +143,7 @@ const mapStateToProps = state => {
         data: state.data,
         context: state.area,
         filter: state.filter,
-
-        // @TODO: polygon jawns
-        polyData: state.polyCrashes
+        polyData: state.polyCRNS
     }
 }
 

@@ -59,8 +59,23 @@ const collisionType = data => {
     }
 }
 // Crashes over Time chart data
-// @TODO: trend line
+const formatYears = years => { // helper to format range object
+    let yearsFormatted = []
+
+    if(years) {
+        let {from, to} = years
+        to = parseInt(to) + 1
+        for(var i = from; i < to; i++) {
+            yearsFormatted.push(i)
+        }
+    }else{
+        yearsFormatted = [2014,2015,2016,2017,2018]
+    }
+
+    return yearsFormatted
+}
 const trend = (data, years) => {
+    years = formatYears(years)
     return {
         labels: years,
         datasets: [{
@@ -78,15 +93,21 @@ const makePlaceholders = () => {
     const collisionTypeChart = collisionType([0,0,0,0,0,0,0,0,0,0])
     const severityChart = severity([0,0,0,0,0])
     const modeChart = mode([0,0,0])
-    const trendChart = trend([0,0,0,0,0,0],[2012,2013,2014,2015,2016,2017])
+    const trendChart = trend([0,0,0,0,0,0],null)
     return { collisionTypeChart, severityChart, modeChart, trendChart }
 }
+
+// helper function to sum severity into trend
+const sum = obj => Object.keys(obj).reduce((acca, cur) => acca + obj[cur], 0)
 
 // transform db response into a format the charting functions can consume
 const formatData = (yearData, output) => {
     Object.keys(yearData).forEach(key => {
     
         const innerObj = yearData[key]
+
+        // quick hack to handle trend b/c no db response for it
+        if(key === 'severity') output.trend.push(sum(innerObj))
     
         Object.keys(innerObj).forEach((innerKey, index) => {
             if(output[key][index] > -1){
@@ -110,7 +131,6 @@ const useAllYears = (data, output) => {
 
 // accepts a custom range and formats specified years of data into a format that can be consuemd by chart functions
 const useSetRange = (data, range, output) => {
-
     for(var year in data){
         if(year >= range.from && year <= range.to){
             const yearData = data[year]
@@ -140,9 +160,7 @@ const makeCharts = (data, range) => {
     severityChart = severity(output.severity)
     modeChart = mode(output.mode)
     collisionTypeChart = collisionType(output.type)
-
-    // @TODO: trend line fields will be added to API response
-    trendChart = trend([2242,2125,2132,2229,1895,1921],[2012,2013,2014,2015,2016,2017])
+    trendChart = trend(output.trend, range)
 
     return { severityChart, modeChart, collisionTypeChart, trendChart }
 }
