@@ -124,7 +124,6 @@ class Map extends Component {
 
                 // extract array of crn and severity for all crashes at that clicked point
                 const crnArray = features.map(crash => { return {crn: crash.properties.id, severity: crash.properties.max_sever} })
-                const length = crnArray.length
                 let index = 0
 
                 // initialize the mapbox popup object
@@ -133,45 +132,8 @@ class Map extends Component {
                     closeOnClick: true
                 }).setLngLat(e.lngLat)
 
-                // get info and set popup contents
-                this.handlePopup(crnArray, index, length).then(html => {
-                    popup.setHTML(html).addTo(this.map)
-                
-                    // handle pagination if necessary
-                    if (length > 1) {
-                        let nextPopup, previousPopup
-
-                        // get a handle on the buttons
-                        const node = ReactDOM.findDOMNode(this)
-                        if (node instanceof HTMLElement) {
-                            const wrapper = node.querySelector('.mapboxgl-popup')
-                            nextPopup = wrapper.querySelector('#crash-next-popup')
-                            previousPopup = wrapper.querySelector('#crash-previous-popup')
-                        }
-
-                        console.log('index before button click is ', index)
-                        console.log('length before button click is ', length)
-    
-                        // add next click handler
-                        /* @TODO for monday: these work, but only once. 
-                            It seems like the issue is resetting the popup HTML in handlePopup, which creates a clone
-                            but doesn't assign handlers to the next/previous buttons. 
-                        */
-                        nextPopup.onclick = () => {
-                            index += 1 >= length ? index = 0 : index += 1
-                            console.log('clicked next popup and changed index to: ', index)
-                            this.handlePopup(crnArray, index, length).then(html => popup.setHTML(html))
-                        }
-    
-                        // add previous click handler
-                        previousPopup.onclick = () => {
-                            index -= 1 < 0 ? index = length - 1 : index -= 1
-                            console.log('clicked previous popup and changed index to: ', index)
-                            this.handlePopup(crnArray, index, length).then(html => popup.setHTML(html))
-                        }
-                    }
-                })
-                
+                // create popup and handle pagination if necessary
+                this.handlePopup(crnArray, index, popup)
             })
         })
 
@@ -484,8 +446,9 @@ class Map extends Component {
     }
 
     // handle popup creation and pagination
-    handlePopup = async (crns, index, length) => {
-        const popupInfo = popups.getPopupInfo(crns[index])
+    handlePopup = async (crnArray, index, popup) => {
+        const length = crnArray.length
+        const popupInfo = popups.getPopupInfo(crnArray[index])
 
         const html = await popupInfo.then(result => {
             const current = index + 1
@@ -498,7 +461,36 @@ class Map extends Component {
             }
         })
 
-        return html
+        // set popup
+        popup.setHTML(html).addTo(this.map)
+
+        // handle pagination if necessary
+        if (length > 1) {
+            let nextPopup, previousPopup
+
+            // get a handle on the buttons
+            const node = ReactDOM.findDOMNode(this)
+            if (node instanceof HTMLElement) {
+                const wrapper = node.querySelector('.mapboxgl-popup')
+                nextPopup = wrapper.querySelector('#crash-next-popup')
+                previousPopup = wrapper.querySelector('#crash-previous-popup')
+            } else{
+                console.log('pagination function failed to find map node')
+                return
+            }
+
+            // add next click handler
+            nextPopup.onclick = () => {
+                index + 1 >= length ? index = 0 : index += 1
+                this.handlePopup(crnArray, index, popup)
+            }
+
+            // add previous click handler
+            previousPopup.onclick = () => {
+                index - 1 < 0 ? index = length - 1 : index -= 1
+                this.handlePopup(crnArray, index, popup)
+            }
+        }
     }
 
 

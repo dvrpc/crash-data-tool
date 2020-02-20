@@ -69,7 +69,6 @@ class Sidebar extends Component {
 
         // process the churts
         let data = this.state.localUpdate ? this.state.data : charts.makeCharts(this.props.data)
-        console.log('sidebar data ', data)
         let area = this.props.context || this.state.context
         
         const severityOptions = charts.chartOptions('Injury type', 'Number of persons')
