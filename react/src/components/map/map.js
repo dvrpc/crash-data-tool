@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import ReactPaginate from 'react-paginate';
 import { connect } from 'react-redux'
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
@@ -145,6 +146,14 @@ class Map extends Component {
 
                 // add pagination if necessary
                 if (crnArray.length > 1) {
+                                        
+                    const paginate = <ReactPaginate
+                    previousLabel={'previous'}
+                    nextLabel={'next'}
+                    breakLabel={'...'}
+                    pageCount={crnArray.length}
+                    pageRangeDisplayed={5}
+                    />
                                         
                     // big issue with this approach
                         // ReactDOM.createPortal needs to be called in the return of a components render method
