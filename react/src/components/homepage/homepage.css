@@ -6,6 +6,19 @@
     background: rgb(0, 19, 38);
     overflow-x: hidden;
 }
+.homepage-h2{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.6rem;
+}
+.homepage-h2:before, .homepage-h2:after{
+    content: "";
+    background: #001326;
+    height: 1px;
+    margin: 0 1rem;
+    flex: 1;
+}
 
 
 /* Header */
@@ -26,7 +39,7 @@ header{
     filter: blur(3px);
     background: url('https://images.wallpaperscraft.com/image/bridge_traffic_cars_139343_2560x1440.jpg') no-repeat center;
 }
-#homepage-h1{
+#homepage-header{
     position: absolute;
     width: 100%;
     text-align: center;
@@ -41,29 +54,19 @@ header{
 
 /* Content */
 #crash-toolkit-main{
-    padding: 4% 2%;
+    padding: 3% 2%;
     /* light blue: edf2f4 */
     background: #f7f7f7;
-}
-#crash-toolkit-intro{
-    font-size: 1.1rem;
-    width: 700px;
-    margin: 0 auto;
-}
-.first-letter{
-    font-size: 1.6rem;
-    color: rgb(0, 19, 38);
 }
 #crash-apps-container{
     display: flex;
     justify-content: space-between;
-    /* compensate for the absolutely positioned circles */
-    margin-top: 70px;
+    /* compensate for the absolutely positioned circles & add 10px */
+    margin-top: 85px;
+    padding-bottom: 3%;
 }
 .crash-app{
     position: relative;
-    display: flex;
-    flex-direction: column;
     border: 2px outset transparent;
     color: rgb(0, 19, 41);
     padding: 3.5% 1%;
@@ -71,12 +74,10 @@ header{
     width: 22%;
     max-width: 300px;
     min-height: 185px;
-    /* 
-        10% lighter than nav/footer: rgba(0, 19, 38, 0.1)
-        very similar light blue: #d4dbde
-     */
     background: rgba(0, 19, 38, 0.1);
-    border-radius: 10px;
+}
+.crash-app-inactive:hover{
+    pointer-events: none;
 }
 .crash-app-img{
     position: absolute;
@@ -109,6 +110,13 @@ header{
     box-shadow: 1px 2px 10px rgba(0,19,38,0.8);
 }
 
+/* Safe Streets / TEXT */
+#safe-streets-container p{
+    width: 700px;
+    margin: 0 auto;
+    padding-top: 10px;
+    line-height: 1.8rem;
+}
 
 /* Footer */
 #homepage footer{
