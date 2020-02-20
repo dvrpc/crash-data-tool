@@ -41,7 +41,7 @@ class Homepage extends Component {
                     <figure className="crash-app crash-app-inactive">
                         <img src="https://cdn3.vectorstock.com/i/1000x1000/95/77/crash-sound-effect-vector-6259577.jpg" alt="jawns" className="crash-app-img" />
                         <figcaption>
-                            Trends 2: Retro<br />
+                            Trends 2: Trendier<br />
                             <small><strong>Coming Soon!</strong> God creates dinosaurs. God destroys dinosaurs. God creates Man. Man destroys God. Man creates Dinosaurs.</small>
                         </figcaption>
                     </figure>
