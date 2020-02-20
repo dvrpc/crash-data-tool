@@ -122,15 +122,6 @@ class Sidebar extends Component {
                     <Doughnut data={data.collisionTypeChart} />
                     <p><strong>Note:</strong> The collision type pie chart is an example of how it would look in the worst case scenario, where the selected area has at least 1 instance of every single collision type.</p>
 
-                <h2 className="centered-text crash-map-sidebar-subheader">A List Subheader</h2>
-                    <ul id="crash-map-sidebar-ul" className="shadow">
-                        <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
-                        <li>Mauris pulvinar sed quam nec finibus. Nulla sed.</li>
-                        <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
-                        <li>Mauris pulvinar sed quam nec finibus. Nulla sed.</li>
-                        <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
-                    </ul>
-
                 <Footer />
             </section>
         );
