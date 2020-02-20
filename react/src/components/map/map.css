@@ -102,10 +102,28 @@
     max-width: 45%;
 }
 .mapboxgl-popup-content{
-    padding: 10px 15px 15px;
+    padding: 18px 10px;
 }
 .crash-popup-header{
     text-align: center;
+}
+#crash-popup-ul{
+    list-style-type: none;
+    padding: 8px 0;
+}
+#crash-popup-ul li{
+    margin-bottom: 3px;
+}
+#crash-popup-pagination{
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    background: #ececec;
+    margin-bottom: -5px;
+}
+#crash-popup-pagination button{
+    border: none;
+    background: inherit;
 }
 
 /* Media Queries */

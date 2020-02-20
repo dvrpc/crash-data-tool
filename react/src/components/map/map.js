@@ -32,6 +32,11 @@ class Map extends Component {
             })
         }
     }
+    
+
+    /**********************/
+    // Lifecycle Methods //
+    /**********************/
 
     componentDidMount() {
         mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
@@ -120,6 +125,7 @@ class Map extends Component {
 
                 // extract array of crn and severity for all crashes at that clicked point
                 const crnArray = features.map(crash => { return {crn: crash.properties.id, severity: crash.properties.max_sever} })
+                let index = 0
 
                 // initialize the mapbox popup object
                 const popup = new mapboxgl.Popup({
@@ -127,41 +133,8 @@ class Map extends Component {
                     closeOnClick: true
                 }).setLngLat(e.lngLat)
 
-                // get info
-                const popupInfo = popups.getPopupInfo(crnArray[0])
-
-                popupInfo.then(result => {
-                    let html;
-
-                    // create popup content (success or fail)
-                    if(result.fail){
-                        html = popups.catchPopupFail(result.crn)
-                    }else{
-                        html = popups.setPopup(result)
-                    }
-
-                    // add the popup to the map
-                    popup.setHTML(html).addTo(this.map)
-                })
-
-                // add pagination if necessary
-                if (crnArray.length > 1) {
-                                        
-                    const paginate = <ReactPaginate
-                    previousLabel={'previous'}
-                    nextLabel={'next'}
-                    breakLabel={'...'}
-                    pageCount={crnArray.length}
-                    pageRangeDisplayed={5}
-                    />
-                                        
-                    // big issue with this approach
-                        // ReactDOM.createPortal needs to be called in the return of a components render method
-                        // a potential work around is to create a wrapper component that accepts the popup as props, creates the paginate element and then calls createPortal in the render method, placing <Paginate /> within popup. 
-                            // since paginate would exist within another component, the click handlers could also go there. 
-                    
-                    //ReactDOM.createPortal(paginate, popup)
-                }
+                // create popup and handle pagination if necessary
+                this.handlePopup(crnArray, index, popup)
             })
         })
 
@@ -471,6 +444,54 @@ class Map extends Component {
 
         this.props.getPolygonCrashes(bboxFormatted)
         this.props.getData(boundaryObj)
+    }
+
+    // handle popup creation and pagination
+    handlePopup = async (crnArray, index, popup) => {
+        const length = crnArray.length
+        const popupInfo = popups.getPopupInfo(crnArray[index])
+
+        const html = await popupInfo.then(result => {
+            const current = index + 1
+
+            // create popup content (success or fail)
+            if(result.fail){
+                return popups.catchPopupFail(result.crn)
+            }else{
+                return popups.setPopup(result, current, length)
+            }
+        })
+
+        // set popup
+        popup.setHTML(html).addTo(this.map)
+
+        // handle pagination if necessary
+        if (length > 1) {
+            let nextPopup, previousPopup
+
+            // get a handle on the buttons
+            const node = ReactDOM.findDOMNode(this)
+            if (node instanceof HTMLElement) {
+                const wrapper = node.querySelector('.mapboxgl-popup')
+                nextPopup = wrapper.querySelector('#crash-next-popup')
+                previousPopup = wrapper.querySelector('#crash-previous-popup')
+            } else{
+                console.log('pagination function failed to find map node')
+                return
+            }
+
+            // add next click handler
+            nextPopup.onclick = () => {
+                index + 1 >= length ? index = 0 : index += 1
+                this.handlePopup(crnArray, index, popup)
+            }
+
+            // add previous click handler
+            previousPopup.onclick = () => {
+                index - 1 < 0 ? index = length - 1 : index -= 1
+                this.handlePopup(crnArray, index, popup)
+            }
+        }
     }
 
 

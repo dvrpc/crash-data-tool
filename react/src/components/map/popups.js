@@ -31,19 +31,26 @@ const getPopupInfo = async crash => {
     return output
 }
 
-const setPopup = popupInfo => {
+const setPopup = (popupInfo, index, length) => {
     popupInfo.severity = severityLookup[popupInfo.severity]
 
     return `
         <h3 class="crash-popup-header">Crash Record Number: ${popupInfo.crn}</h3>
         <hr />
-        <p>Collision Type: ${popupInfo.collision_type}</p>
-        <p>Max Severity: ${popupInfo.severity}</p>
-        <p>Crash Date: ${popupInfo.month}, ${popupInfo.year}</p>
-        <p>Persons involved: ${popupInfo.persons}</p>
-        <p>Vehicles involved: ${popupInfo.vehicle_count}</p>
-        <p>Pedestrians involved: ${popupInfo.ped}</p>
-        <p>Bicyclists involved: ${popupInfo.bike}</p>
+        <ul id="crash-popup-ul">
+            <li>Collision Type: ${popupInfo.collision_type}</li>
+            <li>Max Severity: ${popupInfo.severity}</li>
+            <li>Crash Date: ${popupInfo.month}, ${popupInfo.year}</li>
+            <li>Persons involved: ${popupInfo.persons}</li>
+            <li>Vehicles involved: ${popupInfo.vehicle_count}</li>
+            <li>Pedestrians involved: ${popupInfo.ped}</li>
+            <li>Bicyclists involved: ${popupInfo.bike}</li>
+        </ul>
+        <div id="crash-popup-pagination">
+            <button id="crash-previous-popup"><</button>
+            <p>${index} of ${length}</p>
+            <button id="crash-next-popup">></button>
+        </div>
     `
 }
 
