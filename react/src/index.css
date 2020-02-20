@@ -8,13 +8,6 @@ body {
   line-height: 1.5;
   text-rendering: optimizeLegibility;
 }
-h1{
-  font-size: 1.8em;
-}
-h2{
-  font-size: 1.3em
-}
-
 
 /* General Class Selectors */
 .centered-text{

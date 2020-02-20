@@ -11,6 +11,7 @@
 }
 #crash-map-sidebar-header {
     margin: 2% 0;
+    font-size: 1.6rem;
 }
 #sidebar-hr{
     border: 0;
@@ -25,6 +26,7 @@
 }
 .crash-map-sidebar-subheader{
     margin-top: 8%;
+    font-size: 1.2rem;
 }
 .sidebar-paragraphs{
     padding: 0 3%;
