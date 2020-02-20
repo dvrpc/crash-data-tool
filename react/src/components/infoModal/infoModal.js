@@ -29,7 +29,7 @@ class Modal extends Component {
     render() {
         return (
             <div>
-                <button id="crash-map-nav-info-btn" type="button" onClick={this.showModal}>i</button>
+                <button id="crash-map-nav-info-btn" type="button" onClick={this.showModal}>?</button>
                 <dialog id="crash-map-modal" ref={el => this.modal = el}>
                     <button type="button" className="crash-map-close-modal" id="crash-map-modal-x" onClick={this.hideModal}>X</button>
                     <h2>DVRPC Crash Data Viewer</h2>

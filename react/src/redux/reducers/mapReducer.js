@@ -95,6 +95,7 @@ export const setMapBounding = bounding => dispatch => {
 export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
 
 export const getBoundingBox = id => async dispatch => {
+    console.log('id is ', id)
     id = id.toString()
 
     let featureServer;
@@ -108,11 +109,13 @@ export const getBoundingBox = id => async dispatch => {
 
     // boundary query string w/appropriate featureServer & id
     const api = `https://services1.arcgis.com/LWtWv6q6BJyKidj8/ArcGIS/rest/services/DVRPC_Boundaries/FeatureServer/${featureServer}/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=pgeojson`
+    console.log('api is ', api)
     const stream = await fetch(api, postOptions)
     
     if(stream.ok) {
         const response = await stream.json()
         const bbox = response.bbox
+        console.log('bbox is ', bbox)
 
         dispatch(get_bounding_box(bbox))
     }else {
