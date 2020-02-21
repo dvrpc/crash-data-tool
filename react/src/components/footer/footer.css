@@ -1,5 +1,6 @@
 .footer {
     display: flex;
+    justify-content: space-around;
     color: #f6efee;
     background: #171a21;
     /* this is a bad way to get over the sidebar padding and force full width @TODO do this better  */

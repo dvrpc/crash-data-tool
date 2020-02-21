@@ -118,13 +118,6 @@ header{
     line-height: 1.8rem;
 }
 
-/* Footer */
-#homepage footer{
-    color: #ecebe4;
-    padding: 4% 2%;
-    text-align: center;
-}
-
 
 /* Media Queries */
 @media all and (max-width: 800px) {
