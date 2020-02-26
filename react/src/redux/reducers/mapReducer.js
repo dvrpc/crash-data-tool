@@ -95,7 +95,6 @@ export const setMapBounding = bounding => dispatch => {
 export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
 
 export const getBoundingBox = id => async dispatch => {
-    console.log('id is ', id)
     id = id.toString()
 
     let featureServer;
@@ -107,15 +106,22 @@ export const getBoundingBox = id => async dispatch => {
     // counties and munis have different code types
     featureServer ? codeType = `FIPS=${id}` : codeType = `GEOID_10=${id}` 
 
-    // boundary query string w/appropriate featureServer & id
-    const api = `https://services1.arcgis.com/LWtWv6q6BJyKidj8/ArcGIS/rest/services/DVRPC_Boundaries/FeatureServer/${featureServer}/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=pgeojson`
-    console.log('api is ', api)
-    const stream = await fetch(api, postOptions)
+    // boundary query string w/appropriate featureServer & id 
+    // @TODO: plug this back in when ESRI gets their stuff together
+    //const api = `https://services1.arcgis.com/LWtWv6q6BJyKidj8/ArcGIS/rest/services/DVRPC_Boundaries/FeatureServer/${featureServer}/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=pgeojson`
+    
+    const backupAPI = `https://services1.arcgis.com/LWtWv6q6BJyKidj8/ArcGIS/rest/services/DVRPC_Boundaries/FeatureServer/${featureServer}/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
+    const stream = await fetch(backupAPI, postOptions)
     
     if(stream.ok) {
+        // @TODO: ArcGIS is returning an invalid JSON object. It does not have a closing bracket. Awesome cool great job. 
+        // @TODO: add this two liner back in when we got back to the regular api call
+        // const response = await stream.json()
+        // const bbox = response.bbox
+
         const response = await stream.json()
-        const bbox = response.bbox
-        console.log('bbox is ', bbox)
+        const extent = response.extent
+        const bbox = [extent.xmax, extent.ymax, extent.xmin, extent.ymin]
 
         dispatch(get_bounding_box(bbox))
     }else {
