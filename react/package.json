@@ -6,12 +6,9 @@
   "dependencies": {
     "@mapbox/mapbox-gl-draw": "^1.1.2",
     "@mapbox/mapbox-gl-geocoder": "^3.1.6",
-    "apollo-boost": "^0.1.28",
     "chart.js": "^2.8.0",
-    "graphql": "^14.3.0",
     "mapbox-gl": "^0.51.0",
     "react": "^16.8.6",
-    "react-apollo": "^2.5.5",
     "react-chartjs-2": "^2.7.6",
     "react-dom": "^16.8.6",
     "react-redux": "^6.0.1",
