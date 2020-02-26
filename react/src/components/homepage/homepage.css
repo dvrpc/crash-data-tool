@@ -61,15 +61,15 @@ header{
 #crash-apps-container{
     display: flex;
     justify-content: space-between;
-    /* compensate for the absolutely positioned circles & add 10px */
-    margin-top: 85px;
+    /* compensate for the absolutely positioned circles & add 20px */
+    margin-top: 90px;
     padding-bottom: 3%;
 }
 .crash-app{
     position: relative;
     border: 2px outset transparent;
     color: rgb(0, 19, 41);
-    padding: 3.5% 1%;
+    padding: 2.5% 1%;
     text-align: center;
     width: 22%;
     max-width: 300px;

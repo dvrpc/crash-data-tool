@@ -70,8 +70,6 @@ class Sidebar extends Component {
         // process the churts
         let data = this.state.localUpdate ? this.state.data : charts.makeCharts(this.props.data)
         let area = this.props.context || this.state.context
-
-        console.log('data is ', data)
         
         const severityOptions = charts.chartOptions('Injury type', 'Number of persons')
         const trendOptions = charts.chartOptions('', 'Number of Crashes')
