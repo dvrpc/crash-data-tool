@@ -268,6 +268,7 @@ class Map extends Component {
     setBoundary = boundaryObj => {
         
         // testing polygon
+        // @TODO: remove?
         if(this.state.polygon){
             console.log('boundary object is ', boundaryObj)
             return

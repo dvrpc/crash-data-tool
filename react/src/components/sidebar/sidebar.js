@@ -61,16 +61,30 @@ class Sidebar extends Component {
         // tell render to listen to state instead of props
         const localUpdate = true
 
-        // setState to trigger a re-render
+        // setState to update data & trigger a re-render
         this.setState({data, localUpdate})
     }
 
     render() {
 
         // process the churts
-        let data = this.state.localUpdate ? this.state.data : charts.makeCharts(this.props.data)
+        let data;
+        if(this.state.localUpdate) {
+            data = this.state.data
+        } else if(this.props.data) {
+            let range = {from: 0, to: 0}
+            const rangeKeys = Object.keys(this.props.data)
+            const lastIndex = rangeKeys.length - 1
+
+            range.from = rangeKeys[0]
+            range.to = rangeKeys[lastIndex]
+
+            data = charts.makeCharts(this.props.data, range)
+        } else {
+            data = charts.makeCharts(null)
+        }
+
         let area = this.props.context || this.state.context
-        
         const severityOptions = charts.chartOptions('Injury type', 'Number of persons')
         const trendOptions = charts.chartOptions('', 'Number of Crashes')
 
