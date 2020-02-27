@@ -394,17 +394,17 @@ class Map extends Component {
 
         const props = e.features[0].properties
         const id = props.geoid
-        const decodedName = props.name
+        const encodedName = encodeURIComponent(props.name)
         const featureId = e.features[0].id
-        const boundaryObj = {type: 'municipality', name: decodedName}
+        const boundaryObj = {type: 'municipality', name: encodedName}
 
         // update filter object w/muni id + toggle state
-        let pennID = munis[decodedName]
+        let pennID = munis[props.name]
         let newFilterType = this.state.toggle === 'All' ? 'all' : 'ksi'
         const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID}
 
         // do all the things that search does
-        this.props.setSidebarHeaderContext(decodedName)
+        this.props.setSidebarHeaderContext(props.name)
         this.props.getData(boundaryObj)
         this.props.setMapBounding(boundaryObj)
         this.props.getBoundingBox(id)

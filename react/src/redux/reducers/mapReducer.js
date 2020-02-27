@@ -71,6 +71,8 @@ export default function mapReducer(state = [], action) {
 /****** DISPATCHERS ******/
 export const getDataFromKeyword = boundaryObj => async dispatch => {
     const { type, name } = boundaryObj
+    console.log('named passed to api call ', name)
+    console.log('type passed to api call ', type)
     
     const api = `https://alpha.dvrpc.org/api/crash-data/v2/sidebarInfo?type=${type}&value=${name}`
     const stream = await fetch(api, getOptions)
@@ -81,6 +83,7 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
         dispatch(get_data_from_keyword(failObj))
     }else{
         const response = await stream.json()
+        console.log('API response ', response)
         dispatch(get_data_from_keyword(response))
     }
 }

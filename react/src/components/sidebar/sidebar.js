@@ -68,6 +68,7 @@ class Sidebar extends Component {
     render() {
 
         // process the churts
+        // @TODO: this is being called too many times. Not a priority but would be a perf improvement to fix
         let data;
         if(this.state.localUpdate) {
             data = this.state.data
