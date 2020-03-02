@@ -120,7 +120,7 @@ const formatData = (yearData, output) => {
 }
 
 // default call that formats all available years of data
-const useAllYears = (data, output) => {
+const hasAllYears = (data, output) => {
     for(var year in data){
         const yearData = data[year]
         formatData(yearData, output)
@@ -130,7 +130,7 @@ const useAllYears = (data, output) => {
 }
 
 // accepts a custom range and formats specified years of data into a format that can be consuemd by chart functions
-const useSetRange = (data, range, output) => {
+const hasSetRange = (data, range, output) => {
     for(var year in data){
         if(year >= range.from && year <= range.to){
             const yearData = data[year]
@@ -142,7 +142,7 @@ const useSetRange = (data, range, output) => {
 }
 
 // using the API response to build the actual charts
-const makeCharts = (data, range) => {    
+const makeCharts = (data, range) => {
     if(!data) return makePlaceholders()
 
     // @TODO: the KSI toggle invokes this function but the data doesn't change. Need a way to filter before it arrives...
@@ -157,7 +157,7 @@ const makeCharts = (data, range) => {
     }
 
     // determine whether to build chart data for all years or a specified range of years
-    range ? output = useSetRange(data, range, output) : output = useAllYears(data, output)
+    range ? output = hasSetRange(data, range, output) : output = hasAllYears(data, output)
     
     severityChart = severity(output.severity)
     modeChart = mode(output.mode)

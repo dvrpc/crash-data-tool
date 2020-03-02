@@ -71,8 +71,9 @@ export default function mapReducer(state = [], action) {
 /****** DISPATCHERS ******/
 export const getDataFromKeyword = boundaryObj => async dispatch => {
     const { type, name } = boundaryObj
-    console.log('named passed to api call ', name)
-    console.log('type passed to api call ', type)
+    
+    //  @TODO: SOME NJ municipalities return a blank object. The call is successful, it's just empty.
+    // Ex. Mount Laurel Township fails, Camden City works. 
     
     const api = `https://alpha.dvrpc.org/api/crash-data/v2/sidebarInfo?type=${type}&value=${name}`
     const stream = await fetch(api, getOptions)
