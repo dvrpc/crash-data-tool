@@ -35,6 +35,7 @@ class Sidebar extends Component {
         if(this.props.filter){
             const check = this.props.filter[0]
             // this is a brittle hack but it works as long as the filters dont change...
+            // @TODO: there will be multiple KSI refs so figure out how to handle all of those at once. As is, this just updates the most recent one
             this.activeCrashTypes.textContent = check === 'any' || check === 'all' ? 'Killed or Severely Injured (KSI)' : 'All'
         }
     }
@@ -85,6 +86,7 @@ class Sidebar extends Component {
             data = charts.makeCharts(null)
         }
 
+        // @TODO: this set up might work better than using refs to handle KSI and Range state in the text
         let area = this.props.context || this.state.context
         const severityOptions = charts.chartOptions('Injury type', 'Number of persons')
         const trendOptions = charts.chartOptions('', 'Number of Crashes')
@@ -92,7 +94,8 @@ class Sidebar extends Component {
         return (
             <section id="sidebar">
                 <h1 id="crash-map-sidebar-header" className="centered-text">Crash Statistics for {area}</h1>
-                    <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. The following charts are showing results for <span id="activeCrashTypes" ref={el => this.activeCrashTypes = el}>Killed or Severely Injured (KSI)</span> crash types.</p>
+                    <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2018. This dataset is also used by our state and local partners.</p>
+                    <p className="sidebar-paragraphs">The following charts and map are showing results for <span className="sidebarDynamicContent" ref={el => this.activeCrashTypes = el}>Killed or Severely Injured (KSI)</span> crash types from <span ref={el => this.sidebarFrom = el} className="sidebarDynamicContent">2014</span> to <span ref={el => this.sidebarTo = el} className="sidebarDynamicContent">2018</span></p>
                 
                 <hr id="sidebar-hr" />
 
@@ -123,7 +126,7 @@ class Sidebar extends Component {
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crashes over Time</h2>
                     <Line data={data.trendChart} options={trendOptions}/>
-                    <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem.</p>
+                    <p className="sidebar-paragraphs">This chart shows <span className="sidebarDynamicContent" ref={el => this.activeCrashTypes = el}>KSI</span> crashes in <strong>{area}</strong> by crash severity from <span ref={el => this.sidebarFrom = el} className="sidebarDynamicContent">2014</span> to <span ref={el => this.sidebarTo = el} className="sidebarDynamicContent">2018</span>. Crash trends can be useful for identifying if the frequency of crashes is increasing or decreasing over time, but it is important not to infer patterns from single-year spikes or drops in crashes or in datasets with limited data points.</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crash Severity</h2>
                     <Bar data={data.severityChart} options={severityOptions}/>
