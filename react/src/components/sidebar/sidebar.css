@@ -21,16 +21,13 @@
     clear: both;
     margin: 2% 0;
 }
-.sidebarDynamicContent{
-    font-weight: 700;
-}
 .crash-map-sidebar-subheader{
     margin-top: 8%;
     font-size: 1.2rem;
 }
 .sidebar-paragraphs{
     padding: 0 3%;
-    margin-bottom: 2%;
+    margin: 2% 0;
 }
 #crash-map-sidebar-ul{
     border-radius: 3px;

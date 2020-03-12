@@ -19,7 +19,10 @@ class Sidebar extends Component {
         this.state = {
             data: this.props.setDefaultState({type: 'municipality', name: '%'}),
             context: 'the DVRPC region',
-            localUpdate: false
+            localUpdate: false,
+            crashType: 'KSI',
+            rangeFrom: 2014,
+            rangeTo: 2018
         }
     }
 
@@ -67,6 +70,11 @@ class Sidebar extends Component {
     }
 
     render() {
+        // set dynamic text
+        let area = this.props.context || this.state.context
+        let crashType = this.state.crashType
+        let rangeFrom = this.state.rangeFrom
+        let rangeTo = this.state.rangeTo
 
         // process the churts
         // @TODO: this is being called too many times. Not a priority but would be a perf improvement to fix
@@ -74,6 +82,7 @@ class Sidebar extends Component {
         if(this.state.localUpdate) {
             data = this.state.data
         } else if(this.props.data) {
+            // @TODO: use state to get range so move this logic into a componentWillUpdate lifecycle and just have charts.makeCharts pull a range object
             let range = {from: 0, to: 0}
             const rangeKeys = Object.keys(this.props.data)
             const lastIndex = rangeKeys.length - 1
@@ -86,8 +95,6 @@ class Sidebar extends Component {
             data = charts.makeCharts(null)
         }
 
-        // @TODO: this set up might work better than using refs to handle KSI and Range state in the text
-        let area = this.props.context || this.state.context
         const severityOptions = charts.chartOptions('Injury type', 'Number of persons')
         const trendOptions = charts.chartOptions('', 'Number of Crashes')
 
@@ -95,7 +102,7 @@ class Sidebar extends Component {
             <section id="sidebar">
                 <h1 id="crash-map-sidebar-header" className="centered-text">Crash Statistics for {area}</h1>
                     <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2018. This dataset is also used by our state and local partners.</p>
-                    <p className="sidebar-paragraphs">The following charts and map are showing results for <span className="sidebarDynamicContent" ref={el => this.activeCrashTypes = el}>Killed or Severely Injured (KSI)</span> crash types from <span ref={el => this.sidebarFrom = el} className="sidebarDynamicContent">2014</span> to <span ref={el => this.sidebarTo = el} className="sidebarDynamicContent">2018</span></p>
+                    <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{rangeFrom}</strong> to <strong>{rangeTo}</strong></p>
                 
                 <hr id="sidebar-hr" />
 
@@ -126,19 +133,19 @@ class Sidebar extends Component {
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crashes over Time</h2>
                     <Line data={data.trendChart} options={trendOptions}/>
-                    <p className="sidebar-paragraphs">This chart shows <span className="sidebarDynamicContent" ref={el => this.activeCrashTypes = el}>KSI</span> crashes in <strong>{area}</strong> by crash severity from <span ref={el => this.sidebarFrom = el} className="sidebarDynamicContent">2014</span> to <span ref={el => this.sidebarTo = el} className="sidebarDynamicContent">2018</span>. Crash trends can be useful for identifying if the frequency of crashes is increasing or decreasing over time, but it is important not to infer patterns from single-year spikes or drops in crashes or in datasets with limited data points.</p>
+                    <p className="sidebar-paragraphs">This chart shows <strong>{crashType}</strong> crashes in <strong>{area}</strong> by crash severity from <strong>{rangeFrom}</strong> to <strong>{rangeTo}</strong>. Crash trends can be useful for identifying if the frequency of crashes is increasing or decreasing over time, but it is important not to infer patterns from single-year spikes or drops in crashes or in datasets with limited data points.</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crash Severity</h2>
                     <Bar data={data.severityChart} options={severityOptions}/>
-                    <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem.</p>
+                    <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in <strong>{area}</strong> by crash severity from <strong>{rangeFrom}</strong> to <strong>{rangeTo}</strong>. Injury severity is divided into seven possible categories, as defined in the "About" section of the information modal. ** We can workshop this text, including changing the modal to an actionable word isntead of a ? **</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Mode</h2>
                     <Doughnut data={data.modeChart} />
-                    <p className="sidebar-paragraphs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec arcu purus, facilisis a pharetra bibendum, consequat sed lorem.</p>
+                    <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in the <strong>{area}</strong> by mode from <strong>{rangeFrom}</strong> to <strong>{rangeTo}.</strong> Pedestrians and bicyclists are often a focus of transportation safety planning efforts because they are the road users most vulnerable to sever injuries in the event of a crash. This is reflected in data that consistently shows pedestrians account for a disproportionate number of the injuries sustained on the road.</p>
                 
                 <h2 className="centered-text crash-map-sidebar-subheader">Collision Type</h2>
                     <Doughnut data={data.collisionTypeChart} />
-                    <p><strong>Note:</strong> The collision type pie chart is an example of how it would look in the worst case scenario, where the selected area has at least 1 instance of every single collision type.</p>
+                    <p className="sidebar-paragraphs">This chart shows <strong>{crashType}</strong> <em>crashes</em> in <strong>{area}</strong> by collision type from <strong>{rangeFrom}</strong> to <strong>{rangeTo}</strong>. Collision type data can be especially useful for identifying trends at specific locations or along specific routes.</p>
 
                 <Footer />
             </section>
