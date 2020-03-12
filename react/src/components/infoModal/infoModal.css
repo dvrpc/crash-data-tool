@@ -2,7 +2,7 @@
     width: 800px;
     padding: 0;
     z-index: 5;
-    margin: 5% auto 0 auto;
+    margin: 3.5% auto 0 auto;
     box-shadow: 0 0 100vh 100vh rgba(0,0,0,0.6);
     border-color: #424b54;
     border-radius: 3px;
@@ -54,6 +54,9 @@
 }
 #crash-map-modal-content p{
     margin: 1% 0;
+}
+#crash-map-modal-hr{
+    margin: 2% 0;
 }
 
 

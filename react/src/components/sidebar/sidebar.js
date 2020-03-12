@@ -37,9 +37,8 @@ class Sidebar extends Component {
         // update crash type context
         if(this.props.filter){
             const check = this.props.filter[0]
-            // this is a brittle hack but it works as long as the filters dont change...
-            // @TODO: there will be multiple KSI refs so figure out how to handle all of those at once. As is, this just updates the most recent one
-            this.activeCrashTypes.textContent = check === 'any' || check === 'all' ? 'Killed or Severely Injured (KSI)' : 'All'
+            let crashType = check === 'any' || check === 'all' ? 'Killed or Severely Injured (KSI)' : 'All'
+            if(crashType != this.state.crashType) this.setState({crashType})
         }
     }
 
