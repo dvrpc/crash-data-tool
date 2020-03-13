@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { getDataFromKeyword } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setMapFilter } from '../../redux/reducers/mapReducer.js'
 
 import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
@@ -70,8 +70,17 @@ class Sidebar extends Component {
 
     updateCrashType = e => {
         e.preventDefault()
+        const form = e.target
+        const data = new FormData(form)
+        let selected;
 
-        console.log('toggled chartType form on sidebar')
+        // extract data
+        for(const entry of data) {
+            selected = entry[1]
+        }
+
+        // use selected radio button to set map filter
+        this.props.setCrashTypeFilter(selected)
     }
 
     render() {
@@ -140,7 +149,7 @@ class Sidebar extends Component {
                         <legend>Select Severity Type: </legend>
 
                         <label htmlFor="ksi">KSI: </label>
-                        <input type="radio" value="KSI" name="crashType" className="crash-map-first-input" defaultChecked></input>
+                        <input type="radio" value="ksi" name="crashType" className="crash-map-first-input" defaultChecked></input>
 
                         <label htmlFor="all">All: </label>
                         <input type="radio" value="all" name="crashType"></input>
@@ -183,7 +192,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        setDefaultState: region => dispatch(getDataFromKeyword(region))
+        setDefaultState: region => dispatch(getDataFromKeyword(region)),
+        setCrashTypeFilter: filter => dispatch(setMapFilter(filter))
     }
 }
 

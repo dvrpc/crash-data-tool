@@ -134,6 +134,7 @@ export const getBoundingBox = id => async dispatch => {
     }
 }
 
+// @TODO: rename this to be specific for crash type so as not to confuse with the incoming range filter
 export const setMapFilter = filter => dispatch => {
     const ksiNoBoundary = ['any', 
         ['==', 'max_sever', 1],
