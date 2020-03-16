@@ -17,6 +17,8 @@ class Map extends Component {
         this.state = {
             boundary: null,
             heatZoom: true,
+
+            // @TODO: remove this from local state since the toggle comes from sidebar now
             toggle: 'ksi',
             polygon: false,
             
@@ -43,10 +45,6 @@ class Map extends Component {
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            /* Possible styles:
-                dark: mapbox://styles/mapbox/dark-v9?optimize=true
-                navigation guidance night: mapbox://styles/mapbox/navigation-guidance-night-v2?optimize=true
-            */
             style: 'mapbox://styles/mapbox/navigation-guidance-night-v2?optimize=true',
             center: [-75.2273, 40.071],
             zoom: 8.2
@@ -158,21 +156,32 @@ class Map extends Component {
     }
 
     componentDidUpdate(prevProps) {
+        console.log('map props.filter on didUpdate: ', this.props.filter)
 
-        // zoom to a new center when appropriate (address searches)
-        if(prevProps.center !== this.props.center) {
-            this.map.flyTo({
-                center: this.props.center,
-                zoom: 12,
-                speed: 0.9,
-                curve: 1.7
-            })
-        }
+        // @TODO: tweak this and incorporate the logic here. Replace/update the current filter and 
+        // New workflow will be as follows:
+            // Sidebar provides ksi state (ksi or all)
+                // This will need to be a new reducer that simply returns the string 'ksi' or 'all'
+            // Map provides boundary state (this.state.boundary) which includes:
+                // filterType and ID
+            // Map takes ksi state (string) from Sidebar and combines it with boundary state (obect) to call this.props.setMapFilter
 
-        // zoom to a bounding box when appropriate (all non-address searches)
-        if(prevProps.bbox !== this.props.bbox && this.props.bbox) {
-            this.map.fitBounds(this.props.bbox)
-        }
+        // @TODO: replace with a check on the sidebar state (forthcoming this.props.sidebarFilter)
+        // toggleCircleType = e => {
+        //     const id = e.target.id
+        //     const hasBoundary = this.state.boundary
+            
+        //     if(hasBoundary) {
+        //         id === 'All' ? hasBoundary.filterType = 'all' : hasBoundary.filterType = 'ksi'
+        //         this.props.setMapFilter(hasBoundary)
+        //     }else{
+        //         let filterObj = id === 'All' ? {filterType: 'all no boundary'} : {filterType: 'ksi no boundary'}
+        //         this.props.setMapFilter(filterObj)
+        //     }
+            
+        //     // update toggle state so click muni & remove boundary can apply the correct filters
+        //     this.setState({toggle: id})
+        // }
 
         // add boundaries and their corresponding filters/styles/sidebar stats
         if(this.props.bounding !== prevProps.bounding) {
@@ -183,6 +192,8 @@ class Map extends Component {
             // update map filter & circle toggle state when coming from search
             if(boundingObj.filter) {
                 const toggleFilter = boundingObj.filter
+
+                // @TODO: pull from this.props.sidebarToggle instead of local state
                 toggleFilter.filterType = this.state.toggle === 'All' ? 'all' : 'ksi'
 
                 this.props.setMapFilter(toggleFilter)
@@ -191,6 +202,7 @@ class Map extends Component {
         }
 
         // update map filter if necessary
+        // @TODO: roll this into the state function as stated above
         if(this.props.filter && this.props.filter !== prevProps.filter){
             let filter = this.props.filter === 'none' ? null : this.props.filter
             this.map.setFilter('crash-circles', filter)
@@ -198,7 +210,8 @@ class Map extends Component {
         }
 
         // apply polygon filter
-        if(this.props.polyCRNS) {     
+        if(this.props.polyCRNS) {    
+            // @TODO: update to this.props.sidebarToggle 
             const toggleState = this.state.toggle.toLowerCase()
             let filter;
 
@@ -214,6 +227,21 @@ class Map extends Component {
 
             this.map.setFilter('crash-circles', filter)
             this.map.setFilter('crash-heat', filter)
+        }
+
+        // zoom to a new center when appropriate (address searches)
+        if(prevProps.center !== this.props.center) {
+            this.map.flyTo({
+                center: this.props.center,
+                zoom: 12,
+                speed: 0.9,
+                curve: 1.7
+            })
+        }
+
+        // zoom to a bounding box when appropriate (all non-address searches)
+        if(prevProps.bbox !== this.props.bbox && this.props.bbox) {
+            this.map.fitBounds(this.props.bbox)
         }
     }
 
@@ -245,6 +273,7 @@ class Map extends Component {
     }
 
     // toggle which circles are on the map (defaults to KSI)
+    // @TODO: move this into componentDidUpdate and use props.sidebarFilter as 'e'
     toggleCircleType = e => {
         const id = e.target.id
         const hasBoundary = this.state.boundary
@@ -308,6 +337,7 @@ class Map extends Component {
         const { county, muni } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
+        // @TODO: update to this.props.sidebarToggle
         let newFilterType = this.state.toggle === 'All' ? 'all no boundary' : 'ksi no boundary'
         const filterObj = {filterType: newFilterType}
 
@@ -400,6 +430,7 @@ class Map extends Component {
 
         // update filter object w/muni id + toggle state
         let pennID = munis[props.name]
+        // @TODO: update to this.props.sidebarToggle
         let newFilterType = this.state.toggle === 'All' ? 'all' : 'ksi'
         const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID}
 

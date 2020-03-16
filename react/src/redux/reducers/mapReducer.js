@@ -84,7 +84,6 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
         dispatch(get_data_from_keyword(failObj))
     }else{
         const response = await stream.json()
-        console.log('API response ', response)
         dispatch(get_data_from_keyword(response))
     }
 }
@@ -136,6 +135,7 @@ export const getBoundingBox = id => async dispatch => {
 
 // @TODO: rename this to be specific for crash type so as not to confuse with the incoming range filter
 export const setMapFilter = filter => dispatch => {
+    console.log('filter passed to setMapFilter reducer: ', filter)
     const ksiNoBoundary = ['any', 
         ['==', 'max_sever', 1],
         ['==', 'max_sever', 2],
@@ -153,6 +153,7 @@ export const setMapFilter = filter => dispatch => {
 
     switch(filter.filterType) {
         case 'all':
+            console.log('filter at ALL case in reducer ', filter)
             dispatch(set_map_filter(allBoundary(filter.tileType, filter.id)))
             return
         case 'all no boundary':

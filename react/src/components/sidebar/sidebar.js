@@ -79,8 +79,12 @@ class Sidebar extends Component {
             selected = entry[1]
         }
 
+        const filter = {
+            filterType: selected
+        }
+
         // use selected radio button to set map filter
-        this.props.setCrashTypeFilter(selected)
+        this.props.setCrashTypeFilter(filter)
     }
 
     render() {
