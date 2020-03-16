@@ -23,6 +23,7 @@ const SET_SIDEBAR_HEADER_CONTEXT = 'SET_SIDEBAR_HEADER_CONTEXT'
 const GET_BOUNDING_BOX = 'GET_BOUNDING_BOX'
 const SET_MAP_FILTER = 'SET_MAP_FILTER'
 const GET_POLYGON_CRNS = 'GET_POLYGON_CRNS'
+const SIDEBAR_CRASH_TYPE = 'SIDEBAR_CRASH_TYPE'
 
 
 /*****************************/
@@ -34,6 +35,7 @@ const set_sidebar_header_context = area => ( { type: SET_SIDEBAR_HEADER_CONTEXT,
 const get_bounding_box = bbox => ({ type: GET_BOUNDING_BOX, bbox })
 const set_map_filter = filter => ({ type: SET_MAP_FILTER, filter })
 const get_polygon_crns = polyCRNS => ({ type: GET_POLYGON_CRNS, polyCRNS })
+const sidebar_crash_type = crashType => ({type: SIDEBAR_CRASH_TYPE, crashType})
 
 
 /***********************/
@@ -61,6 +63,9 @@ export default function mapReducer(state = [], action) {
         case GET_POLYGON_CRNS:
             const polyCRNS = action.polyCRNS
             return Object.assign({}, state, { polyCRNS })
+        case SIDEBAR_CRASH_TYPE:
+            const crashType = action.crashType
+            return Object.assign({}, state, { crashType })
         default:
             return state
     }
@@ -133,7 +138,15 @@ export const getBoundingBox = id => async dispatch => {
     }
 }
 
-// @TODO: rename this to be specific for crash type so as not to confuse with the incoming range filter
+export const sidebarCrashType = type => dispatch => dispatch(sidebar_crash_type(type))
+
+// this handles crash type and boundary. It will eventually handle range the same way it handles boundary (array of CRN)
+// @ params:
+    // filter = {
+    //     tileType: 'm / c (municipality or county',
+    //     id: '[] array of CRNs'
+    //     // @NOTE: year will be handled by pre-filtering the array of ID's. so ID effectively covers range
+    // }
 export const setMapFilter = filter => dispatch => {
     console.log('filter passed to setMapFilter reducer: ', filter)
     const ksiNoBoundary = ['any', 

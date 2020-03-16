@@ -157,7 +157,7 @@ class Map extends Component {
 
     componentDidUpdate(prevProps) {
         console.log('map props.filter on didUpdate: ', this.props.filter)
-
+        console.log('sidebar filter from store on map: ', this.props.crashType)
         // @TODO: tweak this and incorporate the logic here. Replace/update the current filter and 
         // New workflow will be as follows:
             // Sidebar provides ksi state (ksi or all)
@@ -570,6 +570,7 @@ class Map extends Component {
 const mapStateToProps = state => {
     return {
         center: state.center,
+        crashType: state.crashType,
         bounding: state.bounding,
         bbox: state.bbox,
         filter: state.filter,

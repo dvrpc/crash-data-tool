@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { getDataFromKeyword, setMapFilter } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, sidebarCrashType } from '../../redux/reducers/mapReducer.js'
 
 import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
@@ -79,12 +79,8 @@ class Sidebar extends Component {
             selected = entry[1]
         }
 
-        const filter = {
-            filterType: selected
-        }
-
         // use selected radio button to set map filter
-        this.props.setCrashTypeFilter(filter)
+        this.props.setCrashTypeFilter(selected)
     }
 
     render() {
@@ -197,7 +193,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         setDefaultState: region => dispatch(getDataFromKeyword(region)),
-        setCrashTypeFilter: filter => dispatch(setMapFilter(filter))
+        setCrashTypeFilter: filter => dispatch(sidebarCrashType(filter))
     }
 }
 
