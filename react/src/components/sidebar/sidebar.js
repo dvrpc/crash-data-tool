@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { getDataFromKeyword, sidebarCrashType } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, sidebarCrashType, sidebarRange } from '../../redux/reducers/mapReducer.js'
 
 import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
@@ -38,7 +38,7 @@ class Sidebar extends Component {
         if(this.props.filter){
             const check = this.props.filter[0]
             let crashType = check === 'any' || check === 'all' ? 'Killed or Severely Injured (KSI)' : 'All'
-            if(crashType != this.state.crashType) this.setState({crashType})
+            if(crashType !== this.state.crashType) this.setState({crashType})
         }
     }
 
@@ -58,10 +58,13 @@ class Sidebar extends Component {
             }
         }
 
+        // update store with new range
+
         // send the inputs to makeCharts 
         const data = charts.makeCharts(this.props.data, range)
 
         // tell render to listen to state instead of props
+        // @TODO: remove the localUpdate check once the filters are all set up b/c there will only ever be local updates w/the new setup
         const localUpdate = true
 
         // setState to update data & trigger a re-render
@@ -81,6 +84,11 @@ class Sidebar extends Component {
 
         // use selected radio button to set map filter
         this.props.setCrashTypeFilter(selected)
+
+        // update local state to update the charts
+        selected = selected === 'ksi' ? 'Killed or Severely Injured (KSI)' : 'All'
+        if(selected !== this.state.crashType) this.setState({selected})
+
     }
 
     render() {
@@ -193,7 +201,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         setDefaultState: region => dispatch(getDataFromKeyword(region)),
-        setCrashTypeFilter: filter => dispatch(sidebarCrashType(filter))
+        setCrashTypeFilter: filter => dispatch(sidebarCrashType(filter)),
+        setCrashRange: range => dispatch(sidebarRange(range))
     }
 }
 

@@ -194,7 +194,7 @@ class Map extends Component {
                 const toggleFilter = boundingObj.filter
 
                 // @TODO: pull from this.props.sidebarToggle instead of local state
-                toggleFilter.filterType = this.state.toggle === 'All' ? 'all' : 'ksi'
+                toggleFilter.filterType = this.props.crashType || 'ksi'
 
                 this.props.setMapFilter(toggleFilter)
                 this.setState({boundary: toggleFilter})
@@ -212,7 +212,7 @@ class Map extends Component {
         // apply polygon filter
         if(this.props.polyCRNS) {    
             // @TODO: update to this.props.sidebarToggle 
-            const toggleState = this.state.toggle.toLowerCase()
+            const toggleState = this.props.crashType || 'ksi'
             let filter;
 
             if(toggleState === 'ksi'){
@@ -338,7 +338,7 @@ class Map extends Component {
 
         // remove filter while maintaining crash type filter (all or ksi)
         // @TODO: update to this.props.sidebarToggle
-        let newFilterType = this.state.toggle === 'All' ? 'all no boundary' : 'ksi no boundary'
+        let newFilterType = this.props.crashType === 'all' ? 'all no boundary' : 'ksi no boundary'
         const filterObj = {filterType: newFilterType}
 
         // set store filter state
@@ -431,7 +431,7 @@ class Map extends Component {
         // update filter object w/muni id + toggle state
         let pennID = munis[props.name]
         // @TODO: update to this.props.sidebarToggle
-        let newFilterType = this.state.toggle === 'All' ? 'all' : 'ksi'
+        let newFilterType = this.props.crashType || 'ksi'
         const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID}
 
         // do all the things that search does
@@ -571,6 +571,7 @@ const mapStateToProps = state => {
     return {
         center: state.center,
         crashType: state.crashType,
+        range: state.range,
         bounding: state.bounding,
         bbox: state.bbox,
         filter: state.filter,
