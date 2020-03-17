@@ -156,35 +156,34 @@ class Map extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        console.log('map props.filter on didUpdate: ', this.props.filter)
-        console.log('sidebar filter from store on map: ', this.props.crashType)
-        // @TODO: tweak this and incorporate the logic here. Replace/update the current filter and 
-        // New workflow will be as follows:
-            // Sidebar provides ksi state (ksi or all)
-                // This will need to be a new reducer that simply returns the string 'ksi' or 'all'
-            // Map provides boundary state (this.state.boundary) which includes:
-                // filterType and ID
-            // Map takes ksi state (string) from Sidebar and combines it with boundary state (obect) to call this.props.setMapFilter
+        console.log('filter at did update ', this.props.filter)
 
-        // @TODO: replace with a check on the sidebar state (forthcoming this.props.sidebarFilter)
-        // toggleCircleType = e => {
-        //     const id = e.target.id
-        //     const hasBoundary = this.state.boundary
+        // receive crashType from sidebar and set new filter with it
+        if(this.props.crashType != prevProps.crashType) {
+            const hasBoundary = this.state.boundary
+            const crashType = this.props.crashType
+            console.log('in crashType condition with type: ', crashType)
             
-        //     if(hasBoundary) {
-        //         id === 'All' ? hasBoundary.filterType = 'all' : hasBoundary.filterType = 'ksi'
-        //         this.props.setMapFilter(hasBoundary)
-        //     }else{
-        //         let filterObj = id === 'All' ? {filterType: 'all no boundary'} : {filterType: 'ksi no boundary'}
-        //         this.props.setMapFilter(filterObj)
-        //     }
-            
-        //     // update toggle state so click muni & remove boundary can apply the correct filters
-        //     this.setState({toggle: id})
-        // }
+            if(hasBoundary) {
+                hasBoundary.filterType = crashType
+                this.props.setMapFilter(hasBoundary)
+            }else{
+                let filterObj = crashType === 'all' ? {filterType: 'all no boundary'} : {filterType: 'ksi no boundary'}
+                this.props.setMapFilter(filterObj)
+            }
+        }
+
+        // update map filter if necessary
+        // @TODO: roll this into the state function as stated above
+        if(this.props.filter && this.props.filter !== prevProps.filter){
+            let filter = this.props.filter === 'none' ? null : this.props.filter
+            this.map.setFilter('crash-circles', filter)
+            this.map.setFilter('crash-heat', filter)
+        }
 
         // add boundaries and their corresponding filters/styles/sidebar stats
         if(this.props.bounding !== prevProps.bounding) {
+            console.log('called BOUNDING FN in map did update')
             const boundingObj = this.props.bounding
             this.setBoundary(boundingObj)
             this.showBoundaryOverlay()
@@ -201,16 +200,9 @@ class Map extends Component {
             }
         }
 
-        // update map filter if necessary
-        // @TODO: roll this into the state function as stated above
-        if(this.props.filter && this.props.filter !== prevProps.filter){
-            let filter = this.props.filter === 'none' ? null : this.props.filter
-            this.map.setFilter('crash-circles', filter)
-            this.map.setFilter('crash-heat', filter)
-        }
-
         // apply polygon filter
-        if(this.props.polyCRNS) {    
+        if(this.props.polyCRNS) {  
+            console.log('called POLYCRN fn in map didupdate')  
             // @TODO: update to this.props.sidebarToggle 
             const toggleState = this.props.crashType || 'ksi'
             let filter;
@@ -240,7 +232,7 @@ class Map extends Component {
         }
 
         // zoom to a bounding box when appropriate (all non-address searches)
-        if(prevProps.bbox !== this.props.bbox && this.props.bbox) {
+        if(this.props.bbox && prevProps.bbox !== this.props.bbox) {
             this.map.fitBounds(this.props.bbox)
         }
     }
