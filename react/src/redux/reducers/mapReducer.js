@@ -166,11 +166,9 @@ export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
 // @ params:
 // filter = {
 //     tileType: 'm / c (municipality or county',
-//     id: '[] array of CRNs'
-//     // @NOTE: year will be handled by pre-filtering the array of ID's. so ID effectively covers range
+//     id: '[] array of CRNs' (handles range and crashType)
 // }
 export const setMapFilter = filter => dispatch => {
-    console.log('filter passed to setMapFilter reducer: ', filter)
     const ksiNoBoundary = ['any', 
         ['==', 'max_sever', 1],
         ['==', 'max_sever', 2],
@@ -188,7 +186,6 @@ export const setMapFilter = filter => dispatch => {
 
     switch(filter.filterType) {
         case 'all':
-            console.log('filter at ALL case in reducer ', filter)
             dispatch(set_map_filter(allBoundary(filter.tileType, filter.id)))
             return
         case 'all no boundary':

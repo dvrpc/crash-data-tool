@@ -17,11 +17,7 @@ class Map extends Component {
         this.state = {
             boundary: null,
             heatZoom: true,
-
-            // @TODO: remove this from local state since the toggle comes from sidebar now
-            toggle: 'ksi',
             polygon: false,
-            
             // draw is on local state so that removeBoundary() can access the instance of MapboxDraw to call draw.deleteAll()
             draw: new MapboxDraw({
                 displayControlsDefault: false,
@@ -156,13 +152,10 @@ class Map extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        console.log('filter at did update ', this.props.filter)
-
         // receive crashType from sidebar and set new filter with it
         if(this.props.crashType != prevProps.crashType) {
             const hasBoundary = this.state.boundary
             const crashType = this.props.crashType
-            console.log('in crashType condition with type: ', crashType)
             
             if(hasBoundary) {
                 hasBoundary.filterType = crashType
@@ -174,16 +167,15 @@ class Map extends Component {
         }
 
         // update map filter if necessary
-        // @TODO: roll this into the state function as stated above
         if(this.props.filter && this.props.filter !== prevProps.filter){
             let filter = this.props.filter === 'none' ? null : this.props.filter
+
             this.map.setFilter('crash-circles', filter)
             this.map.setFilter('crash-heat', filter)
         }
 
         // add boundaries and their corresponding filters/styles/sidebar stats
         if(this.props.bounding !== prevProps.bounding) {
-            console.log('called BOUNDING FN in map did update')
             const boundingObj = this.props.bounding
             this.setBoundary(boundingObj)
             this.showBoundaryOverlay()
@@ -191,8 +183,6 @@ class Map extends Component {
             // update map filter & circle toggle state when coming from search
             if(boundingObj.filter) {
                 const toggleFilter = boundingObj.filter
-
-                // @TODO: pull from this.props.sidebarToggle instead of local state
                 toggleFilter.filterType = this.props.crashType || 'ksi'
 
                 this.props.setMapFilter(toggleFilter)
@@ -202,8 +192,6 @@ class Map extends Component {
 
         // apply polygon filter
         if(this.props.polyCRNS) {  
-            console.log('called POLYCRN fn in map didupdate')  
-            // @TODO: update to this.props.sidebarToggle 
             const toggleState = this.props.crashType || 'ksi'
             let filter;
 
@@ -264,24 +252,6 @@ class Map extends Component {
         }
     }
 
-    // toggle which circles are on the map (defaults to KSI)
-    // @TODO: move this into componentDidUpdate and use props.sidebarFilter as 'e'
-    toggleCircleType = e => {
-        const id = e.target.id
-        const hasBoundary = this.state.boundary
-        
-        if(hasBoundary) {
-            id === 'All' ? hasBoundary.filterType = 'all' : hasBoundary.filterType = 'ksi'
-            this.props.setMapFilter(hasBoundary)
-        }else{
-            let filterObj = id === 'All' ? {filterType: 'all no boundary'} : {filterType: 'ksi no boundary'}
-            this.props.setMapFilter(filterObj)
-        }
-        
-        // update toggle state so click muni & remove boundary can apply the correct filters
-        this.setState({toggle: id})
-    }
-
     // reveal the boundary overlay when a boundary is established
     showBoundaryOverlay = () => this.boundaryOverlay.classList.remove('hidden')
 
@@ -329,7 +299,6 @@ class Map extends Component {
         const { county, muni } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
-        // @TODO: update to this.props.sidebarToggle
         let newFilterType = this.props.crashType === 'all' ? 'all no boundary' : 'ksi no boundary'
         const filterObj = {filterType: newFilterType}
 
@@ -422,7 +391,6 @@ class Map extends Component {
 
         // update filter object w/muni id + toggle state
         let pennID = munis[props.name]
-        // @TODO: update to this.props.sidebarToggle
         let newFilterType = this.props.crashType || 'ksi'
         const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID}
 
@@ -528,22 +496,6 @@ class Map extends Component {
                         <span>1</span>
                         <span>4</span>
                         <span>8+</span>
-                    </div>
-                </div>
-
-                <div id="toggle-wrapper" className="shadow overlays custom-toggle" aria-label="Toggle layers" onClick={this.toggleLayerToggles}>
-                    <div id="toggle-circles" className="shadow overlays hidden">
-                        <h3 className="legend-header centered-text">Toggle Crash Type</h3>
-                        <form id="toggle-circles-form" onChange={this.toggleCircleType}>
-                            <div>
-                                <label htmlFor="KSI">KSI</label>
-                                <input id="KSI" type="radio" value="KSI" name="crash-circle-type" defaultChecked />
-                            </div>
-                            <div>
-                                <label htmlFor="All">All</label>
-                                <input id="All" type="radio" value="All" name="crash-circle-type" />
-                            </div>
-                        </form>
                     </div>
                 </div>
 
