@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { getDataFromKeyword } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, sidebarCrashType, sidebarRange } from '../../redux/reducers/mapReducer.js'
 
 import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
@@ -38,11 +38,11 @@ class Sidebar extends Component {
         if(this.props.filter){
             const check = this.props.filter[0]
             let crashType = check === 'any' || check === 'all' ? 'Killed or Severely Injured (KSI)' : 'All'
-            if(crashType != this.state.crashType) this.setState({crashType})
+            if(crashType !== this.state.crashType) this.setState({crashType})
         }
     }
 
-    updateChartRange = e => {
+    updateRange = e => {
         e.preventDefault()
 
         let range = {from: 0, to: 0}
@@ -58,14 +58,37 @@ class Sidebar extends Component {
             }
         }
 
+        // update store with new range
+
         // send the inputs to makeCharts 
         const data = charts.makeCharts(this.props.data, range)
 
         // tell render to listen to state instead of props
+        // @TODO: remove the localUpdate check once the filters are all set up b/c there will only ever be local updates w/the new setup
         const localUpdate = true
 
         // setState to update data & trigger a re-render
         this.setState({data, localUpdate})
+    }
+
+    updateCrashType = e => {
+        e.preventDefault()
+        const form = e.target
+        const data = new FormData(form)
+        let selected;
+
+        // extract data
+        for(const entry of data) {
+            selected = entry[1]
+        }
+
+        // use selected radio button to set map filter
+        this.props.setCrashTypeFilter(selected)
+
+        // update local state to update the charts
+        selected = selected === 'ksi' ? 'Killed or Severely Injured (KSI)' : 'All'
+        if(selected !== this.state.crashType) this.setState({selected})
+
     }
 
     render() {
@@ -100,35 +123,50 @@ class Sidebar extends Component {
         return (
             <section id="sidebar">
                 <h1 id="crash-map-sidebar-header" className="centered-text">Crash Statistics for {area}</h1>
-                    <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2018. This dataset is also used by our state and local partners.</p>
-                    <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{rangeFrom}</strong> to <strong>{rangeTo}</strong></p>
+                <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2018. This dataset is also used by our state and local partners.</p>
+                <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{rangeFrom}</strong> to <strong>{rangeTo}</strong>. You can adjust the range and severity type using the forms below.</p>
                 
-                <hr id="sidebar-hr" />
+                <form className="crash-map-charts-form" id="crash-map-update-range" onSubmit={this.updateRange}>
+                    <fieldset className="crash-maps-charts-fieldset" form="crash-map-update-range">
+                        <legend>Select Date Range: </legend>
 
-                <form id="update-charts-form" onSubmit={this.updateChartRange}>
-                    <fieldset id="update-charts-fieldset" form="update-charts-form">
-                        <legend>Select Charts Data Range: </legend>
-                        <div id="crash-range-input-wrapper">
-                            <label htmlFor="from">From: </label>
-                            <select id="crash-select-from" name="from">
-                                <option value="2014">2014</option>
-                                <option value="2015">2015</option>
-                                <option value="2016">2016</option>
-                                <option value="2017">2017</option>
-                                <option value="2018">2018</option>
-                            </select>
-                            <label htmlFor="to">To: </label>
-                            <select name="to">
-                                <option value="2018">2018</option>
-                                <option value="2017">2017</option>
-                                <option value="2016">2016</option>
-                                <option value="2015">2015</option>
-                                <option value="2014">2014</option>
-                            </select>
-                            <button id="crash-range-button" type="submit">Update</button>
-                        </div>
+                        <label htmlFor="from">From: </label>
+                        <select id="crash-select-from" name="from" className="crash-map-first-input">
+                            <option value="2014">2014</option>
+                            <option value="2015">2015</option>
+                            <option value="2016">2016</option>
+                            <option value="2017">2017</option>
+                            <option value="2018">2018</option>
+                        </select>
+
+                        <label htmlFor="to">To: </label>
+                        <select name="to">
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                            <option value="2014">2014</option>
+                        </select>
+
+                        <button id="crash-range-button" type="submit">Update</button>
                     </fieldset>
                 </form>
+
+                <form className="crash-map-charts-form" id="crash-map-update-type" onSubmit={this.updateCrashType}>
+                    <fieldset className="crash-maps-charts-fieldset" form="crash-map-update-type">
+                        <legend>Select Severity Type: </legend>
+
+                        <label htmlFor="ksi">KSI: </label>
+                        <input type="radio" value="ksi" name="crashType" className="crash-map-first-input" defaultChecked></input>
+
+                        <label htmlFor="all">All: </label>
+                        <input type="radio" value="all" name="crashType"></input>
+
+                        <button id="crash-range-button" type="submit">Update</button>
+                    </fieldset>
+                </form>
+
+                <hr id="sidebar-hr" />
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crashes over Time</h2>
                     <Line data={data.trendChart} options={trendOptions}/>
@@ -162,7 +200,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        setDefaultState: region => dispatch(getDataFromKeyword(region))
+        setDefaultState: region => dispatch(getDataFromKeyword(region)),
+        setCrashTypeFilter: filter => dispatch(sidebarCrashType(filter)),
+        setCrashRange: range => dispatch(sidebarRange(range))
     }
 }
 

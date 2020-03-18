@@ -23,6 +23,8 @@ const SET_SIDEBAR_HEADER_CONTEXT = 'SET_SIDEBAR_HEADER_CONTEXT'
 const GET_BOUNDING_BOX = 'GET_BOUNDING_BOX'
 const SET_MAP_FILTER = 'SET_MAP_FILTER'
 const GET_POLYGON_CRNS = 'GET_POLYGON_CRNS'
+const SIDEBAR_CRASH_TYPE = 'SIDEBAR_CRASH_TYPE'
+const SIDEBAR_RANGE = 'SIDEBAR_RANGE'
 
 
 /*****************************/
@@ -34,6 +36,8 @@ const set_sidebar_header_context = area => ( { type: SET_SIDEBAR_HEADER_CONTEXT,
 const get_bounding_box = bbox => ({ type: GET_BOUNDING_BOX, bbox })
 const set_map_filter = filter => ({ type: SET_MAP_FILTER, filter })
 const get_polygon_crns = polyCRNS => ({ type: GET_POLYGON_CRNS, polyCRNS })
+const sidebar_crash_type = crashType => ({type: SIDEBAR_CRASH_TYPE, crashType})
+const sidebar_range = range => ({type: SIDEBAR_RANGE, range})
 
 
 /***********************/
@@ -61,6 +65,12 @@ export default function mapReducer(state = [], action) {
         case GET_POLYGON_CRNS:
             const polyCRNS = action.polyCRNS
             return Object.assign({}, state, { polyCRNS })
+        case SIDEBAR_CRASH_TYPE:
+            const crashType = action.crashType
+            return Object.assign({}, state, { crashType })
+        case SIDEBAR_RANGE:
+            const range = action.range
+            return Object.assign({}, state, { range })
         default:
             return state
     }
@@ -69,10 +79,13 @@ export default function mapReducer(state = [], action) {
 
 /**************************/
 /****** DISPATCHERS ******/
+
+
+/***** MAP Dispatchers *****/
 export const getDataFromKeyword = boundaryObj => async dispatch => {
     const { type, name } = boundaryObj
     
-    //  @TODO: SOME NJ municipalities return a blank object. The call is successful, it's just empty.
+    //  @BUG: SOME NJ municipalities return a blank object. The call is successful, it's just empty.
     // Ex. Mount Laurel Township fails, Camden City works. 
     
     const api = `https://alpha.dvrpc.org/api/crash-data/v2/sidebarInfo?type=${type}&value=${name}`
@@ -84,7 +97,6 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
         dispatch(get_data_from_keyword(failObj))
     }else{
         const response = await stream.json()
-        console.log('API response ', response)
         dispatch(get_data_from_keyword(response))
     }
 }
@@ -118,7 +130,7 @@ export const getBoundingBox = id => async dispatch => {
     const stream = await fetch(backupAPI, postOptions)
     
     if(stream.ok) {
-        // @TODO: ArcGIS is returning an invalid JSON object. It does not have a closing bracket. Awesome cool great job. 
+        // @BUG: ArcGIS is returning an invalid JSON object. It does not have a closing bracket. Awesome cool great job. 
         // @TODO: add this two liner back in when we got back to the regular api call
         // const response = await stream.json()
         // const bbox = response.bbox
@@ -134,6 +146,28 @@ export const getBoundingBox = id => async dispatch => {
     }
 }
 
+// pass a bbox and get an array of CRN's to filter map tiles from polygons
+export const getPolygonCrashes = bbox => async dispatch => {
+    const api = `https://alpha.dvrpc.org/api/crash-data/v2/crashId?geojson=${bbox}`
+    const stream = await fetch(api, getOptions)
+
+    if(stream.ok) {
+        const response = await stream.json()
+        dispatch(get_polygon_crns(response))
+    }else {
+        console.log('get crashes from polygon failed because ', stream)
+    }
+}
+
+// reset the polyCRNS on boundary removal
+export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
+
+// this handles crash type and boundary. It will eventually handle range the same way it handles boundary (array of CRN)
+// @ params:
+// filter = {
+//     tileType: 'm / c (municipality or county',
+//     id: '[] array of CRNs' (handles range and crashType)
+// }
 export const setMapFilter = filter => dispatch => {
     const ksiNoBoundary = ['any', 
         ['==', 'max_sever', 1],
@@ -166,18 +200,8 @@ export const setMapFilter = filter => dispatch => {
     }
 }
 
-// pass a bbox and get an array of CRN's to filter map tiles from polygons
-export const getPolygonCrashes = bbox => async dispatch => {
-    const api = `https://alpha.dvrpc.org/api/crash-data/v2/crashId?geojson=${bbox}`
-    const stream = await fetch(api, getOptions)
 
-    if(stream.ok) {
-        const response = await stream.json()
-        dispatch(get_polygon_crns(response))
-    }else {
-        console.log('get crashes from polygon failed because ', stream)
-    }
-}
+/***** SIDEBAR Dispatchers *****/
+export const sidebarCrashType = type => dispatch => dispatch(sidebar_crash_type(type))
 
-// reset the polyCRNS on boundary removal
-export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
+export const sidebarRange = range => dispatch => dispatch(sidebar_range(range))

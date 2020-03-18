@@ -17,9 +17,7 @@ class Map extends Component {
         this.state = {
             boundary: null,
             heatZoom: true,
-            toggle: 'ksi',
             polygon: false,
-            
             // draw is on local state so that removeBoundary() can access the instance of MapboxDraw to call draw.deleteAll()
             draw: new MapboxDraw({
                 displayControlsDefault: false,
@@ -43,10 +41,6 @@ class Map extends Component {
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            /* Possible styles:
-                dark: mapbox://styles/mapbox/dark-v9?optimize=true
-                navigation guidance night: mapbox://styles/mapbox/navigation-guidance-night-v2?optimize=true
-            */
             style: 'mapbox://styles/mapbox/navigation-guidance-night-v2?optimize=true',
             center: [-75.2273, 40.071],
             zoom: 8.2
@@ -101,9 +95,10 @@ class Map extends Component {
                     this.setState({heatZoom: false})
                 }
 
-                // @TODO: add (KSI) or (All) depending on toggle state
                 if(zoom < 11 && !this.state.heatZoom){
-                    this.legendTitle.textContent = 'Number of Crashes'
+                    let crashType = this.props.crashType || 'ksi'
+                    this.legendTitle.textContent = `Number of Crashes (${crashType})`
+                    // @TODO: look here for updating Crash Type bg colors
                     this.legendGradient.style.background = 'linear-gradient(to right, #f8eeed, #f9dad7, #f7b9b3, #f39993, #d62839)'
                     this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
                     this.setState({heatZoom: true})
@@ -159,19 +154,26 @@ class Map extends Component {
 
     componentDidUpdate(prevProps) {
 
-        // zoom to a new center when appropriate (address searches)
-        if(prevProps.center !== this.props.center) {
-            this.map.flyTo({
-                center: this.props.center,
-                zoom: 12,
-                speed: 0.9,
-                curve: 1.7
-            })
+        // create filters (boundary, crashType, range)
+        if(this.props.crashType !== prevProps.crashType) {
+            const hasBoundary = this.state.boundary
+            const crashType = this.props.crashType
+            
+            if(hasBoundary) {
+                hasBoundary.filterType = crashType
+                this.props.setMapFilter(hasBoundary)
+            }else{
+                let filterObj = crashType === 'all' ? {filterType: 'all no boundary'} : {filterType: 'ksi no boundary'}
+                this.props.setMapFilter(filterObj)
+            }
         }
 
-        // zoom to a bounding box when appropriate (all non-address searches)
-        if(prevProps.bbox !== this.props.bbox && this.props.bbox) {
-            this.map.fitBounds(this.props.bbox)
+        // apply filters
+        if(this.props.filter){
+            let filter = this.props.filter === 'none' ? null : this.props.filter
+
+            this.map.setFilter('crash-circles', filter)
+            this.map.setFilter('crash-heat', filter)
         }
 
         // add boundaries and their corresponding filters/styles/sidebar stats
@@ -183,23 +185,16 @@ class Map extends Component {
             // update map filter & circle toggle state when coming from search
             if(boundingObj.filter) {
                 const toggleFilter = boundingObj.filter
-                toggleFilter.filterType = this.state.toggle === 'All' ? 'all' : 'ksi'
+                toggleFilter.filterType = this.props.crashType || 'ksi'
 
                 this.props.setMapFilter(toggleFilter)
                 this.setState({boundary: toggleFilter})
             }
         }
 
-        // update map filter if necessary
-        if(this.props.filter && this.props.filter !== prevProps.filter){
-            let filter = this.props.filter === 'none' ? null : this.props.filter
-            this.map.setFilter('crash-circles', filter)
-            this.map.setFilter('crash-heat', filter)
-        }
-
         // apply polygon filter
-        if(this.props.polyCRNS) {     
-            const toggleState = this.state.toggle.toLowerCase()
+        if(this.props.polyCRNS) {
+            const toggleState = this.props.crashType || 'ksi'
             let filter;
 
             if(toggleState === 'ksi'){
@@ -210,10 +205,25 @@ class Map extends Component {
                 ]
             } else{
                 filter = ['match', ['get', 'id'], this.props.polyCRNS, true, false]
-            }            
-
+            }     
+            
             this.map.setFilter('crash-circles', filter)
             this.map.setFilter('crash-heat', filter)
+        }
+
+        // zoom to a new center when appropriate (address searches)
+        if(prevProps.center !== this.props.center) {
+            this.map.flyTo({
+                center: this.props.center,
+                zoom: 12,
+                speed: 0.9,
+                curve: 1.7
+            })
+        }
+
+        // zoom to a bounding box when appropriate (all non-address searches)
+        if(this.props.bbox && prevProps.bbox !== this.props.bbox) {
+            this.map.fitBounds(this.props.bbox)
         }
     }
 
@@ -242,23 +252,6 @@ class Map extends Component {
         for(var i = 0; i < length; i++){
             children[i].classList.toggle('hidden')
         }
-    }
-
-    // toggle which circles are on the map (defaults to KSI)
-    toggleCircleType = e => {
-        const id = e.target.id
-        const hasBoundary = this.state.boundary
-        
-        if(hasBoundary) {
-            id === 'All' ? hasBoundary.filterType = 'all' : hasBoundary.filterType = 'ksi'
-            this.props.setMapFilter(hasBoundary)
-        }else{
-            let filterObj = id === 'All' ? {filterType: 'all no boundary'} : {filterType: 'ksi no boundary'}
-            this.props.setMapFilter(filterObj)
-        }
-        
-        // update toggle state so click muni & remove boundary can apply the correct filters
-        this.setState({toggle: id})
     }
 
     // reveal the boundary overlay when a boundary is established
@@ -304,23 +297,24 @@ class Map extends Component {
         this.props.setDefaultState(regionalStats)
         this.props.setSidebarHeaderContext('the DVRPC region')
 
-        // update map filters and paint properties
+        // get default map filters and paint properties
         const { county, muni } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
-        let newFilterType = this.state.toggle === 'All' ? 'all no boundary' : 'ksi no boundary'
+        let newFilterType = this.props.crashType === 'all' ? 'all no boundary' : 'ksi no boundary'
         const filterObj = {filterType: newFilterType}
 
         // set store filter state
         this.props.setMapFilter(filterObj)
+
+        // update map
         this.map.setFilter(county.layer, county.filter)
         this.map.setFilter(muni.layer, muni.filter)
-
         this.map.setPaintProperty(county.layer, 'line-width', county.paint.width)
         this.map.setPaintProperty(county.layer, 'line-color', county.paint.color)
         this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
         this.map.setPaintProperty(muni.layer, 'line-color', muni.paint.color)
-
+        
         // update boundary state to allow hover effects now that boundaries are removed & update polygon state to enable normal event listener interaction
         this.setState({
             boundary: null,
@@ -400,7 +394,7 @@ class Map extends Component {
 
         // update filter object w/muni id + toggle state
         let pennID = munis[props.name]
-        let newFilterType = this.state.toggle === 'All' ? 'all' : 'ksi'
+        let newFilterType = this.props.crashType || 'ksi'
         const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID}
 
         // do all the things that search does
@@ -499,28 +493,12 @@ class Map extends Component {
         return (
             <main id="crashMap" ref={el => this.crashMap = el}>
                 <div id="legend" className="shadow overlays">
-                    <h3 className="legend-header centered-text" ref={el => this.legendTitle = el}>Number of Crashes</h3>
+                    <h3 className="legend-header centered-text" ref={el => this.legendTitle = el}>Number of Crashes (ksi)</h3>
                     <span id="legend-gradient" ref={el => this.legendGradient = el}></span>
                     <div id="legend-text" ref={el => this.legendLabel = el}>
                         <span>1</span>
                         <span>4</span>
                         <span>8+</span>
-                    </div>
-                </div>
-
-                <div id="toggle-wrapper" className="shadow overlays custom-toggle" aria-label="Toggle layers" onClick={this.toggleLayerToggles}>
-                    <div id="toggle-circles" className="shadow overlays hidden">
-                        <h3 className="legend-header centered-text">Toggle Crash Type</h3>
-                        <form id="toggle-circles-form" onChange={this.toggleCircleType}>
-                            <div>
-                                <label htmlFor="KSI">KSI</label>
-                                <input id="KSI" type="radio" value="KSI" name="crash-circle-type" defaultChecked />
-                            </div>
-                            <div>
-                                <label htmlFor="All">All</label>
-                                <input id="All" type="radio" value="All" name="crash-circle-type" />
-                            </div>
-                        </form>
                     </div>
                 </div>
 
@@ -539,6 +517,8 @@ class Map extends Component {
 const mapStateToProps = state => {
     return {
         center: state.center,
+        crashType: state.crashType,
+        range: state.range,
         bounding: state.bounding,
         bbox: state.bbox,
         filter: state.filter,

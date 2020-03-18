@@ -22,7 +22,7 @@
     margin: 2% 0;
 }
 .crash-map-sidebar-subheader{
-    margin-top: 8%;
+    margin-top: 4%;
     font-size: 1.2rem;
 }
 .sidebar-paragraphs{
@@ -46,17 +46,14 @@
 
 
 /* Chart Form */
-#update-charts-form{
-    margin-top: 5%;
+.crash-map-charts-form{
+    margin-top: 3%;
 }
-#update-charts-fieldset{
+.crash-map-charts-fieldset{
     background: #fcfcfc;
 }
-#crash-range-input-wrapper{
-    padding: 1% 0;
-}
-#crash-select-from {
-    margin-right: 5%;
+.crash-map-first-input{
+    margin-right: 3%;
 }
 #crash-range-button{
     float: right;
