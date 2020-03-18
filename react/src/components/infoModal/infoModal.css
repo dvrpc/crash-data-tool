@@ -15,7 +15,7 @@
     font-weight: 900;
     color: #f6efee;
 }
-#crash-map-modal-x:hover, #crash-map-modal-tabs:hover{
+#crash-map-modal-x, #crash-map-modal-tabs{
     cursor: pointer;
 }
 #crash-map-modal h2{

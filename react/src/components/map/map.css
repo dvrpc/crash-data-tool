@@ -41,6 +41,7 @@
     margin: 150px 10px 0 0;
     right: 0;
     padding: 5px;
+    cursor: pointer;
 }
 #default-extent-img{
     height: 100%;
@@ -54,10 +55,8 @@
     right: auto;
     padding: 6px 10px;
     border: none;
-}
-/* #remove-boundary-btn:hover{
     cursor: pointer;
-} */
+}
 #remove-boundary-x{
     background: #424b54;
     color: #f6efee;

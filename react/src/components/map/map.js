@@ -90,7 +90,7 @@ class Map extends Component {
 
                 if(zoom >= 11 && this.state.heatZoom) {
                     this.legendTitle.textContent = 'Crash Severity'
-                    this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7 1%, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #d62839)'
+                    this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #d62839)'
                     this.legendLabel.innerHTML = '<span>No Injury</span><span>Fatal</span>'
                     this.setState({heatZoom: false})
                 }
