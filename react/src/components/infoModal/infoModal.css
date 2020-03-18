@@ -2,9 +2,9 @@
     width: 800px;
     padding: 0;
     z-index: 5;
-    margin: 3.5% auto 0 auto;
+    margin: 5px auto 0 auto;
     box-shadow: 0 0 100vh 100vh rgba(0,0,0,0.6);
-    border-color: #424b54;
+    border-color: #437b82;
     border-radius: 3px;
 }
 #crash-map-modal-x{
@@ -20,7 +20,7 @@
 }
 #crash-map-modal h2{
     color: #f6efee;
-    background: #424b54;
+    background: #437b82;
     padding: 15px 0 15px 7.5%;
 }
 #crash-map-modal-tabs{
@@ -31,7 +31,7 @@
     margin-top: 20px;
 }
 .crash-map-modal-active-tab{
-    color: #424b54;
+    color: #437b82;
     font-weight: 900 !important;
     border-left: 1px solid #424b54;
     border-right: 1px solid #424b54;
