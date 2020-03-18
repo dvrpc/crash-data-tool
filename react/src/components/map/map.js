@@ -98,8 +98,7 @@ class Map extends Component {
                 if(zoom < 11 && !this.state.heatZoom){
                     let crashType = this.props.crashType || 'ksi'
                     this.legendTitle.textContent = `Number of Crashes (${crashType})`
-                    // @TODO: look here for updating Crash Type bg colors
-                    this.legendGradient.style.background = 'linear-gradient(to right, #f8eeed, #f9dad7, #f7b9b3, #f39993, #d62839)'
+                    this.legendGradient.style.background = 'linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248)'
                     this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
                     this.setState({heatZoom: true})
                 }

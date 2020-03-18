@@ -26,7 +26,7 @@
     display: block;
     height: 20px;
     margin-top: 10px;
-    background: linear-gradient(to right, #f8eeed, #f9dad7, #f7b9b3, #f39993, #d62839);
+    background: linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248);
 }
 #legend-text{
     display: flex;
