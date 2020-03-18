@@ -8,6 +8,18 @@ body {
   line-height: 1.5;
   text-rendering: optimizeLegibility;
 }
+strong{
+  color: #f4a22d;
+}
+select, input {
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+}
+select {
+  padding: 3px 6px;
+}
+
 
 /* General Class Selectors */
 .centered-text{
@@ -19,6 +31,7 @@ body {
 .hidden{
   display: none;
 }
+
 
 
 /* Media Queries */

@@ -86,7 +86,7 @@ class Search extends Component {
                     </fieldset>
                     ) : (
                     <fieldset className="search-form-fieldset" name="address" form="search-form">
-                        <input name="address" type="text" />
+                        <input name="address" type="text" placeholder="enter address" />
                     </fieldset>
                     )
                 }

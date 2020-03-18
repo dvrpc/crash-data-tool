@@ -90,7 +90,7 @@ class Map extends Component {
 
                 if(zoom >= 11 && this.state.heatZoom) {
                     this.legendTitle.textContent = 'Crash Severity'
-                    this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7 1%, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #d62839)'
+                    this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #d62839)'
                     this.legendLabel.innerHTML = '<span>No Injury</span><span>Fatal</span>'
                     this.setState({heatZoom: false})
                 }
@@ -98,8 +98,7 @@ class Map extends Component {
                 if(zoom < 11 && !this.state.heatZoom){
                     let crashType = this.props.crashType || 'ksi'
                     this.legendTitle.textContent = `Number of Crashes (${crashType})`
-                    // @TODO: look here for updating Crash Type bg colors
-                    this.legendGradient.style.background = 'linear-gradient(to right, #f8eeed, #f9dad7, #f7b9b3, #f39993, #d62839)'
+                    this.legendGradient.style.background = 'linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248)'
                     this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
                     this.setState({heatZoom: true})
                 }
@@ -490,10 +489,12 @@ class Map extends Component {
 
 
     render() {
+        let crashType = this.props.crashType || 'ksi'
+        
         return (
             <main id="crashMap" ref={el => this.crashMap = el}>
                 <div id="legend" className="shadow overlays">
-                    <h3 className="legend-header centered-text" ref={el => this.legendTitle = el}>Number of Crashes (ksi)</h3>
+                    <h3 className="legend-header centered-text" ref={el => this.legendTitle = el}>Number of Crashes ({crashType})</h3>
                     <span id="legend-gradient" ref={el => this.legendGradient = el}></span>
                     <div id="legend-text" ref={el => this.legendLabel = el}>
                         <span>1</span>

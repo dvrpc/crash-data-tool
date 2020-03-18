@@ -61,33 +61,38 @@ const crashHeat = {
             ['linear'],
             ['get', 'max_sever'],
             1, 2,
-            2, 1
+            2, 1,
+            3, 0.6,
+            4, 0.3,
+            5, 0.1,
+            6, 0.08,
+            7, 0.05,
+            8, 0.02
         ],
         'heatmap-intensity': [
             'interpolate',
             ['linear'],
             ['zoom'],
-            8.2, 1.3,
-            11, 3
+            8.2, 1,
+            11, 2
         ],
         'heatmap-radius': [
             'interpolate',
             ['linear'],
             ['zoom'],
-            8.2, 2.5,
-            11, 3
+            8.2, 1.5,
+            11, 2.5
         ],
         'heatmap-color': [
             'interpolate',
             ['linear'],
             ['heatmap-density'],
             0, 'rgba(0,0,0,0)',
-            // sequential color scheme leading to the KSI red:
-            0.20, '#f8eeed ',
-            0.40, '#f9dad7 ',
-            0.60, '#f7b9b3 ',
-            0.80, '#f39993 ',
-            1, '#d62839 '
+            0.20, '#f8f8fe',
+            0.40, '#dddefa',
+            0.60, '#bbbdf6',
+            0.80, '#414770',
+            1, '#372248'
         ]
     }
 }

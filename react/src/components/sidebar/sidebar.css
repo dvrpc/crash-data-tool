@@ -13,6 +13,9 @@
     margin: 5% 0;
     font-size: 1.5rem;
 }
+#crash-map-sidebar-header, .crash-map-sidebar-subheader{
+    color: #437b82;
+}
 #sidebar-hr{
     border: 0;
     border-top: 1px solid #ddd;
@@ -51,12 +54,19 @@
 }
 .crash-map-charts-fieldset{
     background: #fcfcfc;
+    border: 1px solid #f4a22d;
 }
 .crash-map-first-input{
     margin-right: 3%;
 }
 #crash-range-button{
     float: right;
+    border-radius: 3px;
+    border: none;
+    padding: 4px 8px;
+    background: #f4a22d;
+    color: #fff;
+    cursor: pointer;
 }
 
 

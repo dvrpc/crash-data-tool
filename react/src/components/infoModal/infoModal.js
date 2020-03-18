@@ -39,9 +39,23 @@ class Modal extends Component {
                         <h3 id="crash-disclaimer-tab">Disclaimer</h3>
                     </div>
                     <div id="crash-map-modal-content">
-                        <p>Words about the app. Hey, you know how I'm, like, always trying to save the planet? Here's my chance. Did he just throw my cat out of the window? My dad once told me, laugh and the world laughs with you, Cry, and I'll give you something to cry about you little! Is this my espresso machine? Wh-what is-h-how did you get my espresso machine?</p>
-                        <p>Yeah, but John, if The Pirates of the Caribbean breaks down, the pirates don’t eat the tourists. God help us, we're in the hands of engineers. Yeah, but your scientists were so preoccupied with whether or not they could, they didn't stop to think if they should.</p>
-                        <p>You know what? It is beets. I've crashed into a beet truck. Must go faster. Just my luck, no ice. We gotta burn the rain forest, dump toxic waste, pollute the air, and rip up the OZONE! 'Cause maybe if we screw up this planet enough, they won't want it anymore!</p>
+                        <p>In transportation planning, crash data is a vital resource for identifying crash trends and needed safety improvements. DVRPC is consistent with state and local partners by employing a Vision Zero approach to crash data analysis: no loss of life in our region's roadways is acceptable. Roadway owners and policymakers should focus on preventing crashes that result in fatalities or serious injuries - the most severe crashes on the road.</p>
+                        <span>Injury severity from crashes is divided into seven possible categories:</span>
+                        <ol>
+                            <li><strong>Fatality</strong>: Fatalities stemming from crashes may occur up to 30 days following the crash for the injury to be coded as fatal.</li>
+                            <li><strong>Suspected Serious Injury</strong>: The responding police officer suspects that the person sustained a serious, often incapacitating, injury.</li>
+                            <li><strong>Suspected Minor Injury</strong>: The responding police officer suspects that the person sustained an injury less sever than a serious injury, and the injury is "evident".</li>
+                            <li><strong>Possible Injury</strong>: The responding police officer suspects that the person sustained an injury of low severity, sometimes a "complaint of pain," and the injury is not readily evident.</li>
+                            <li><strong>Not Injured</strong>: The responding police officer does not suspect that the person was injuried.
+                            <ul>
+                                <li>In <strong>Pennsylvania</strong>, if no one was injured than at least one vehicle must require a tow from the scene of the crash for that crash to be considered "reportable."</li>
+                                <li> In <strong>New Jersey</strong> a crash is "reportable" if any one person involved is injured, or if there is damage to property of $500 or more.</li>
+                            </ul>
+                            </li>
+                            <li><strong>Unknown Injury</strong>: An injury is suspected but the severity of the injury is unknown.</li>
+                            <li><strong>Unknown if Injured</strong>: Data is unavailable regarding whether the person was injured.</li>
+                        </ol>
+                        <hr id="crash-map-modal-hr"/>
                         <p><strong>Contact:</strong> Kevin Murphy <a href="mailto:kmurphy@dvrpc.org">kmurphy@dvrpc.org</a></p>
                     </div>
                 </dialog>
