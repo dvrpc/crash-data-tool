@@ -19,16 +19,15 @@
 /* Information Modal Button */
 #crash-map-nav-info-btn {
     color: #f6efee;
-    /* border: 2px solid #f6efee; */
     border-color: #f6efee;
     border-radius: 50%;
     background: none;
     font-size: 1rem;
     font-weight: 900;
     padding: 2px 7px;
+    cursor: pointer;
 }
 #crash-map-nav-info-btn:hover {
-    cursor: pointer;
     background: #f6efee;
     color: #424b54;
 }

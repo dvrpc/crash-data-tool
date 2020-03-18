@@ -75,6 +75,7 @@ header{
     max-width: 300px;
     min-height: 185px;
     background: rgba(0, 19, 38, 0.1);
+    cursor: pointer;
 }
 .crash-app-inactive:hover{
     pointer-events: none;
@@ -101,7 +102,6 @@ header{
 }
 .crash-app:hover{
     box-shadow: 1px 2px 3px rgba(0,19,38,0.7);
-    cursor: pointer;
 }
 .crash-app:hover figcaption{
     text-decoration: underline;
