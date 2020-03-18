@@ -127,7 +127,7 @@ class Sidebar extends Component {
                 <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{rangeFrom}</strong> to <strong>{rangeTo}</strong>. You can adjust the range and severity type using the forms below.</p>
                 
                 <form className="crash-map-charts-form" id="crash-map-update-range" onSubmit={this.updateRange}>
-                    <fieldset className="crash-maps-charts-fieldset" form="crash-map-update-range">
+                    <fieldset className="crash-map-charts-fieldset" form="crash-map-update-range">
                         <legend>Select Date Range: </legend>
 
                         <label htmlFor="from">From: </label>
@@ -153,7 +153,7 @@ class Sidebar extends Component {
                 </form>
 
                 <form className="crash-map-charts-form" id="crash-map-update-type" onSubmit={this.updateCrashType}>
-                    <fieldset className="crash-maps-charts-fieldset" form="crash-map-update-type">
+                    <fieldset className="crash-map-charts-fieldset" form="crash-map-update-type">
                         <legend>Select Severity Type: </legend>
 
                         <label htmlFor="ksi">KSI: </label>
