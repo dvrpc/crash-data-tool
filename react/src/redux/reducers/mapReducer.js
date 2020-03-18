@@ -85,7 +85,7 @@ export default function mapReducer(state = [], action) {
 export const getDataFromKeyword = boundaryObj => async dispatch => {
     const { type, name } = boundaryObj
     
-    //  @TODO: SOME NJ municipalities return a blank object. The call is successful, it's just empty.
+    //  @BUG: SOME NJ municipalities return a blank object. The call is successful, it's just empty.
     // Ex. Mount Laurel Township fails, Camden City works. 
     
     const api = `https://alpha.dvrpc.org/api/crash-data/v2/sidebarInfo?type=${type}&value=${name}`
@@ -130,7 +130,7 @@ export const getBoundingBox = id => async dispatch => {
     const stream = await fetch(backupAPI, postOptions)
     
     if(stream.ok) {
-        // @TODO: ArcGIS is returning an invalid JSON object. It does not have a closing bracket. Awesome cool great job. 
+        // @BUG: ArcGIS is returning an invalid JSON object. It does not have a closing bracket. Awesome cool great job. 
         // @TODO: add this two liner back in when we got back to the regular api call
         // const response = await stream.json()
         // const bbox = response.bbox

@@ -95,9 +95,10 @@ class Map extends Component {
                     this.setState({heatZoom: false})
                 }
 
-                // @TODO: add (KSI) or (All) depending on toggle state
                 if(zoom < 11 && !this.state.heatZoom){
-                    this.legendTitle.textContent = 'Number of Crashes'
+                    let crashType = this.props.crashType || 'ksi'
+                    this.legendTitle.textContent = `Number of Crashes (${crashType})`
+                    // @TODO: look here for updating Crash Type bg colors
                     this.legendGradient.style.background = 'linear-gradient(to right, #f8eeed, #f9dad7, #f7b9b3, #f39993, #d62839)'
                     this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
                     this.setState({heatZoom: true})
@@ -152,8 +153,9 @@ class Map extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        // receive crashType from sidebar and set new filter with it
-        if(this.props.crashType != prevProps.crashType) {
+
+        // create filters (boundary, crashType, range)
+        if(this.props.crashType !== prevProps.crashType) {
             const hasBoundary = this.state.boundary
             const crashType = this.props.crashType
             
@@ -166,8 +168,8 @@ class Map extends Component {
             }
         }
 
-        // update map filter if necessary
-        if(this.props.filter && this.props.filter !== prevProps.filter){
+        // apply filters
+        if(this.props.filter){
             let filter = this.props.filter === 'none' ? null : this.props.filter
 
             this.map.setFilter('crash-circles', filter)
@@ -191,7 +193,7 @@ class Map extends Component {
         }
 
         // apply polygon filter
-        if(this.props.polyCRNS) {  
+        if(this.props.polyCRNS) {
             const toggleState = this.props.crashType || 'ksi'
             let filter;
 
@@ -203,8 +205,8 @@ class Map extends Component {
                 ]
             } else{
                 filter = ['match', ['get', 'id'], this.props.polyCRNS, true, false]
-            }            
-
+            }     
+            
             this.map.setFilter('crash-circles', filter)
             this.map.setFilter('crash-heat', filter)
         }
@@ -295,7 +297,7 @@ class Map extends Component {
         this.props.setDefaultState(regionalStats)
         this.props.setSidebarHeaderContext('the DVRPC region')
 
-        // update map filters and paint properties
+        // get default map filters and paint properties
         const { county, muni } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
@@ -304,14 +306,15 @@ class Map extends Component {
 
         // set store filter state
         this.props.setMapFilter(filterObj)
+
+        // update map
         this.map.setFilter(county.layer, county.filter)
         this.map.setFilter(muni.layer, muni.filter)
-
         this.map.setPaintProperty(county.layer, 'line-width', county.paint.width)
         this.map.setPaintProperty(county.layer, 'line-color', county.paint.color)
         this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
         this.map.setPaintProperty(muni.layer, 'line-color', muni.paint.color)
-
+        
         // update boundary state to allow hover effects now that boundaries are removed & update polygon state to enable normal event listener interaction
         this.setState({
             boundary: null,
@@ -490,7 +493,7 @@ class Map extends Component {
         return (
             <main id="crashMap" ref={el => this.crashMap = el}>
                 <div id="legend" className="shadow overlays">
-                    <h3 className="legend-header centered-text" ref={el => this.legendTitle = el}>Number of Crashes</h3>
+                    <h3 className="legend-header centered-text" ref={el => this.legendTitle = el}>Number of Crashes (ksi)</h3>
                     <span id="legend-gradient" ref={el => this.legendGradient = el}></span>
                     <div id="legend-text" ref={el => this.legendLabel = el}>
                         <span>1</span>
