@@ -59,7 +59,7 @@ const collisionType = data => {
     }
 }
 // Crashes over Time chart data
-const formatYears = years => { // helper to format range object
+const formatYears = years => {
     let yearsFormatted = []
 
     if(years) {
@@ -144,8 +144,6 @@ const hasSetRange = (data, range, output) => {
 // using the API response to build the actual charts
 const makeCharts = (data, range) => {
     if(!data) return makePlaceholders()
-
-    // @TODO: the KSI toggle invokes this function but the data doesn't change. Need a way to filter before it arrives...
 
     let severityChart, modeChart, collisionTypeChart, trendChart;
 
