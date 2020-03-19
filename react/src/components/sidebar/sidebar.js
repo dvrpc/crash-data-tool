@@ -58,8 +58,6 @@ class Sidebar extends Component {
             }
         }
 
-        // update store with new range
-
         // send the inputs to makeCharts 
         const data = charts.makeCharts(this.props.data, range)
 
@@ -68,7 +66,12 @@ class Sidebar extends Component {
         const localUpdate = true
 
         // setState to update data & trigger a re-render
-        this.setState({data, localUpdate})
+        this.setState({
+            data, 
+            localUpdate,
+            rangeFrom: range.from,
+            rangeTo: range.to
+        })
     }
 
     updateCrashType = e => {
