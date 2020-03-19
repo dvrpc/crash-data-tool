@@ -1,4 +1,6 @@
-// Miscellaneous
+/**********************/
+/****** Helpers ******/ 
+// Fetch Options
 const getOptions = {
     method: 'GET',
     mode: 'cors',
@@ -11,6 +13,33 @@ const postOptions = {
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     }
+}
+
+
+// Filters
+// Crash Type Filters
+const ksiNoBoundary = [
+    ['==', 'max_sever', 1],
+    ['==', 'max_sever', 2],
+]
+const ksiBoundary = [
+    ['>', 'max_sever', 0],
+    ['<', 'max_sever', 3]
+]
+const allBoundary = (tileType, id) => ['==', tileType, id]
+
+// Range Filters
+const rangeNoBoundary = (from, to) => {
+    return [
+        ['>=', 'year', from],
+        ['<=', 'year', to]
+    ]
+}
+const rangeBoundary = (from, to) => {
+    return [
+        ['>=', 'year', from],
+        ['<=', 'year', to]
+    ]
 }
 
 
@@ -162,42 +191,80 @@ export const getPolygonCrashes = bbox => async dispatch => {
 // reset the polyCRNS on boundary removal
 export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
 
-// this handles crash type and boundary. It will eventually handle range the same way it handles boundary (array of CRN)
-// @ params:
-// filter = {
-//     tileType: 'm / c (municipality or county',
-//     id: '[] array of CRNs' (handles range and crashType)
-// }
+// handle boundary, crash type and range
 export const setMapFilter = filter => dispatch => {
-    const ksiNoBoundary = ['any', 
-        ['==', 'max_sever', 1],
-        ['==', 'max_sever', 2],
-    ]
+    console.log('filter is ', filter)
 
-    const ksiBoundary = (tileType, id) => {
-        const filter = ['all',
-            ['==', tileType, id],
-            ['>', 'max_sever', 0],
-            ['<', 'max_sever', 3]
-        ]
-        return filter
-    }
-    const allBoundary = (tileType, id) => ['==', tileType, id]
+    let mapFilter = []
+    const boundary = filter.boundary
+    let hasRange = Object.keys(filter.range).length
 
-    switch(filter.filterType) {
-        case 'all':
-            dispatch(set_map_filter(allBoundary(filter.tileType, filter.id)))
-            return
-        case 'all no boundary':
-            // set to 'none' here b/c if null is used it doesn't pass the if(this.props.filter) check on map did update
-            dispatch(set_map_filter('none'))
-            return
-        case 'ksi':
-            dispatch(set_map_filter(ksiBoundary(filter.tileType, filter.id)))
-            return
-        default:
-            dispatch(set_map_filter(ksiNoBoundary))
+        // FILTER STATES:
+        //     Boundary: ['all', [conditions]]
+        //     No Boundary: ['any', [conditions]]
+
+        // Range conditions: Range no boundary, range Boundary
+        // Crash Type conditions: KSI no boundary, KSI Boundary, All no boundary, All Boundary
+
+    if(boundary) {
+        console.log('boundary case')
+        const tileType = filter.tileType
+        const id = filter.id
+        mapFilter = ['all', ['==', tileType, id]]
+
+        // handle range first
+        if(hasRange) {
+            const {from, to} = filter.range
+            mapFilter = mapFilter.concat(rangeBoundary(tileType, id, from, to))
+        }
+
+        // handle crash type
+        switch(filter.filterType) {
+            case 'all':
+                // replace existing filter with optimized allBoundary filter
+                if(!hasRange) mapFilter = allBoundary(filter.tileType, filter.id)
+                return
+            default:
+                mapFilter = mapFilter.concat(ksiBoundary)
+        }
+    } else {
+        console.log('no boundary case')
+        mapFilter = ['any']
+
+        if(hasRange) {
+            const {from, to} = filter.range
+            const rangeFilter = rangeNoBoundary(from, to)
+            mapFilter = mapFilter.concat(rangeFilter)
+        }
+
+        switch(filter.filterType) {
+            case 'all':
+                if(!hasRange) mapFilter = 'none'
+                return
+            default:
+                mapFilter = mapFilter.concat(ksiNoBoundary)
+        }
     }
+
+    console.log('mapFilter is ', mapFilter)
+    //dispatch(mapFilter)
+
+    // OLD WAY
+    // handle crash type and boundary OLD WAY
+    // switch(filter.filterType) {
+    //     case 'all':
+    //         dispatch(set_map_filter(allBoundary(filter.tileType, filter.id)))
+    //         return
+    //     case 'all no boundary':
+    //         dispatch(set_map_filter('none'))
+    //         return
+    //     case 'ksi':
+    //         dispatch(set_map_filter(ksiBoundary(filter.tileType, filter.id)))
+    //         return
+    //     default: // ksi no boundary
+    //         dispatch(set_map_filter(ksiNoBoundary))
+    // }
+    // OLD WAY
 }
 
 

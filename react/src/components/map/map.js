@@ -152,19 +152,60 @@ class Map extends Component {
     }
 
     componentDidUpdate(prevProps) {
+        // handle filter state
+        const filterObj = {
+            filterType: 'ksi',
+            boundary: false,
+            tileType: '',
+            id: 0,
+            range: {}
+        }
+        let makeNewFilter = false
 
-        // create filters (boundary, crashType, range)
+        // create crashType filters
         if(this.props.crashType !== prevProps.crashType) {
-            const hasBoundary = this.state.boundary
-            const crashType = this.props.crashType
+            // const hasBoundary = this.state.boundary
+            // const crashType = this.props.crashType
             
-            if(hasBoundary) {
-                hasBoundary.filterType = crashType
-                this.props.setMapFilter(hasBoundary)
-            }else{
-                let filterObj = crashType === 'all' ? {filterType: 'all no boundary'} : {filterType: 'ksi no boundary'}
-                this.props.setMapFilter(filterObj)
+            // if(hasBoundary) {
+            //     hasBoundary.filterType = crashType
+            //     this.props.setMapFilter(hasBoundary)
+            // }else{
+            //     let filterObj = crashType === 'all' ? {filterType: 'all no boundary'} : {filterType: 'ksi no boundary'}
+            //     this.props.setMapFilter(filterObj)
+            // }
+            
+            const crashType = this.props.crashType
+            filterObj.filterType = crashType
+            makeNewFilter = true
+        }
+
+        // create range filters
+        if(this.props.range){
+            const {to, from} = this.props.range
+
+            // set range if first time or new range
+            if(prevProps.range){
+                const {prevTo, prevFrom} = prevProps.range
+                if(prevTo !== to || prevFrom !== from) {
+                    filterObj.range = {to, from}
+                    makeNewFilter = true
+                }
+            } else{
+                filterObj.range = {to, from}
+                makeNewFilter = true
             }
+        }
+
+        // update store filters
+        if(makeNewFilter) {
+            if(this.state.boundary) {
+                const boundary = this.state.boundary
+                filterObj.id = boundary.id
+                filterObj.tileType = boundary.tileType
+                filterObj.boundary = true
+            }
+            this.props.setMapFilter(filterObj)
         }
 
         // apply filters
@@ -185,13 +226,14 @@ class Map extends Component {
             if(boundingObj.filter) {
                 const toggleFilter = boundingObj.filter
                 toggleFilter.filterType = this.props.crashType || 'ksi'
+                // @TODO add range here
 
                 this.props.setMapFilter(toggleFilter)
                 this.setState({boundary: toggleFilter})
             }
         }
 
-        // apply polygon filter
+        // apply polygon filter @TODO incorporate range into this
         if(this.props.polyCRNS) {
             const toggleState = this.props.crashType || 'ksi'
             let filter;
@@ -204,7 +246,7 @@ class Map extends Component {
                 ]
             } else{
                 filter = ['match', ['get', 'id'], this.props.polyCRNS, true, false]
-            }     
+            }
             
             this.map.setFilter('crash-circles', filter)
             this.map.setFilter('crash-heat', filter)
@@ -300,8 +342,10 @@ class Map extends Component {
         const { county, muni } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
+        // @TODO: remove 'no boundary' just use crashType as is. No boundary calculation is happening in the reducer now
         let newFilterType = this.props.crashType === 'all' ? 'all no boundary' : 'ksi no boundary'
         const filterObj = {filterType: newFilterType}
+        // @TODO add range object here
 
         // set store filter state
         this.props.setMapFilter(filterObj)
@@ -395,6 +439,7 @@ class Map extends Component {
         let pennID = munis[props.name]
         let newFilterType = this.props.crashType || 'ksi'
         const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID}
+        // @TODO add range object here
 
         // do all the things that search does
         this.props.setSidebarHeaderContext(props.name)

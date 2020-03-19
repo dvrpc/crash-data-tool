@@ -54,6 +54,9 @@ class Sidebar extends Component {
         // send the inputs to makeCharts 
         const data = charts.makeCharts(this.props.data, range)
 
+        // update store state
+        this.props.setCrashRange(range)
+
         // setState to update data & trigger a re-render
         this.setState({
             data, 
@@ -76,9 +79,11 @@ class Sidebar extends Component {
         // use selected radio button to set map filter
         this.props.setCrashTypeFilter(selected)
 
-        // update local state to update the charts
+        // update crashType dynamic text
         selected = selected === 'ksi' ? 'Killed or Severely Injured (KSI)' : 'All'
         if(selected !== this.state.crashType) this.setState({selected})
+
+        // make call to KSI endpoint for new data
 
     }
 
