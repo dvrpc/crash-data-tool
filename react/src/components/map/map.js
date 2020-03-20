@@ -152,19 +152,55 @@ class Map extends Component {
     }
 
     componentDidUpdate(prevProps) {
+        // set form filters (crash type and range) to prevProps or default value to hold on to state if a recalculation doesn't occur
+        const prevType = prevProps.crashType || 'ksi'
+        const prevRange = prevProps.range || {}
+        let makeNewFilter = false
 
-        // create filters (boundary, crashType, range)
+        const filterObj = {
+            filterType: prevType,
+            boundary: false,
+            tileType: '',
+            id: 0,
+            range: prevRange
+        }
+
+        // add crashType filters
         if(this.props.crashType !== prevProps.crashType) {
-            const hasBoundary = this.state.boundary
             const crashType = this.props.crashType
-            
-            if(hasBoundary) {
-                hasBoundary.filterType = crashType
-                this.props.setMapFilter(hasBoundary)
-            }else{
-                let filterObj = crashType === 'all' ? {filterType: 'all no boundary'} : {filterType: 'ksi no boundary'}
-                this.props.setMapFilter(filterObj)
+            filterObj.filterType = crashType
+            makeNewFilter = true
+        }
+
+        // add range filters
+        if(this.props.range){
+            const {to, from} = this.props.range
+
+            // set range if first time or new range
+            if(prevProps.range){
+                const prevRange = prevProps.range
+                const prevFrom = prevRange.from
+                const prevTo = prevRange.to
+
+                if(prevTo !== to || prevFrom !== from) {
+                    filterObj.range = {to, from}
+                    makeNewFilter = true
+                }
+            } else{
+                filterObj.range = {to, from}
+                makeNewFilter = true
             }
+        }
+
+        // update store filters
+        if(makeNewFilter) {
+            if(this.state.boundary) {
+                const boundary = this.state.boundary
+                filterObj.id = boundary.id
+                filterObj.tileType = boundary.tileType
+                filterObj.boundary = true
+            }
+            this.props.setMapFilter(filterObj)
         }
 
         // apply filters
@@ -185,29 +221,40 @@ class Map extends Component {
             if(boundingObj.filter) {
                 const toggleFilter = boundingObj.filter
                 toggleFilter.filterType = this.props.crashType || 'ksi'
+                toggleFilter.range = prevRange
 
                 this.props.setMapFilter(toggleFilter)
                 this.setState({boundary: toggleFilter})
             }
         }
 
-        // apply polygon filter
+        // apply polygon filter (special case)
         if(this.props.polyCRNS) {
-            const toggleState = this.props.crashType || 'ksi'
-            let filter;
+            let crashType = this.props.crashType || 'ksi'
+            let range = this.props.range
+            let polygonFilter = ['all', ['in', 'id', ...this.props.polyCRNS]]
 
-            if(toggleState === 'ksi'){
-                filter = ['all', 
-                    ['in', 'id', ...this.props.polyCRNS],
+            // add range
+            if(range) {
+                const {from, to} = range
+                const rangeFilter = [
+                    ['>=', 'year', parseInt(from)],
+                    ['<=', 'year', parseInt(to)]            
+                ]
+                polygonFilter = polygonFilter.concat(rangeFilter)
+            }
+
+            // add crashtype
+            if(crashType === 'ksi') {
+                const ksiFilter = [
                     ['>', 'max_sever', 0],
                     ['<', 'max_sever', 3]
                 ]
-            } else{
-                filter = ['match', ['get', 'id'], this.props.polyCRNS, true, false]
-            }     
+                polygonFilter = polygonFilter.concat(ksiFilter)
+            }            
             
-            this.map.setFilter('crash-circles', filter)
-            this.map.setFilter('crash-heat', filter)
+            this.map.setFilter('crash-circles', polygonFilter)
+            this.map.setFilter('crash-heat', polygonFilter)
         }
 
         // zoom to a new center when appropriate (address searches)
@@ -300,8 +347,9 @@ class Map extends Component {
         const { county, muni } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
-        let newFilterType = this.props.crashType === 'all' ? 'all no boundary' : 'ksi no boundary'
-        const filterObj = {filterType: newFilterType}
+        let newFilterType = this.props.crashType || 'ksi'
+        let range = this.props.range || {}
+        const filterObj = {filterType: newFilterType, range}
 
         // set store filter state
         this.props.setMapFilter(filterObj)
@@ -394,7 +442,8 @@ class Map extends Component {
         // update filter object w/muni id + toggle state
         let pennID = munis[props.name]
         let newFilterType = this.props.crashType || 'ksi'
-        const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID}
+        let range = this.props.range || {}
+        const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID, range, boundary: true}
 
         // do all the things that search does
         this.props.setSidebarHeaderContext(props.name)

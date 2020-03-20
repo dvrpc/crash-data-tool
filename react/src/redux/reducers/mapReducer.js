@@ -1,4 +1,6 @@
-// Miscellaneous
+/**********************/
+/****** Helpers ******/ 
+// Fetch Options
 const getOptions = {
     method: 'GET',
     mode: 'cors',
@@ -11,6 +13,18 @@ const postOptions = {
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     }
+}
+
+// Filters
+const ksiFilter = [
+    ['>', 'max_sever', 0],
+    ['<', 'max_sever', 3],
+]
+const rangeFilter = (from, to) => {
+    return [
+        ['>=', 'year', parseInt(from)],
+        ['<=', 'year', parseInt(to)]
+    ]
 }
 
 
@@ -79,9 +93,7 @@ export default function mapReducer(state = [], action) {
 
 /**************************/
 /****** DISPATCHERS ******/
-
-
-/***** MAP Dispatchers *****/
+/// MAP Dispatchers
 export const getDataFromKeyword = boundaryObj => async dispatch => {
     const { type, name } = boundaryObj
     
@@ -146,7 +158,6 @@ export const getBoundingBox = id => async dispatch => {
     }
 }
 
-// pass a bbox and get an array of CRN's to filter map tiles from polygons
 export const getPolygonCrashes = bbox => async dispatch => {
     const api = `https://alpha.dvrpc.org/api/crash-data/v2/crashId?geojson=${bbox}`
     const stream = await fetch(api, getOptions)
@@ -159,49 +170,46 @@ export const getPolygonCrashes = bbox => async dispatch => {
     }
 }
 
-// reset the polyCRNS on boundary removal
 export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
 
-// this handles crash type and boundary. It will eventually handle range the same way it handles boundary (array of CRN)
-// @ params:
-// filter = {
-//     tileType: 'm / c (municipality or county',
-//     id: '[] array of CRNs' (handles range and crashType)
-// }
+// handle boundary, crash type and range
 export const setMapFilter = filter => dispatch => {
-    const ksiNoBoundary = ['any', 
-        ['==', 'max_sever', 1],
-        ['==', 'max_sever', 2],
-    ]
+    let mapFilter = []
+    const boundary = filter.boundary
+    const hasRange = Object.keys(filter.range).length
+    const type = filter.filterType
+    let noFilterCondition = 0
 
-    const ksiBoundary = (tileType, id) => {
-        const filter = ['all',
-            ['==', tileType, id],
-            ['>', 'max_sever', 0],
-            ['<', 'max_sever', 3]
-        ]
-        return filter
+    if(boundary) {
+        const tileType = filter.tileType
+        const id = filter.id
+        mapFilter = ['all', ['==', tileType, id]]
+    }else{
+        mapFilter = ['all']
+        noFilterCondition++
     }
-    const allBoundary = (tileType, id) => ['==', tileType, id]
 
-    switch(filter.filterType) {
-        case 'all':
-            dispatch(set_map_filter(allBoundary(filter.tileType, filter.id)))
-            return
-        case 'all no boundary':
-            // set to 'none' here b/c if null is used it doesn't pass the if(this.props.filter) check on map did update
-            dispatch(set_map_filter('none'))
-            return
-        case 'ksi':
-            dispatch(set_map_filter(ksiBoundary(filter.tileType, filter.id)))
-            return
-        default:
-            dispatch(set_map_filter(ksiNoBoundary))
+    // handle range first
+    if(hasRange) {
+        const {from, to} = filter.range
+        mapFilter = mapFilter.concat(rangeFilter(from, to))
+    } else {
+        noFilterCondition++
     }
+
+    // handle crash type
+    if(type === 'ksi'){
+        mapFilter = mapFilter.concat(ksiFilter)
+    }else {
+        noFilterCondition++
+    }
+
+    // if no boundary or range and type all, no filter
+    if(noFilterCondition === 3) mapFilter = 'none'
+
+    dispatch(set_map_filter(mapFilter))
 }
 
-
-/***** SIDEBAR Dispatchers *****/
+// SIDEBAR Dispatchers
 export const sidebarCrashType = type => dispatch => dispatch(sidebar_crash_type(type))
-
 export const sidebarRange = range => dispatch => dispatch(sidebar_range(range))

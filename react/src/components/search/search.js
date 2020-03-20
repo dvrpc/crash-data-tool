@@ -6,11 +6,6 @@ import * as form from './handleForm.js'
 
 import './search.css'
 
-// @TODO for store filter:
-/* 
-    dispatch to the store
-*/
-
 class Search extends Component {
     constructor(props){
         super(props)
@@ -51,7 +46,7 @@ class Search extends Component {
             let tileType = boundary.type[0]
 
             // let map local state fill in the correct filterType
-            const filterObj = {filterType: '', tileType, id: boundary.id}
+            const filterObj = {filterType: '', tileType, id: boundary.id, boundary: true}
             
             // add filter obj to boundary obj
             boundary.filter = filterObj
