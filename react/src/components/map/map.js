@@ -343,10 +343,9 @@ class Map extends Component {
         const { county, muni } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
-        // @TODO: remove 'no boundary' just use crashType as is. No boundary calculation is happening in the reducer now
-        let newFilterType = this.props.crashType === 'all' ? 'all no boundary' : 'ksi no boundary'
-        const filterObj = {filterType: newFilterType}
-        // @TODO add range object here
+        let newFilterType = this.props.crashType || 'ksi'
+        let range = this.props.range || {}
+        const filterObj = {filterType: newFilterType, range}
 
         // set store filter state
         this.props.setMapFilter(filterObj)
