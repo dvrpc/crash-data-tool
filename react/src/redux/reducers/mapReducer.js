@@ -178,7 +178,7 @@ export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
 
 // handle boundary, crash type and range
 export const setMapFilter = filter => dispatch => {
-    console.log('filter param at setMapFilter ', filter)
+    console.log('filter at setMapFilter reducer ', filter)
     let mapFilter = []
     const boundary = filter.boundary
     const hasRange = Object.keys(filter.range).length
@@ -212,7 +212,6 @@ export const setMapFilter = filter => dispatch => {
     // if no boundary or range and type all, no filter
     if(noFilterCondition === 3) mapFilter = 'none'
 
-    console.log('filter at reducer: ', mapFilter)
     dispatch(set_map_filter(mapFilter))
 }
 
