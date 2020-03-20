@@ -16,25 +16,15 @@ const postOptions = {
 }
 
 // Filters
-// CRASH TYPE Filters
-const ksiNoBoundary = [
+const ksiFilter = [
     ['>', 'max_sever', 0],
     ['<', 'max_sever', 3],
 ]
-const ksiBoundary = [
-    ['>', 'max_sever', 0],
-    ['<', 'max_sever', 3]
-]
+
+// @BRUH - this isn't even needed! hype!
 const allBoundary = (tileType, id) => ['==', tileType, id]
 
-// RANGE Filters - NOTE: both this can KSI are the same if the new format works so that's cool
-const rangeNoBoundary = (from, to) => {
-    return [
-        ['>=', 'year', parseInt(from)],
-        ['<=', 'year', parseInt(to)]
-    ]
-}
-const rangeBoundary = (from, to) => {
+const rangeFilter = (from, to) => {
     return [
         ['>=', 'year', parseInt(from)],
         ['<=', 'year', parseInt(to)]
@@ -188,80 +178,49 @@ export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
 
 // handle boundary, crash type and range
 export const setMapFilter = filter => dispatch => {
+    console.log('filter param at setMapFilter ', filter)
     let mapFilter = []
     const boundary = filter.boundary
-    let hasRange = Object.keys(filter.range).length
+    const hasRange = Object.keys(filter.range).length
+    const type = filter.filterType
+    let noFilterCondition = 0
 
-        // FILTER STATES:
-        //     Boundary: ['all', [conditions]]
-        //     No Boundary: ['any', [conditions]]
-
-        // Range conditions: Range no boundary, range Boundary
-        // Crash Type conditions: KSI no boundary, KSI Boundary, All no boundary, All Boundary
-
-    // @NOTE: this can be greatly simplified assuming what I'm about to do works. 
-    // line 208 vs line 228 is all that matters for boundary case. Otherwise it's just if(range) and if(ksi)else(all)
     if(boundary) {
-        console.log('boundary case')
         const tileType = filter.tileType
         const id = filter.id
         mapFilter = ['all', ['==', tileType, id]]
-
-        // handle range first
-        if(hasRange) {
-            const {from, to} = filter.range
-            mapFilter = mapFilter.concat(rangeBoundary(tileType, id, from, to))
-        }
-
-        // handle crash type
-        switch(filter.filterType) {
-            case 'all':
-                // replace existing filter with optimized allBoundary filter IF no range
-                if(!hasRange) mapFilter = allBoundary(filter.tileType, filter.id)
-                break
-            default:
-                mapFilter = mapFilter.concat(ksiBoundary)
-        }
-
-    // no boundary case
-    } else {
+    }else{
         mapFilter = ['all']
-
-        switch(filter.filterType) {
-            case 'all':
-                if(!hasRange) mapFilter = 'none'
-                break
-            default:
-                mapFilter = mapFilter.concat(ksiNoBoundary)
-        }
-
-        if(hasRange) {
-            const {from, to} = filter.range
-            mapFilter = mapFilter.concat(rangeNoBoundary(from, to))
-        }
+        noFilterCondition++
     }
 
-    console.log('mapFilter is ', mapFilter)
-    dispatch(set_map_filter(mapFilter))
+    // handle range first
+    if(hasRange) {
+        const {from, to} = filter.range
+        mapFilter = mapFilter.concat(rangeFilter(from, to))
+    } else {
+        noFilterCondition++
+    }
 
-    // OLD WAY
-    // handle crash type and boundary OLD WAY
-    // switch(filter.filterType) {
-    //     case 'all':
-    //         dispatch(set_map_filter(allBoundary(filter.tileType, filter.id)))
-    //         break
-    //     case 'all no boundary':
-    //         dispatch(set_map_filter('none'))
-    //         break
-    //     case 'ksi':
-    //         dispatch(set_map_filter(ksiBoundary(filter.tileType, filter.id)))
-    //         break
-    //     default: // ksi no boundary
-    //         dispatch(set_map_filter(ksiNoBoundary))
-    // }
-    // OLD WAY
+    // handle crash type
+    if(type === 'ksi'){
+        mapFilter = mapFilter.concat(ksiFilter)
+    }else {
+        noFilterCondition++
+    }
+
+    // if no boundary or range and type all, no filter
+    if(noFilterCondition === 3) mapFilter = 'none'
+
+    console.log('filter at reducer: ', mapFilter)
+    dispatch(set_map_filter(mapFilter))
 }
 
+// handle polygons
+export const setPolygonFilter = filter => dispatch => {
+    console.log('polygon filter input: ', filter)
+    //dispatch(set_map_filter(mapFilter))
+}
 
 // SIDEBAR Dispatchers
 export const sidebarCrashType = type => dispatch => dispatch(sidebar_crash_type(type))

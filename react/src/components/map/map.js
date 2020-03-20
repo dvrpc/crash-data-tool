@@ -165,8 +165,6 @@ class Map extends Component {
             range: prevRange
         }
 
-        console.log('filterObj at begining of didUpdate: ', filterObj)
-
         // add crashType filters
         if(this.props.crashType !== prevProps.crashType) {
             const crashType = this.props.crashType
@@ -207,6 +205,7 @@ class Map extends Component {
 
         // apply filters
         if(this.props.filter){
+            console.log('applying a filter to the map')
             // handle the remove filters case
             let filter = this.props.filter === 'none' ? null : this.props.filter
 
@@ -224,7 +223,7 @@ class Map extends Component {
             if(boundingObj.filter) {
                 const toggleFilter = boundingObj.filter
                 toggleFilter.filterType = this.props.crashType || 'ksi'
-                // @TODO add range here
+                toggleFilter.range = prevRange
 
                 this.props.setMapFilter(toggleFilter)
                 this.setState({boundary: toggleFilter})
@@ -232,6 +231,7 @@ class Map extends Component {
         }
 
         // apply polygon filter @TODO incorporate range into this
+        // @TODO move this login into a reducer. Just create the filter obj and then pass that to a reducer
         if(this.props.polyCRNS) {
             const toggleState = this.props.crashType || 'ksi'
             let filter;
@@ -245,7 +245,10 @@ class Map extends Component {
             } else{
                 filter = ['match', ['get', 'id'], this.props.polyCRNS, true, false]
             }
+
+            if(prevRange) filter = filter.concat()
             
+            // @TODO maybe make a new reducer here
             this.map.setFilter('crash-circles', filter)
             this.map.setFilter('crash-heat', filter)
         }
@@ -436,8 +439,8 @@ class Map extends Component {
         // update filter object w/muni id + toggle state
         let pennID = munis[props.name]
         let newFilterType = this.props.crashType || 'ksi'
-        const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID}
-        // @TODO add range object here
+        let range = this.props.range || {}
+        const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID, range, boundary: true}
 
         // do all the things that search does
         this.props.setSidebarHeaderContext(props.name)
