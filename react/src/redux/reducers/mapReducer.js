@@ -15,12 +15,11 @@ const postOptions = {
     }
 }
 
-
 // Filters
-// Crash Type Filters
+// CRASH TYPE Filters
 const ksiNoBoundary = [
-    ['==', 'max_sever', 1],
-    ['==', 'max_sever', 2],
+    ['>', 'max_sever', 0],
+    ['<', 'max_sever', 3],
 ]
 const ksiBoundary = [
     ['>', 'max_sever', 0],
@@ -28,17 +27,17 @@ const ksiBoundary = [
 ]
 const allBoundary = (tileType, id) => ['==', tileType, id]
 
-// Range Filters
+// RANGE Filters - NOTE: both this can KSI are the same if the new format works so that's cool
 const rangeNoBoundary = (from, to) => {
     return [
-        ['>=', 'year', from],
-        ['<=', 'year', to]
+        ['>=', 'year', parseInt(from)],
+        ['<=', 'year', parseInt(to)]
     ]
 }
 const rangeBoundary = (from, to) => {
     return [
-        ['>=', 'year', from],
-        ['<=', 'year', to]
+        ['>=', 'year', parseInt(from)],
+        ['<=', 'year', parseInt(to)]
     ]
 }
 
@@ -108,9 +107,7 @@ export default function mapReducer(state = [], action) {
 
 /**************************/
 /****** DISPATCHERS ******/
-
-
-/***** MAP Dispatchers *****/
+/// MAP Dispatchers
 export const getDataFromKeyword = boundaryObj => async dispatch => {
     const { type, name } = boundaryObj
     
@@ -175,7 +172,6 @@ export const getBoundingBox = id => async dispatch => {
     }
 }
 
-// pass a bbox and get an array of CRN's to filter map tiles from polygons
 export const getPolygonCrashes = bbox => async dispatch => {
     const api = `https://alpha.dvrpc.org/api/crash-data/v2/crashId?geojson=${bbox}`
     const stream = await fetch(api, getOptions)
@@ -188,13 +184,10 @@ export const getPolygonCrashes = bbox => async dispatch => {
     }
 }
 
-// reset the polyCRNS on boundary removal
 export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
 
 // handle boundary, crash type and range
 export const setMapFilter = filter => dispatch => {
-    console.log('filter is ', filter)
-
     let mapFilter = []
     const boundary = filter.boundary
     let hasRange = Object.keys(filter.range).length
@@ -206,6 +199,8 @@ export const setMapFilter = filter => dispatch => {
         // Range conditions: Range no boundary, range Boundary
         // Crash Type conditions: KSI no boundary, KSI Boundary, All no boundary, All Boundary
 
+    // @NOTE: this can be greatly simplified assuming what I'm about to do works. 
+    // line 208 vs line 228 is all that matters for boundary case. Otherwise it's just if(range) and if(ksi)else(all)
     if(boundary) {
         console.log('boundary case')
         const tileType = filter.tileType
@@ -221,46 +216,46 @@ export const setMapFilter = filter => dispatch => {
         // handle crash type
         switch(filter.filterType) {
             case 'all':
-                // replace existing filter with optimized allBoundary filter
+                // replace existing filter with optimized allBoundary filter IF no range
                 if(!hasRange) mapFilter = allBoundary(filter.tileType, filter.id)
-                return
+                break
             default:
                 mapFilter = mapFilter.concat(ksiBoundary)
         }
-    } else {
-        console.log('no boundary case')
-        mapFilter = ['any']
 
-        if(hasRange) {
-            const {from, to} = filter.range
-            const rangeFilter = rangeNoBoundary(from, to)
-            mapFilter = mapFilter.concat(rangeFilter)
-        }
+    // no boundary case
+    } else {
+        mapFilter = ['all']
 
         switch(filter.filterType) {
             case 'all':
                 if(!hasRange) mapFilter = 'none'
-                return
+                break
             default:
                 mapFilter = mapFilter.concat(ksiNoBoundary)
+        }
+
+        if(hasRange) {
+            const {from, to} = filter.range
+            mapFilter = mapFilter.concat(rangeNoBoundary(from, to))
         }
     }
 
     console.log('mapFilter is ', mapFilter)
-    //dispatch(mapFilter)
+    dispatch(set_map_filter(mapFilter))
 
     // OLD WAY
     // handle crash type and boundary OLD WAY
     // switch(filter.filterType) {
     //     case 'all':
     //         dispatch(set_map_filter(allBoundary(filter.tileType, filter.id)))
-    //         return
+    //         break
     //     case 'all no boundary':
     //         dispatch(set_map_filter('none'))
-    //         return
+    //         break
     //     case 'ksi':
     //         dispatch(set_map_filter(ksiBoundary(filter.tileType, filter.id)))
-    //         return
+    //         break
     //     default: // ksi no boundary
     //         dispatch(set_map_filter(ksiNoBoundary))
     // }
@@ -268,7 +263,6 @@ export const setMapFilter = filter => dispatch => {
 }
 
 
-/***** SIDEBAR Dispatchers *****/
+// SIDEBAR Dispatchers
 export const sidebarCrashType = type => dispatch => dispatch(sidebar_crash_type(type))
-
 export const sidebarRange = range => dispatch => dispatch(sidebar_range(range))

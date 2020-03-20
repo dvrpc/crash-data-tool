@@ -152,41 +152,38 @@ class Map extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        // handle filter state
+        // set form filters (crash type and range) to prevProps or default value to hold on to state if a recalculation doesn't occur
+        const prevType = prevProps.crashType || 'ksi'
+        const prevRange = prevProps.range || {}
+        let makeNewFilter = false
+
         const filterObj = {
-            filterType: 'ksi',
+            filterType: prevType,
             boundary: false,
             tileType: '',
             id: 0,
-            range: {}
+            range: prevRange
         }
-        let makeNewFilter = false
 
-        // create crashType filters
+        console.log('filterObj at begining of didUpdate: ', filterObj)
+
+        // add crashType filters
         if(this.props.crashType !== prevProps.crashType) {
-            // const hasBoundary = this.state.boundary
-            // const crashType = this.props.crashType
-            
-            // if(hasBoundary) {
-            //     hasBoundary.filterType = crashType
-            //     this.props.setMapFilter(hasBoundary)
-            // }else{
-            //     let filterObj = crashType === 'all' ? {filterType: 'all no boundary'} : {filterType: 'ksi no boundary'}
-            //     this.props.setMapFilter(filterObj)
-            // }
-            
             const crashType = this.props.crashType
             filterObj.filterType = crashType
             makeNewFilter = true
         }
 
-        // create range filters
+        // add range filters
         if(this.props.range){
             const {to, from} = this.props.range
 
             // set range if first time or new range
             if(prevProps.range){
-                const {prevTo, prevFrom} = prevProps.range
+                const prevRange = prevProps.range
+                const prevFrom = prevRange.from
+                const prevTo = prevRange.to
+
                 if(prevTo !== to || prevFrom !== from) {
                     filterObj.range = {to, from}
                     makeNewFilter = true
@@ -210,6 +207,7 @@ class Map extends Component {
 
         // apply filters
         if(this.props.filter){
+            // handle the remove filters case
             let filter = this.props.filter === 'none' ? null : this.props.filter
 
             this.map.setFilter('crash-circles', filter)
