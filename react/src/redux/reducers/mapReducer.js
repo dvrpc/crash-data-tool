@@ -20,10 +20,6 @@ const ksiFilter = [
     ['>', 'max_sever', 0],
     ['<', 'max_sever', 3],
 ]
-
-// @BRUH - this isn't even needed! hype!
-const allBoundary = (tileType, id) => ['==', tileType, id]
-
 const rangeFilter = (from, to) => {
     return [
         ['>=', 'year', parseInt(from)],
@@ -178,7 +174,6 @@ export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
 
 // handle boundary, crash type and range
 export const setMapFilter = filter => dispatch => {
-    console.log('filter at setMapFilter reducer ', filter)
     let mapFilter = []
     const boundary = filter.boundary
     const hasRange = Object.keys(filter.range).length
@@ -213,12 +208,6 @@ export const setMapFilter = filter => dispatch => {
     if(noFilterCondition === 3) mapFilter = 'none'
 
     dispatch(set_map_filter(mapFilter))
-}
-
-// handle polygons
-export const setPolygonFilter = filter => dispatch => {
-    console.log('polygon filter input: ', filter)
-    //dispatch(set_map_filter(mapFilter))
 }
 
 // SIDEBAR Dispatchers

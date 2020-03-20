@@ -205,8 +205,6 @@ class Map extends Component {
 
         // apply filters
         if(this.props.filter){
-            console.log('applying a filter to the map')
-            // handle the remove filters case
             let filter = this.props.filter === 'none' ? null : this.props.filter
 
             this.map.setFilter('crash-circles', filter)
@@ -230,27 +228,33 @@ class Map extends Component {
             }
         }
 
-        // apply polygon filter @TODO incorporate range into this
-        // @TODO move this login into a reducer. Just create the filter obj and then pass that to a reducer
+        // apply polygon filter (special case)
         if(this.props.polyCRNS) {
-            const toggleState = this.props.crashType || 'ksi'
-            let filter;
+            let crashType = this.props.crashType || 'ksi'
+            let range = this.props.range
+            let polygonFilter = ['all', ['in', 'id', ...this.props.polyCRNS]]
 
-            if(toggleState === 'ksi'){
-                filter = ['all', 
-                    ['in', 'id', ...this.props.polyCRNS],
+            // add range
+            if(range) {
+                const {from, to} = range
+                const rangeFilter = [
+                    ['>=', 'year', parseInt(from)],
+                    ['<=', 'year', parseInt(to)]            
+                ]
+                polygonFilter = polygonFilter.concat(rangeFilter)
+            }
+
+            // add crashtype
+            if(crashType === 'ksi') {
+                const ksiFilter = [
                     ['>', 'max_sever', 0],
                     ['<', 'max_sever', 3]
                 ]
-            } else{
-                filter = ['match', ['get', 'id'], this.props.polyCRNS, true, false]
-            }
-
-            if(prevRange) filter = filter.concat()
+                polygonFilter = polygonFilter.concat(ksiFilter)
+            }            
             
-            // @TODO maybe make a new reducer here
-            this.map.setFilter('crash-circles', filter)
-            this.map.setFilter('crash-heat', filter)
+            this.map.setFilter('crash-circles', polygonFilter)
+            this.map.setFilter('crash-heat', polygonFilter)
         }
 
         // zoom to a new center when appropriate (address searches)
