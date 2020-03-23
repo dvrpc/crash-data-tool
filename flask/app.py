@@ -45,10 +45,10 @@ def docs():
 
 @app.route('/api/crash-data/v2/popupInfo', methods=['GET'])
 def get_popup_info():
-    # grab crash id
-    id = request.args.get('id')
+    '''
+    @TODO: add docstring
+    '''
 
-    # is the CRN there?
     if id is not None:
         cursor = get_db_cursor()
         query = """
@@ -106,7 +106,10 @@ def get_popup_info():
 
 @app.route('/api/crash-data/v2/sidebarInfo', methods=['GET'])
 def get_sidebar_info():
-    
+    '''
+    @TODO: add docstring
+    '''
+
     args = request.args
     possible_types = ['county', 'municipality', 'geojson']
 
@@ -150,9 +153,9 @@ def get_sidebar_info():
     try:
         payload = {}
         cursor.execute(query.format(statement))
-        results = cursor.fetchall()
+        result = cursor.fetchall()
 
-        for row in results:
+        for row in result:
             if str(row[0]) in payload:  
                 payload[str(row[0])]['type'][str(row[10])] = row[1]
             else:
@@ -180,7 +183,11 @@ def get_sidebar_info():
 
 @app.route('/api/crash-data/v2/crashId', methods=['GET'])
 def get_geojson_info():
-    # grab crash id
+    '''
+    @TODO: add docstring
+    '''
+
+    # grab crash id  @TODO: crash_id or geojson?
     geojson = request.args.get('geojson')
 
     # connect to db
@@ -202,9 +209,9 @@ def get_geojson_info():
         
         try:
             cursor.execute(sql.SQL(query.format(geojson)))
-            idresults = cursor.fetchall()
-            if len(idresults) > 0:
-                for row in idresults:
+            result = cursor.fetchall()
+            if len(result) > 0:
+                for row in result:
                     ids.append(row[0])
                 return jsonify(ids)
             else:
