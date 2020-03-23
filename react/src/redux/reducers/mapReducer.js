@@ -180,6 +180,7 @@ export const setMapFilter = filter => dispatch => {
     const type = filter.filterType
     let noFilterCondition = 0
 
+    // check for boundary
     if(boundary) {
         const tileType = filter.tileType
         const id = filter.id
@@ -189,7 +190,7 @@ export const setMapFilter = filter => dispatch => {
         noFilterCondition++
     }
 
-    // handle range first
+    // handle range
     if(hasRange) {
         const {from, to} = filter.range
         mapFilter = mapFilter.concat(rangeFilter(from, to))

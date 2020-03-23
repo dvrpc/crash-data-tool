@@ -7,31 +7,17 @@ import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
 import './sidebar.css';
 
-// @TODO for global filter state:
-// charts.makeCharts will accept a parameter for filter state and use that to filter down the outputs
-
 
 class Sidebar extends Component {
     constructor(props) {
         super(props)
 
-        // load default state from the jawn (possibly add a range field to state which defaults to null and updates whenever a new range is picked)
         this.state = {
             data: this.props.setDefaultState({type: 'municipality', name: '%'}),
             context: 'the DVRPC region',
             crashType: 'KSI',
             from: 2014,
             to: 2018
-        }
-    }
-
-    componentDidUpdate(prevProps) {
-
-        // update crash type context
-        if(this.props.filter){
-            const check = this.props.filter[0]
-            let crashType = check === 'any' || check === 'all' ? 'Killed or Severely Injured (KSI)' : 'All'
-            if(crashType !== this.state.crashType) this.setState({crashType})
         }
     }
 
@@ -80,8 +66,8 @@ class Sidebar extends Component {
         this.props.setCrashTypeFilter(selected)
 
         // update crashType dynamic text
-        selected = selected === 'ksi' ? 'Killed or Severely Injured (KSI)' : 'All'
-        if(selected !== this.state.crashType) this.setState({selected})
+        selected = selected === 'ksi' ? 'KSI' : 'All'
+        if(selected !== this.state.crashType) this.setState({crashType: selected})
 
         // make call to KSI endpoint for new data
 
@@ -181,7 +167,6 @@ const mapStateToProps = state => {
     return {
         data: state.data,
         context: state.area,
-        filter: state.filter,
     }
 }
 

@@ -373,7 +373,7 @@ class Map extends Component {
                     {hover: false}
                 )
 
-                // remove old popup with muni name
+                // remove old popup with muni name (this will be a problem ugh)
             }
 
             // update hover layer
