@@ -1,5 +1,5 @@
 import pytest
-from app import BadArgsException, BadTypeException
+from app import BadArgsException, BadTypeException, TooManyArgsException
 '''
 Testing get_sidebar_info()
 '''
@@ -31,6 +31,13 @@ def test_type_and_value_required_ex3(client):
         )
 
 
+def test_number_of_args(client):
+    with pytest.raises(TooManyArgsException):
+        client.get(
+            endpoint,
+            query_string={'type': 'county', 'value': 'Montgomery', 'a_third_arg': 'no'}
+        )
+
 def test_type_arg_not_in_required_list(client):
     with pytest.raises(BadTypeException):
         client.get(
@@ -44,5 +51,7 @@ def test_success1(client):
         endpoint,
         query_string={'type': 'county', 'value': 'Montgomery'}
     )
+
     # print(response.data)
-    assert False
+    # assert False
+    assert response.status_code == 200

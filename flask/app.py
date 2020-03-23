@@ -6,6 +6,8 @@ purpose: simple REST API to retrieve summary information in DVRPC's crash data t
 
 @TODO (not listed elsewhere in the code):
     - create list of possible values for the various area "types" - check against
+    - review the response codes given
+    - add messages to exceptions
 
 """
 from flask import Flask, request, abort, jsonify
@@ -21,6 +23,10 @@ CORS(app)
 
 # Exceptions
 class BadArgsException(Exception):
+    pass
+
+
+class TooManyArgsException(Exception):
     pass
 
 
@@ -111,14 +117,18 @@ def get_sidebar_info():
     '''
 
     args = request.args
+    keys = list(args.keys())
     possible_types = ['county', 'municipality', 'geojson']
-
-    if not args.get('type') or not args.get('value'):
+    
+    if 'type' not in keys or 'value' not in keys:
         raise BadArgsException
         abort(422)
     
+    if len(args) > 2:
+        raise TooManyArgsException
+        abort(422)
+
     if args['type'] not in possible_types:
-        # @TODO: more meaningful error response
         raise BadTypeException
         abort(404)
     
