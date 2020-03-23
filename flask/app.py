@@ -4,10 +4,9 @@ date: March 11, 2019
 modified: November 12, 2019
 purpose: simple REST API to retrieve summary information in DVRPC's crash data tool
 """
-
-from flask import Flask, request, abort
+from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
-from lib import credentials
+from config import PSQL_CREDS
 import psycopg2 as psql
 from psycopg2 import sql
 import json
@@ -15,28 +14,30 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-def connectToPsql():
-    return psql.connect(credentials.PSQL_CREDS)
 
-"""
-@TODO:  create documentation page using flask's render_template function to deliver an HTML file
-        to give details about how to use the API
-"""
+def connectToPsql():
+    return psql.connect(PSQL_CREDS)
+
 
 @app.route('/api/crash-data/v2/documentation')
 def docs():
+    """
+    @TODO:  create documentation page using flask's render_template function to deliver an HTML file
+            to give details about how to use the API
+    """
+
     return '<html><p>this will be the docs page</p></html>'
 
-@app.route('/api/crash-data/v2/popupInfo', methods=["GET"])
+
+@app.route('/api/crash-data/v2/popupInfo', methods=['GET'])
 def get_popup_info():
-    ## grab crash id
+    # grab crash id
     id = request.args.get('id')
 
-
-    ## connect to db
-    con = connectToPsql()
-    cur = con.cursor()
-    qry = """
+    # connect to db
+    connection = connectToPsql()
+    cursor = connection.cursor()
+    query = """
     SELECT
         crash.month,
         crash.year,
@@ -55,15 +56,15 @@ def get_popup_info():
 """
     payload = {}
 
-    ## is the CRN there?
+    # is the CRN there?
     if id is not None:
-        ## success message
+        # success message
         payload['status'] = 200
-        ## try/except block for query
+        
         try:
-            cur.execute(sql.SQL(qry.format(id)))
-            rows = cur.fetchall()
-            if len(rows) is not 0:
+            cursor.execute(sql.SQL(query.format(id)))
+            rows = cursor.fetchall()
+            if len(rows) > 0:
                 for row in rows:
                     result = {
                         'month': row[0],
@@ -77,37 +78,45 @@ def get_popup_info():
                     payload['features'] = result
                     return json.dumps(payload, indent=4)
             else:
-                ## query returns no results
+                # query returns no results
                 abort(422)
-        ## alter payload status/message if query fails
+        # alter payload status/message if query fails
         except Exception as e:
             abort(401)
-    ## alter payload message for invalid query
+    # alter payload message for invalid query
     else:
         abort(404)
 
+
 @app.route('/api/crash-data/v2/sidebarInfo', methods=['GET'])
 def get_sidebar_info():
-    ## get args
+    
     args = request.args
 
-    if not len(args) is 2:
+    if len(args) !=  2:
         abort(422)
     else:
-        con = connectToPsql()
-        cur = con.cursor()
+        connection = connectToPsql()
+        cursor = connection.cursor()
 
-        qry = """
+        query = """
         SELECT
             crash.year, COUNT(crash.crash_id) AS count,
-            SUM(severity.fatal) AS fatalities, SUM(severity.major) AS major_inj, SUM(severity.minor) AS minor_inj, SUM(severity.uninjured) AS uninjured, SUM(severity.unknown) AS unknown,
-            SUM(type.bicycle) AS bike, SUM(type.ped) AS ped, SUM(type.persons_involved) AS persons_involved, type.collision_type AS type
+            SUM(severity.fatal) AS fatalities, 
+            SUM(severity.major) AS major_inj, 
+            SUM(severity.minor) AS minor_inj, 
+            SUM(severity.uninjured) AS uninjured, 
+            SUM(severity.unknown) AS unknown,
+            SUM(type.bicycle) AS bike, 
+            SUM(type.ped) AS ped,
+            SUM(type.persons_involved) AS persons_involved,
+            type.collision_type AS type
         FROM crash
         JOIN severity ON severity.crash_id = crash.crash_id
-	JOIN location ON location.crash_id = crash.crash_id
-	JOIN type ON type.crash_id = crash.crash_id
+        JOIN location ON location.crash_id = crash.crash_id
+        JOIN type ON type.crash_id = crash.crash_id
         WHERE {}
-		GROUP BY crash.year, type.collision_type;
+        GROUP BY crash.year, type.collision_type;
         """
 
         qryRef = {
@@ -116,7 +125,6 @@ def get_sidebar_info():
             'geojson': 'ST_WITHIN(location.geom,ST_GeomFromGeoJSON(\'{0}\'))'.format((args.get('value')))
         }
 
-
         if not args.get('type') in qryRef:
             abort(404)
         else:
@@ -124,8 +132,8 @@ def get_sidebar_info():
 
         try:
             payload = {}
-            cur.execute(qry.format(statement))
-            results = cur.fetchall()
+            curso.execute(query.format(statement))
+            results = cursor.fetchall()
             for row in results:
                 if str(row[0]) in payload:
                     payload[str(row[0])]['type'][str(row[10])] = row[1]
@@ -151,16 +159,16 @@ def get_sidebar_info():
         except Exception as e:
             abort(404)
 
-@app.route('/api/crash-data/v2/crashId', methods=["GET"])
+
+@app.route('/api/crash-data/v2/crashId', methods=['GET'])
 def get_geojson_info():
-    ## grab crash id
+    # grab crash id
     geojson = request.args.get('geojson')
 
-
-    ## connect to db
-    con = connectToPsql()
-    cur = con.cursor()
-    qry = """
+    # connect to db
+    connection = connectToPsql()
+    cursor = connection.cursor()
+    query = """
         SELECT
             crash.crash_id
         FROM crash
@@ -169,24 +177,25 @@ def get_geojson_info():
         """
     payload = {}
     ids = []
-    ## is the geojson there?
+
+    # is the geojson there?
     if geojson is not None:
-        ## success message
+        # success message
         payload['status'] = 200
-        ## try/except block for query
+        
         try:
-            cur.execute(sql.SQL(qry.format(geojson)))
-            idresults = cur.fetchall()
-            if len(idresults) is not 0:
+            cursor.execute(sql.SQL(query.format(geojson)))
+            idresults = cursor.fetchall()
+            if len(idresults) > 0:
                 for row in idresults:
                     ids.append(row[0])
                 return jsonify(ids)
             else:
-                ## query returns no results
+                # query returns no results
                 abort(422)
-        ## alter payload status/message if query fails
+        # alter payload status/message if query fails
         except Exception as e:
             abort(401)
-    ## alter payload message for invalid query
+    # alter payload message for invalid query
     else:
         abort(404)
