@@ -34,6 +34,9 @@ class BadTypeException(Exception):
     pass
 
 
+class IdNotProvidedException(Exception):
+    pass
+
 def get_db_cursor():
     connection = psycopg2.connect(PSQL_CREDS)
     return connection.cursor()
@@ -54,8 +57,9 @@ def get_popup_info():
     '''
     @TODO: add docstring
     '''
+    id = request.args.get('id')
 
-    if id is not None:
+    if id:
         cursor = get_db_cursor()
         query = """
             SELECT
@@ -95,7 +99,7 @@ def get_popup_info():
                         'collision_type': row[6]
                     }
                     payload['features'] = result
-                    return json.dumps(payload, indent=4)
+                    return jsonify(payload) 
             else:
                 # query returns no results
                 abort(422)
@@ -106,7 +110,7 @@ def get_popup_info():
             abort(401)
     # alter payload message for invalid query
     else:
-        # @TODO: more meaningful error response
+        raise IdNotProvidedException
         abort(404)
 
 
