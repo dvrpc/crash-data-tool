@@ -38,6 +38,7 @@ def test_number_of_args(client):
             query_string={'type': 'county', 'value': 'Montgomery', 'a_third_arg': 'no'}
         )
 
+
 def test_type_arg_not_in_required_list(client):
     with pytest.raises(BadTypeException):
         client.get(
