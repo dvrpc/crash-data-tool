@@ -37,6 +37,7 @@ class BadTypeException(Exception):
 class IdNotProvidedException(Exception):
     pass
 
+
 def get_db_cursor():
     connection = psycopg2.connect(PSQL_CREDS)
     return connection.cursor()
@@ -190,7 +191,7 @@ def get_sidebar_info():
                         str(row[10]): row[1]
                     }
                 }
-        return json.dumps(payload, indent=4)
+        return jsonify(payload)
     except Exception as e:
         abort(404)
 
