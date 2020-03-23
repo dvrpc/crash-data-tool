@@ -34,30 +34,31 @@ def get_popup_info():
     # grab crash id
     id = request.args.get('id')
 
-    # connect to db
-    connection = connectToPsql()
-    cursor = connection.cursor()
-    query = """
-    SELECT
-        crash.month,
-        crash.year,
-        type.vehicle_count,
-        type.bicycle,
-        type.ped,
-        type.persons_involved,
-        type.collision_type
-    FROM crash
-    JOIN
-        severity ON crash.crash_id = severity.crash_id
-    JOIN
-        type ON crash.crash_id = type.crash_id
-    WHERE
-        crash.crash_id = {0};
-"""
-    payload = {}
-
     # is the CRN there?
     if id is not None:
+        # connect to db
+        connection = connectToPsql()
+        cursor = connection.cursor()
+        query = """
+            SELECT
+                crash.month,
+                crash.year,
+                type.vehicle_count,
+                type.bicycle,
+                type.ped,
+                type.persons_involved,
+                type.collision_type
+            FROM crash
+            JOIN
+                severity ON crash.crash_id = severity.crash_id
+            JOIN
+                type ON crash.crash_id = type.crash_id
+            WHERE
+                crash.crash_id = {0};
+        """
+
+        payload = {}
+        
         # success message
         payload['status'] = 200
         
@@ -82,9 +83,12 @@ def get_popup_info():
                 abort(422)
         # alter payload status/message if query fails
         except Exception as e:
+            # @TODO: more meaningful error response
+            # @TODO: use possible exceptions 
             abort(401)
     # alter payload message for invalid query
     else:
+        # @TODO: more meaningful error response
         abort(404)
 
 
@@ -93,30 +97,30 @@ def get_sidebar_info():
     
     args = request.args
 
-    if len(args) !=  2:
+    if len(args) != 2:
         abort(422)
     else:
         connection = connectToPsql()
         cursor = connection.cursor()
 
         query = """
-        SELECT
-            crash.year, COUNT(crash.crash_id) AS count,
-            SUM(severity.fatal) AS fatalities, 
-            SUM(severity.major) AS major_inj, 
-            SUM(severity.minor) AS minor_inj, 
-            SUM(severity.uninjured) AS uninjured, 
-            SUM(severity.unknown) AS unknown,
-            SUM(type.bicycle) AS bike, 
-            SUM(type.ped) AS ped,
-            SUM(type.persons_involved) AS persons_involved,
-            type.collision_type AS type
-        FROM crash
-        JOIN severity ON severity.crash_id = crash.crash_id
-        JOIN location ON location.crash_id = crash.crash_id
-        JOIN type ON type.crash_id = crash.crash_id
-        WHERE {}
-        GROUP BY crash.year, type.collision_type;
+            SELECT
+                crash.year, COUNT(crash.crash_id) AS count,
+                SUM(severity.fatal) AS fatalities, 
+                SUM(severity.major) AS major_inj, 
+                SUM(severity.minor) AS minor_inj, 
+                SUM(severity.uninjured) AS uninjured, 
+                SUM(severity.unknown) AS unknown,
+                SUM(type.bicycle) AS bike, 
+                SUM(type.ped) AS ped,
+                SUM(type.persons_involved) AS persons_involved,
+                type.collision_type AS type
+            FROM crash
+            JOIN severity ON severity.crash_id = crash.crash_id
+            JOIN location ON location.crash_id = crash.crash_id
+            JOIN type ON type.crash_id = crash.crash_id
+            WHERE {}
+            GROUP BY crash.year, type.collision_type;
         """
 
         qryRef = {
