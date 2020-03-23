@@ -3,11 +3,15 @@ author: Robert Beatty
 date: March 11, 2019
 modified: November 12, 2019
 purpose: simple REST API to retrieve summary information in DVRPC's crash data tool
+
+@TODO (not listed elsewhere in the code):
+    - create list of possible values for the various area "types" - check against
+
 """
 from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
 from config import PSQL_CREDS
-import psycopg2 as psql
+import psycopg2 
 from psycopg2 import sql
 import json
 
@@ -15,8 +19,18 @@ app = Flask(__name__)
 CORS(app)
 
 
-def connectToPsql():
-    return psql.connect(PSQL_CREDS)
+# Exceptions
+class BadArgsException(Exception):
+    pass
+
+
+class BadTypeException(Exception):
+    pass
+
+
+def get_db_cursor():
+    connection = psycopg2.connect(PSQL_CREDS)
+    return connection.cursor()
 
 
 @app.route('/api/crash-data/v2/documentation')
@@ -36,9 +50,7 @@ def get_popup_info():
 
     # is the CRN there?
     if id is not None:
-        # connect to db
-        connection = connectToPsql()
-        cursor = connection.cursor()
+        cursor = get_db_cursor()
         query = """
             SELECT
                 crash.month,
@@ -96,72 +108,74 @@ def get_popup_info():
 def get_sidebar_info():
     
     args = request.args
+    possible_types = ['county', 'municipality', 'geojson']
 
-    if len(args) != 2:
+    if not args.get('type') or not args.get('value'):
+        raise BadArgsException
         abort(422)
-    else:
-        connection = connectToPsql()
-        cursor = connection.cursor()
+    
+    if args['type'] not in possible_types:
+        # @TODO: more meaningful error response
+        raise BadTypeException
+        abort(404)
+    
+    cursor = get_db_cursor() 
+    qryRef = {
+        "county": "crash.county = '{0}'".format(args.get('value')),
+        "municipality": "crash.municipality LIKE '{0}'".format(args.get('value')),
+        "geojson": "ST_WITHIN(location.geom,ST_GeomFromGeoJSON('{0}'))".format(args.get('value'))
+    }
 
-        query = """
-            SELECT
-                crash.year, COUNT(crash.crash_id) AS count,
-                SUM(severity.fatal) AS fatalities, 
-                SUM(severity.major) AS major_inj, 
-                SUM(severity.minor) AS minor_inj, 
-                SUM(severity.uninjured) AS uninjured, 
-                SUM(severity.unknown) AS unknown,
-                SUM(type.bicycle) AS bike, 
-                SUM(type.ped) AS ped,
-                SUM(type.persons_involved) AS persons_involved,
-                type.collision_type AS type
-            FROM crash
-            JOIN severity ON severity.crash_id = crash.crash_id
-            JOIN location ON location.crash_id = crash.crash_id
-            JOIN type ON type.crash_id = crash.crash_id
-            WHERE {}
-            GROUP BY crash.year, type.collision_type;
-        """
+    statement = qryRef[args.get('type')]
+    query = """
+        SELECT
+            crash.year, COUNT(crash.crash_id) AS count,
+            SUM(severity.fatal) AS fatalities, 
+            SUM(severity.major) AS major_inj, 
+            SUM(severity.minor) AS minor_inj, 
+            SUM(severity.uninjured) AS uninjured, 
+            SUM(severity.unknown) AS unknown,
+            SUM(type.bicycle) AS bike, 
+            SUM(type.ped) AS ped,
+            SUM(type.persons_involved) AS persons_involved,
+            type.collision_type AS type
+        FROM crash
+        JOIN severity ON severity.crash_id = crash.crash_id
+        JOIN location ON location.crash_id = crash.crash_id
+        JOIN type ON type.crash_id = crash.crash_id
+        WHERE {}
+        GROUP BY crash.year, type.collision_type;
+    """
 
-        qryRef = {
-            'county': 'crash.county = \'{0}\''.format(args.get('value')),
-            'municipality': 'crash.municipality LIKE \'{0}\''.format(args.get('value')),
-            'geojson': 'ST_WITHIN(location.geom,ST_GeomFromGeoJSON(\'{0}\'))'.format((args.get('value')))
-        }
+    try:
+        payload = {}
+        cursor.execute(query.format(statement))
+        results = cursor.fetchall()
 
-        if not args.get('type') in qryRef:
-            abort(404)
-        else:
-            statement = qryRef[args.get('type')]
-
-        try:
-            payload = {}
-            curso.execute(query.format(statement))
-            results = cursor.fetchall()
-            for row in results:
-                if str(row[0]) in payload:
-                    payload[str(row[0])]['type'][str(row[10])] = row[1]
-                else:
-                    payload[str(row[0])] = {
-                        'severity': {
-                            'fatal': row[2],
-                            'major': row[3],
-                            'minor': row[4],
-                            'uninjured': row[5],
-                            'unknown': row[6]
-                        },
-                        'mode': {
-                            'bike': row[7],
-                            'ped': row[8],
-                            'persons': row[9]
-                        },
-                        'type': {
-                            str(row[10]): row[1]
-                        }
+        for row in results:
+            if str(row[0]) in payload:  
+                payload[str(row[0])]['type'][str(row[10])] = row[1]
+            else:
+                payload[str(row[0])] = {
+                    'severity': {
+                        'fatal': row[2],
+                        'major': row[3],
+                        'minor': row[4],
+                        'uninjured': row[5],
+                        'unknown': row[6]
+                    },
+                    'mode': {
+                        'bike': row[7],
+                        'ped': row[8],
+                        'persons': row[9]
+                    },
+                    'type': {
+                        str(row[10]): row[1]
                     }
-            return json.dumps(payload, indent=4)
-        except Exception as e:
-            abort(404)
+                }
+        return json.dumps(payload, indent=4)
+    except Exception as e:
+        abort(404)
 
 
 @app.route('/api/crash-data/v2/crashId', methods=['GET'])
@@ -170,19 +184,18 @@ def get_geojson_info():
     geojson = request.args.get('geojson')
 
     # connect to db
-    connection = connectToPsql()
-    cursor = connection.cursor()
+    cursor = get_db_cursor()
     query = """
         SELECT
             crash.crash_id
         FROM crash
         JOIN location ON location.crash_id = crash.crash_id
         WHERE ST_WITHIN(location.geom, ST_GeomFromGeoJSON('{0}'));
-        """
+    """
+    
     payload = {}
     ids = []
 
-    # is the geojson there?
     if geojson is not None:
         # success message
         payload['status'] = 200
