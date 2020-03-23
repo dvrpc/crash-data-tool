@@ -285,21 +285,6 @@ class Map extends Component {
     // reset map to default view
     resetControl = () => this.map.flyTo({center: [-75.2273, 40.071], zoom: 8.2})
 
-    // reveal the list of layer toggles (right now it's just crash circle type)
-    toggleLayerToggles = e => {
-        const wrapper = e.target
-
-        // handle event bubbling
-        if(wrapper.id !== 'toggle-wrapper') return
-
-        const children = wrapper.children
-        const length = children.length
-        
-        for(var i = 0; i < length; i++){
-            children[i].classList.toggle('hidden')
-        }
-    }
-
     // reveal the boundary overlay when a boundary is established
     showBoundaryOverlay = () => this.boundaryOverlay.classList.remove('hidden')
 
@@ -375,19 +360,25 @@ class Map extends Component {
         // escape if zoom level isn't right, if a boundary is set or if the user is drawing a polygon
         if(this.map.getZoom() < 8.4 || this.state.boundary || this.state.polygon) return
 
+        const features = e.features
+
         this.map.getCanvas().style.cursor = 'pointer'
 
-        if(e.features.length > 0 ) {
+        if(features.length > 0 ) {
             
-            // // update old hover jawn
+            // remove old hover state
             if(hoveredMuni) {
                 this.map.setFeatureState(
                     {source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
                     {hover: false}
                 )
+
+                // remove old popup with muni name
             }
 
-            hoveredMuni = +e.features[0].id
+            // update hover layer
+            hoveredMuni = +features[0].id
+
             
             // handle edge cases where hoveredMuni is null or NaN (I think this check is only necessary right now b/c it sometimes serves the old VT's and sometimes doesn't. Can be removed eventually)
             if(hoveredMuni) {
@@ -395,6 +386,8 @@ class Map extends Component {
                     {source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
                     {hover: true}
                 )
+                
+                // add popup with muni name
             }
         }
 
