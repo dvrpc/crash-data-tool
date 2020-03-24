@@ -187,14 +187,17 @@ def get_sidebar_info():
 
 @app.route('/api/crash-data/v2/crashId', methods=['GET'])
 def get_geojson_info():
-    '''
-    @TODO: add docstring
-    '''
+    '''Return list of crash_ids based on provided *geojson*.'''
 
-    # grab crash id  @TODO: crash_id or geojson?
+    # @TODO: rename to .../crash_ids/<geojson> ? 
+
     geojson = request.args.get('geojson')
+    
+    if not geojson:
+        return jsonify({'Message': 'No value provided.'}), 404
+        
+    ids = []
 
-    # connect to db
     cursor = get_db_cursor()
     query = """
         SELECT
@@ -202,28 +205,16 @@ def get_geojson_info():
         FROM crash
         JOIN location ON location.crash_id = crash.crash_id
         WHERE ST_WITHIN(location.geom, ST_GeomFromGeoJSON('{0}'));
-    """
-    
-    payload = {}
-    ids = []
-
-    if geojson is not None:
-        # success message
-        payload['status'] = 200
+    """ 
         
-        try:
-            cursor.execute(sql.SQL(query.format(geojson)))
-            result = cursor.fetchall()
-            if len(result) > 0:
-                for row in result:
-                    ids.append(row[0])
-                return jsonify(ids)
-            else:
-                # query returns no results
-                abort(422)
-        # alter payload status/message if query fails
-        except Exception as e:
-            abort(401)
-    # alter payload message for invalid query
-    else:
-        abort(404)
+    try:
+        cursor.execute(sql.SQL(query.format(geojson)))
+        result = cursor.fetchall()
+        if len(result) > 0:
+            for row in result:
+                ids.append(row[0])
+            return jsonify(ids)
+        else:
+            return jsonify({'message': 'No crashes found for provided geojson'}), 404
+    except Exception as e:
+        abort(401)
