@@ -26,7 +26,7 @@ class Map extends Component {
                     // disable trash because we want the polygons and muni/county boundaries to follow the same flow (i.e. use the 'remove boundary' overlay for both)
                     trash: false
                 }
-            })
+            }),
         }
     }
     
@@ -307,7 +307,7 @@ class Map extends Component {
         
         // make the appropraite paint changes
         this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
-        this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f7c59f')
+        this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f4a22d')
         this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
         this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
     }
@@ -360,11 +360,12 @@ class Map extends Component {
         // escape if zoom level isn't right, if a boundary is set or if the user is drawing a polygon
         if(this.map.getZoom() < 8.4 || this.state.boundary || this.state.polygon) return
 
-        const features = e.features
+        let features = e.features
 
         this.map.getCanvas().style.cursor = 'pointer'
 
         if(features.length > 0 ) {
+            features = features[0]
             
             // remove old hover state
             if(hoveredMuni) {
@@ -372,13 +373,10 @@ class Map extends Component {
                     {source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
                     {hover: false}
                 )
-
-                // remove old popup with muni name (this will be a problem ugh)
             }
 
             // update hover layer
-            hoveredMuni = +features[0].id
-
+            hoveredMuni = features.id
             
             // handle edge cases where hoveredMuni is null or NaN (I think this check is only necessary right now b/c it sometimes serves the old VT's and sometimes doesn't. Can be removed eventually)
             if(hoveredMuni) {
@@ -386,8 +384,6 @@ class Map extends Component {
                     {source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
                     {hover: true}
                 )
-                
-                // add popup with muni name
             }
         }
 
@@ -528,7 +524,6 @@ class Map extends Component {
             }
         }
     }
-
 
     render() {
         let crashType = this.props.crashType || 'ksi'
