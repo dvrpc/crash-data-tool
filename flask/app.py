@@ -7,7 +7,7 @@ purpose: simple REST API to retrieve summary information in DVRPC's crash data t
 @TODO (not listed elsewhere in the code):
     - create list of possible values for the various area "types" - check against
     - review the response codes given
-    - add messages to exceptions
+    - add try/except for connecting to database
 
 """
 from flask import Flask, request, abort, jsonify
@@ -48,7 +48,7 @@ def get_popup_info():
     id = request.args.get('id')
 
     if not id:
-        return jsonify({'message': '"id" is a required parameter'}), 400
+        return jsonify({'message': 'Required parameter *id* not provided'}), 400
     
     cursor = get_db_cursor()
     query = """
@@ -68,25 +68,30 @@ def get_popup_info():
         WHERE
             crash.crash_id = '{0}';
     """
-        
-    payload = {}
-    cursor.execute(query.format(id))
+
+    try:    
+        cursor.execute(query.format(id))
+    except psycopg2.Error as e:
+        return jsonify({'message': 'Database error: ' + str(e)})
         
     result = cursor.fetchone()
-    if result:
-        features = {
-            'month': result[0],
-            'year': result[1],
-            'vehicle_count': result[2],
-            'bike': result[3],
-            'ped': result[4],
-            'persons': result[5],
-            'collision_type': result[6],
-        }
-        payload['features'] = features
-        return jsonify(payload) 
-    else:
+    
+    if not result:
         return jsonify({'message': 'No information found for provided crash'}), 404
+    
+    payload = {}
+    
+    features = {
+        'month': result[0],
+        'year': result[1],
+        'vehicle_count': result[2],
+        'bike': result[3],
+        'ped': result[4],
+        'persons': result[5],
+        'collision_type': result[6],
+    }
+    payload['features'] = features
+    return jsonify(payload) 
 
 
 @app.route('/api/crash-data/v2/sidebarInfo', methods=['GET'])
@@ -139,34 +144,39 @@ def get_sidebar_info():
     """
 
     try:
-        payload = {}
         cursor.execute(query.format(statement))
-        result = cursor.fetchall()
-
-        for row in result:
-            if str(row[0]) in payload:  
-                payload[str(row[0])]['type'][str(row[10])] = row[1]
-            else:
-                payload[str(row[0])] = {
-                    'severity': {
-                        'fatal': row[2],
-                        'major': row[3],
-                        'minor': row[4],
-                        'uninjured': row[5],
-                        'unknown': row[6]
-                    },
-                    'mode': {
-                        'bike': row[7],
-                        'ped': row[8],
-                        'persons': row[9]
-                    },
-                    'type': {
-                        str(row[10]): row[1]
-                    }
+    except psycopg2.Error as e:
+        return jsonify({'message': 'Database error: ' + str(e)})
+    
+    result = cursor.fetchall()
+    
+    if not result:
+        return jsonify({'message': 'No information found for given type/value.'})
+    
+    payload = {}
+    
+    for row in result:
+        if str(row[0]) in payload:  
+            payload[str(row[0])]['type'][str(row[10])] = row[1]
+        else:
+            payload[str(row[0])] = {
+                'severity': {
+                    'fatal': row[2],
+                    'major': row[3],
+                    'minor': row[4],
+                    'uninjured': row[5],
+                    'unknown': row[6]
+                },
+                'mode': {
+                    'bike': row[7],
+                    'ped': row[8],
+                    'persons': row[9]
+                },
+                'type': {
+                    str(row[10]): row[1]
                 }
-        return jsonify(payload)
-    except Exception as e:
-        abort(404)
+            }
+    return jsonify(payload)
 
 
 @app.route('/api/crash-data/v2/crashId', methods=['GET'])
@@ -193,12 +203,14 @@ def get_geojson_info():
         
     try:
         cursor.execute(sql.SQL(query.format(geojson)))
-        result = cursor.fetchall()
-        if len(result) > 0:
-            for row in result:
-                ids.append(row[0])
-            return jsonify(ids)
-        else:
-            return jsonify({'message': 'No crashes found for provided geojson'}), 404
-    except Exception as e:
-        abort(401)
+    except psycopg2.Error as e:
+        return jsonify({'message': 'Database error: ' + str(e)}), 400
+
+    result = cursor.fetchall()
+    
+    if not result:
+        return jsonify({'message': 'No crashes found for provided geojson'}), 404
+
+    for row in result:
+        ids.append(row[0])
+    return jsonify(ids)
