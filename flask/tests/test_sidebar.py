@@ -47,3 +47,30 @@ def test_success1(client):
     # print(response.data)
     # assert False
     assert response.status_code == 200
+
+
+@pytest.mark.parametrize('value', ['Camden City', 'Mount Laurel Township'])
+def test_double_spacing(client, value):
+    '''
+    Test that double-spacing error is fixed (some municipalities and counties had two spaces
+    between words rather than one).
+    '''
+    response = client.get(
+        endpoint,
+        query_string={'type': 'municipality', 'value': value}
+    )
+
+    assert response.status_code == 200
+
+
+def test_KSI_only(client):
+    response = client.get(
+        endpoint,
+        query_string={
+            'type': 'county', 
+            'value': 'Bucks',
+            'ksi_only': 'yes'
+        }
+    )
+    print(response.data)
+    assert False

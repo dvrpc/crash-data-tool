@@ -76,74 +76,108 @@ def get_popup_info():
     result = cursor.fetchone()
     
     if not result:
-        return jsonify({'message': 'No information found for provided crash'}), 404
+        return jsonify({'message': 'Crash not found'}), 404
     
-    payload = {}
-    
-    features = {
-        'month': result[0],
-        'year': result[1],
-        'vehicle_count': result[2],
-        'bike': result[3],
-        'ped': result[4],
-        'persons': result[5],
-        'collision_type': result[6],
+    payload = {
+        'features': {
+            'month': result[0],
+            'year': result[1],
+            'vehicle_count': result[2],
+            'bike': result[3],
+            'ped': result[4],
+            'persons': result[5],
+            'collision_type': result[6],
+        }
     }
-    payload['features'] = features
     return jsonify(payload) 
 
 
 @app.route('/api/crash-data/v2/sidebarInfo', methods=['GET'])
 def get_sidebar_info():
     '''
-    @TODO: add docstring
+    Return summary of various attributes by year.
+    *type* and *value* parameters will limit geographic area.
+    If *ksi_only* == yes, return only fatal and major accidents.
+    
+    @TODO: 
+        - rename to .../v2/crashes_by_area?
+        - do we want to add year and KSI/not KSI variables here?
+        - take closer look at how resulting payload is created
     '''
 
     args = request.args
     keys = list(args.keys())
-    possible_types = ['county', 'municipality', 'geojson']
-    
+    possible_area_types = ['county', 'municipality', 'geojson']
+
+    # type and value are required parameters 
     if 'type' not in keys or 'value' not in keys:
         return jsonify({'message': '*type* and *value* are required parameters'}), 400
-    
-    if args['type'] not in possible_types:
+
+    if args.get('type') not in possible_area_types:
         return jsonify(
             {
                 'message': 
                 '*type* must be one of *county*, *municipality*, or *geojson*'
             }
         ), 400
-    
-    cursor = get_db_cursor() 
-    qryRef = {
-        "county": "crash.county = '{0}'".format(args.get('value')),
-        "municipality": "crash.municipality LIKE '{0}'".format(args.get('value')),
-        "geojson": "ST_WITHIN(location.geom,ST_GeomFromGeoJSON('{0}'))".format(args.get('value'))
+
+    # choose the appropriate WHERE clause for query based on value of 'type' 
+    value = args.get('value')
+    where_options = {
+        "county": "crash.county = '{}'".format(value),
+        "municipality": "crash.municipality = '{}'".format(value),
+        "geojson": "ST_WITHIN(location.geom,ST_GeomFromGeoJSON('{}'))".format(value),
     }
+    where_statement = where_options[args.get('type')]
 
-    statement = qryRef[args.get('type')]
-    query = """
-        SELECT
-            crash.year, COUNT(crash.crash_id) AS count,
-            SUM(severity.fatal) AS fatalities, 
-            SUM(severity.major) AS major_inj, 
-            SUM(severity.minor) AS minor_inj, 
-            SUM(severity.uninjured) AS uninjured, 
-            SUM(severity.unknown) AS unknown,
-            SUM(type.bicycle) AS bike, 
-            SUM(type.ped) AS ped,
-            SUM(type.persons_involved) AS persons_involved,
-            type.collision_type AS type
-        FROM crash
-        JOIN severity ON severity.crash_id = crash.crash_id
-        JOIN location ON location.crash_id = crash.crash_id
-        JOIN type ON type.crash_id = crash.crash_id
-        WHERE {}
-        GROUP BY crash.year, type.collision_type;
-    """
+    # only get fatal and major accidents if ksi_only parameter passed and == yes
+    if args.get('ksi_only') == 'yes':
+        query = """
+            SELECT
+                crash.year,
+                COUNT(crash.crash_id) AS count,
+                SUM(severity.fatal) AS fatalities,
+                SUM(severity.major) AS major_inj,
+                SUM(type.bicycle) AS bike,
+                SUM(type.ped) AS ped,
+                SUM(type.persons_involved) AS persons_involved,
+                type.collision_type AS type
+            FROM crash
+            JOIN severity ON severity.crash_id = crash.crash_id
+            JOIN location ON location.crash_id = crash.crash_id
+            JOIN type ON type.crash_id = crash.crash_id
+            WHERE {}
+            AND (severity.fatal > 0 OR severity.major > 0)
+            GROUP BY crash.year, type.collision_type;
+        """
+    # otherwise get them all
+    else: 
+        query = """
+            SELECT
+                crash.year, 
+                COUNT(crash.crash_id) AS count,
+                SUM(severity.fatal) AS fatalities, 
+                SUM(severity.major) AS major_inj,
+                SUM(severity.moderate) AS mod_inj, 
+                SUM(severity.minor) AS minor_inj, 
+                SUM(severity.uninjured) AS uninjured, 
+                SUM(severity.unknown) AS unknown,
+                SUM(type.bicycle) AS bike, 
+                SUM(type.ped) AS ped,
+                SUM(type.persons_involved) AS persons_involved,
+                type.collision_type AS type
+            FROM crash
+            JOIN severity ON severity.crash_id = crash.crash_id
+            JOIN location ON location.crash_id = crash.crash_id
+            JOIN type ON type.crash_id = crash.crash_id
+            WHERE {}
+            GROUP BY crash.year, type.collision_type
+        """
 
+    cursor = get_db_cursor() 
+   
     try:
-        cursor.execute(query.format(statement))
+        cursor.execute(query.format(where_statement))
     except psycopg2.Error as e:
         return jsonify({'message': 'Database error: ' + str(e)}), 400
     
@@ -151,30 +185,55 @@ def get_sidebar_info():
     
     if not result:
         return jsonify({'message': 'No information found for given type/value.'}), 404
-    
+
+    # create dictionary to return, with data summarized by year
     payload = {}
     
     for row in result:
-        if str(row[0]) in payload:  
-            payload[str(row[0])]['type'][str(row[10])] = row[1]
-        else:
-            payload[str(row[0])] = {
-                'severity': {
-                    'fatal': row[2],
-                    'major': row[3],
-                    'minor': row[4],
-                    'uninjured': row[5],
-                    'unknown': row[6]
-                },
-                'mode': {
-                    'bike': row[7],
-                    'ped': row[8],
-                    'persons': row[9]
-                },
-                'type': {
-                    str(row[10]): row[1]
+        if args.get('ksi_only') == 'yes':
+            if str(row[0]) in payload: 
+                payload[str(row[0])]['type'][str(row[7])] = row[1]
+            else:
+                payload[str(row[0])] = {
+                    'severity': {
+                        'fatal': row[2],
+                        'major': row[3],
+                        'moderate': 'n/a',
+                        'minor': 'n/a',
+                        'uninjured': 'n/a',
+                        'unknown': 'n/a',
+                    },
+                    'mode': {
+                        'bike': row[4],
+                        'ped': row[5],
+                        'persons': row[6]
+                    },
+                    'type': {
+                        str(row[7]): row[1]
+                    }
                 }
-            }
+        else:
+            if str(row[0]) in payload: 
+                payload[str(row[0])]['type'][str(row[11])] = row[1]
+            else:
+                payload[str(row[0])] = {
+                    'severity': {
+                        'fatal': row[2],
+                        'major': row[3],
+                        'moderate': row[4],
+                        'minor': row[5],
+                        'uninjured': row[6],
+                        'unknown': row[7]
+                    },
+                    'mode': {
+                        'bike': row[8],
+                        'ped': row[9],
+                        'persons': row[10]
+                    },
+                    'type': {
+                        str(row[11]): row[1]
+                    }
+                }
     return jsonify(payload)
 
 
