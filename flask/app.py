@@ -71,7 +71,7 @@ def get_popup_info():
     try:    
         cursor.execute(query.format(id))
     except psycopg2.Error as e:
-        return jsonify({'message': 'Database error: ' + str(e)})
+        return jsonify({'message': 'Database error: ' + str(e)}), 400
         
     result = cursor.fetchone()
     
@@ -145,12 +145,12 @@ def get_sidebar_info():
     try:
         cursor.execute(query.format(statement))
     except psycopg2.Error as e:
-        return jsonify({'message': 'Database error: ' + str(e)})
+        return jsonify({'message': 'Database error: ' + str(e)}), 400
     
     result = cursor.fetchall()
     
     if not result:
-        return jsonify({'message': 'No information found for given type/value.'})
+        return jsonify({'message': 'No information found for given type/value.'}), 404
     
     payload = {}
     
@@ -188,8 +188,6 @@ def get_geojson_info():
     
     if not geojson:
         return jsonify({'Message': 'Required parameter *geojson* not provided.'}), 400
-        
-    ids = []
 
     cursor = get_db_cursor()
     query = """
@@ -209,6 +207,8 @@ def get_geojson_info():
     
     if not result:
         return jsonify({'message': 'No crashes found for provided geojson'}), 404
+    
+    ids = []
 
     for row in result:
         ids.append(row[0])
