@@ -10,12 +10,11 @@ purpose: simple REST API to retrieve summary information in DVRPC's crash data t
     - add try/except for connecting to database
 
 """
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from config import PSQL_CREDS
 import psycopg2 
 from psycopg2 import sql
-import json
 
 app = Flask(__name__)
 CORS(app)
