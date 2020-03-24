@@ -59,7 +59,7 @@ def get_popup_info():
     @TODO: add docstring
     '''
     id = request.args.get('id')
-
+    
     if id:
         cursor = get_db_cursor()
         query = """
@@ -77,42 +77,31 @@ def get_popup_info():
             JOIN
                 type ON crash.crash_id = type.crash_id
             WHERE
-                crash.crash_id = {0};
+                crash.crash_id = '{0}';
         """
-
+        
         payload = {}
+        cursor.execute(query.format(id))
         
-        # success message
-        payload['status'] = 200
-        
-        try:
-            cursor.execute(sql.SQL(query.format(id)))
-            rows = cursor.fetchall()
-            if len(rows) > 0:
-                for row in rows:
-                    result = {
-                        'month': row[0],
-                        'year': row[1],
-                        'vehicle_count': row[2],
-                        'bike': row[3],
-                        'ped': row[4],
-                        'persons': row[5],
-                        'collision_type': row[6]
-                    }
-                    payload['features'] = result
-                    return jsonify(payload) 
-            else:
-                # query returns no results
-                abort(422)
-        # alter payload status/message if query fails
-        except Exception as e:
-            # @TODO: more meaningful error response
-            # @TODO: use possible exceptions 
-            abort(401)
-    # alter payload message for invalid query
+        result = cursor.fetchone()
+        if result:
+            features = {
+                'month': result[0],
+                'year': result[1],
+                'vehicle_count': result[2],
+                'bike': result[3],
+                'ped': result[4],
+                'persons': result[5],
+                'collision_type': result[6],
+            }
+            payload['features'] = features
+            return jsonify(payload) 
+        else:
+            # query returns no results
+            abort(404)  # @TODO: accurate http response
     else:
         raise IdNotProvidedException
-        abort(404)
+        abort(404)  # @TODO: accurate http response
 
 
 @app.route('/api/crash-data/v2/sidebarInfo', methods=['GET'])

@@ -11,3 +11,11 @@ def test_no_id_ex(client):
         )
 
 
+def test_id_success(client):
+    response = client.get(
+        endpoint,
+        query_string={'id': '2016000817'}
+    )
+
+    assert response.status_code == 200
+
