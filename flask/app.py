@@ -130,50 +130,31 @@ def get_sidebar_info():
     }
     where_statement = where_options[args.get('type')]
 
-    # only get fatal and major accidents if ksi_only parameter passed and == yes
+    # get crashes that had severity levels of fatal or major only (although this does mean that
+    # we exclude the lower level severities if they existed for these crashes)
     if args.get('ksi_only') == 'yes':
-        query = """
-            SELECT
-                crash.year,
-                COUNT(crash.crash_id) AS count,
-                SUM(severity.fatal) AS fatalities,
-                SUM(severity.major) AS major_inj,
-                SUM(type.bicycle) AS bike,
-                SUM(type.ped) AS ped,
-                SUM(type.persons_involved) AS persons_involved,
-                type.collision_type AS type
-            FROM crash
-            JOIN severity ON severity.crash_id = crash.crash_id
-            JOIN location ON location.crash_id = crash.crash_id
-            JOIN type ON type.crash_id = crash.crash_id
-            WHERE {}
-            AND (severity.fatal > 0 OR severity.major > 0)
-            GROUP BY crash.year, type.collision_type;
-        """
-    # otherwise get them all
-    else: 
-        query = """
-            SELECT
-                crash.year, 
-                COUNT(crash.crash_id) AS count,
-                SUM(severity.fatal) AS fatalities, 
-                SUM(severity.major) AS major_inj,
-                SUM(severity.moderate) AS mod_inj, 
-                SUM(severity.minor) AS minor_inj, 
-                SUM(severity.uninjured) AS uninjured, 
-                SUM(severity.unknown) AS unknown,
-                SUM(type.bicycle) AS bike, 
-                SUM(type.ped) AS ped,
-                SUM(type.persons_involved) AS persons_involved,
-                type.collision_type AS type
-            FROM crash
-            JOIN severity ON severity.crash_id = crash.crash_id
-            JOIN location ON location.crash_id = crash.crash_id
-            JOIN type ON type.crash_id = crash.crash_id
-            WHERE {}
-            GROUP BY crash.year, type.collision_type
-        """
-
+        where_statement += 'AND (severity.fatal > 0 OR severity.major > 0)'
+    
+    query = """
+        SELECT
+            crash.year, COUNT(crash.crash_id) AS count,
+            SUM(severity.fatal) AS fatalities, 
+            SUM(severity.major) AS major_inj,
+            SUM(severity.moderate) AS moderate_inj, 
+            SUM(severity.minor) AS minor_inj, 
+            SUM(severity.uninjured) AS uninjured, 
+            SUM(severity.unknown) AS unknown,
+            SUM(type.bicycle) AS bike, 
+            SUM(type.ped) AS ped,
+            SUM(type.persons_involved) AS persons_involved,
+            type.collision_type AS type
+        FROM crash
+        JOIN severity ON severity.crash_id = crash.crash_id
+        JOIN location ON location.crash_id = crash.crash_id
+        JOIN type ON type.crash_id = crash.crash_id
+        WHERE {}
+        GROUP BY crash.year, type.collision_type;
+    """
     cursor = get_db_cursor() 
    
     try:
@@ -190,50 +171,27 @@ def get_sidebar_info():
     payload = {}
     
     for row in result:
-        if args.get('ksi_only') == 'yes':
-            if str(row[0]) in payload: 
-                payload[str(row[0])]['type'][str(row[7])] = row[1]
-            else:
-                payload[str(row[0])] = {
-                    'severity': {
-                        'fatal': row[2],
-                        'major': row[3],
-                        'moderate': 'n/a',
-                        'minor': 'n/a',
-                        'uninjured': 'n/a',
-                        'unknown': 'n/a',
-                    },
-                    'mode': {
-                        'bike': row[4],
-                        'ped': row[5],
-                        'persons': row[6]
-                    },
-                    'type': {
-                        str(row[7]): row[1]
-                    }
-                }
+        if str(row[0]) in payload: 
+            payload[str(row[0])]['type'][str(row[11])] = row[1]
         else:
-            if str(row[0]) in payload: 
-                payload[str(row[0])]['type'][str(row[11])] = row[1]
-            else:
-                payload[str(row[0])] = {
-                    'severity': {
-                        'fatal': row[2],
-                        'major': row[3],
-                        'moderate': row[4],
-                        'minor': row[5],
-                        'uninjured': row[6],
-                        'unknown': row[7]
-                    },
-                    'mode': {
-                        'bike': row[8],
-                        'ped': row[9],
-                        'persons': row[10]
-                    },
-                    'type': {
-                        str(row[11]): row[1]
-                    }
+            payload[str(row[0])] = {
+                'severity': {
+                    'fatal': row[2],
+                    'major': row[3],
+                    'moderate': row[4],
+                    'minor': row[5],
+                    'uninjured': row[6],
+                    'unknown': row[7]
+                },
+                'mode': {
+                    'bike': row[8],
+                    'ped': row[9],
+                    'persons': row[10]
+                },
+                'type': {
+                    str(row[11]): row[1]
                 }
+            }
     return jsonify(payload)
 
 

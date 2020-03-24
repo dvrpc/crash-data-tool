@@ -1,4 +1,5 @@
 import pytest
+
 '''
 Testing get_sidebar_info()
 '''
@@ -63,7 +64,10 @@ def test_double_spacing(client, value):
     assert response.status_code == 200
 
 
-def test_KSI_only(client):
+def test_KSI_only1(client):
+    '''
+    ?
+    '''
     response = client.get(
         endpoint,
         query_string={
@@ -72,5 +76,5 @@ def test_KSI_only(client):
             'ksi_only': 'yes'
         }
     )
-    print(response.data)
+    
     assert False
