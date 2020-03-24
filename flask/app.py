@@ -21,23 +21,6 @@ app = Flask(__name__)
 CORS(app)
 
 
-# Exceptions
-class BadArgsException(Exception):
-    pass
-
-
-class TooManyArgsException(Exception):
-    pass
-
-
-class BadTypeException(Exception):
-    pass
-
-
-class IdNotProvidedException(Exception):
-    pass
-
-
 def get_db_cursor():
     connection = psycopg2.connect(PSQL_CREDS)
     return connection.cursor()
@@ -56,52 +39,54 @@ def docs():
 @app.route('/api/crash-data/v2/popupInfo', methods=['GET'])
 def get_popup_info():
     '''
-    @TODO: add docstring
+    @TODO: 
+        - add docstring
+        - rename to ../v2/crash_detail/<id>?
+        - check psycopg2 docs for any exception provided for no empty result
     '''
+
     id = request.args.get('id')
+
+    if not id:
+        return jsonify({'message': '"id" is a required parameter'}), 400
     
-    if id:
-        cursor = get_db_cursor()
-        query = """
-            SELECT
-                crash.month,
-                crash.year,
-                type.vehicle_count,
-                type.bicycle,
-                type.ped,
-                type.persons_involved,
-                type.collision_type
-            FROM crash
-            JOIN
-                severity ON crash.crash_id = severity.crash_id
-            JOIN
-                type ON crash.crash_id = type.crash_id
-            WHERE
-                crash.crash_id = '{0}';
-        """
+    cursor = get_db_cursor()
+    query = """
+        SELECT
+            crash.month,
+            crash.year,
+            type.vehicle_count,
+            type.bicycle,
+            type.ped,
+            type.persons_involved,
+            type.collision_type
+        FROM crash
+        JOIN
+            severity ON crash.crash_id = severity.crash_id
+        JOIN
+            type ON crash.crash_id = type.crash_id
+        WHERE
+            crash.crash_id = '{0}';
+    """
         
-        payload = {}
-        cursor.execute(query.format(id))
+    payload = {}
+    cursor.execute(query.format(id))
         
-        result = cursor.fetchone()
-        if result:
-            features = {
-                'month': result[0],
-                'year': result[1],
-                'vehicle_count': result[2],
-                'bike': result[3],
-                'ped': result[4],
-                'persons': result[5],
-                'collision_type': result[6],
-            }
-            payload['features'] = features
-            return jsonify(payload) 
-        else:
-            # query returns no results
-            abort(404)  # @TODO: accurate http response
+    result = cursor.fetchone()
+    if result:
+        features = {
+            'month': result[0],
+            'year': result[1],
+            'vehicle_count': result[2],
+            'bike': result[3],
+            'ped': result[4],
+            'persons': result[5],
+            'collision_type': result[6],
+        }
+        payload['features'] = features
+        return jsonify(payload) 
     else:
-        raise IdNotProvidedException
-        abort(404)  # @TODO: accurate http response
+        return jsonify({'message': 'No information found for provided crash'}), 404
 
 
 @app.route('/api/crash-data/v2/sidebarInfo', methods=['GET'])
@@ -115,16 +100,15 @@ def get_sidebar_info():
     possible_types = ['county', 'municipality', 'geojson']
     
     if 'type' not in keys or 'value' not in keys:
-        raise BadArgsException
-        abort(422)
+        return jsonify({'message': '*type* and *value* are required parameters'}), 400
     
-    if len(args) > 2:
-        raise TooManyArgsException
-        abort(422)
-
     if args['type'] not in possible_types:
-        raise BadTypeException
-        abort(404)
+        return jsonify(
+            {
+                'message': 
+                '*type* must be one of *county*, *municipality*, or *geojson*'
+            }
+        ), 400
     
     cursor = get_db_cursor() 
     qryRef = {
@@ -194,7 +178,7 @@ def get_geojson_info():
     geojson = request.args.get('geojson')
     
     if not geojson:
-        return jsonify({'Message': 'No value provided.'}), 404
+        return jsonify({'Message': 'Required parameter *geojson* not provided.'}), 400
         
     ids = []
 

@@ -1,14 +1,11 @@
 import pytest
-from app import IdNotProvidedException
 
 endpoint = '/api/crash-data/v2/popupInfo'
 
 
-def test_no_id_ex(client):
-    with pytest.raises(IdNotProvidedException):
-        client.get(
-            endpoint
-        )
+def test_no_id1(client):
+    response = client.get(endpoint)
+    assert response.status_code == 400
 
 
 def test_id_success(client):
