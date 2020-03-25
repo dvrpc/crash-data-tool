@@ -6,7 +6,6 @@ purpose: simple REST API to retrieve summary information in DVRPC's crash data t
 
 @TODO (not listed elsewhere in the code):
     - create list of possible values for the various area "types" - check against
-    - review the response codes given
     - add try/except for connecting to database
 
 """
@@ -14,7 +13,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from config import PSQL_CREDS
 import psycopg2 
-from psycopg2 import sql
+
 
 app = Flask(__name__)
 CORS(app)
@@ -65,11 +64,11 @@ def get_popup_info():
         JOIN
             type ON crash.crash_id = type.crash_id
         WHERE
-            crash.crash_id = '{0}';
-    """
+            crash.crash_id = %s 
+        """
 
     try:    
-        cursor.execute(query.format(id))
+        cursor.execute(query, [id])
     except psycopg2.Error as e:
         return jsonify({'message': 'Database error: ' + str(e)}), 400
         
@@ -107,13 +106,11 @@ def get_sidebar_info():
 
     args = request.args
     keys = list(args.keys())
-    possible_area_types = ['county', 'municipality', 'geojson']
 
-    # type and value are required parameters 
     if 'type' not in keys or 'value' not in keys:
         return jsonify({'message': '*type* and *value* are required parameters'}), 400
 
-    if args.get('type') not in possible_area_types:
+    if args.get('type') not in ['county', 'municipality', 'geojson']:
         return jsonify(
             {
                 'message': 
@@ -121,20 +118,8 @@ def get_sidebar_info():
             }
         ), 400
 
-    # choose the appropriate WHERE clause for query based on value of 'type' 
-    value = args.get('value')
-    where_options = {
-        "county": "crash.county = '{}'".format(value),
-        "municipality": "crash.municipality = '{}'".format(value),
-        "geojson": "ST_WITHIN(location.geom,ST_GeomFromGeoJSON('{}'))".format(value),
-    }
-    where_statement = where_options[args.get('type')]
-
-    # get crashes that had severity levels of fatal or major only (although this does mean that
-    # we exclude the lower level severities if they existed for these crashes)
-    if args.get('ksi_only') == 'yes':
-        where_statement += 'AND (severity.fatal > 0 OR severity.major > 0)'
-    
+    # build query incrementally, to add possible WHERE clauses before GROUP BY and 
+    # to easily pass value parameter to execute in order to prevent SQL injection 
     query = """
         SELECT
             crash.year, COUNT(crash.crash_id) AS count,
@@ -152,13 +137,24 @@ def get_sidebar_info():
         JOIN severity ON severity.crash_id = crash.crash_id
         JOIN location ON location.crash_id = crash.crash_id
         JOIN type ON type.crash_id = crash.crash_id
-        WHERE {}
-        GROUP BY crash.year, type.collision_type;
     """
+
+    if args.get('type') == 'county':
+        query += " WHERE crash.county = %s"
+    elif args.get('type') == 'municipality':
+        query += " WHERE crash.municipality = %s"
+    elif args.get('type') == 'geojson':
+        query += " WHERE ST_WITHIN(location.geom,ST_GeomFromGeoJSON(%s))"
+    
+    if args.get('ksi_only') == 'yes':
+        query += " AND (severity.fatal > 0 OR severity.major > 0)"
+    
+    query += " GROUP BY crash.year, type.collision_type;"
+    
     cursor = get_db_cursor() 
    
     try:
-        cursor.execute(query.format(where_statement))
+        cursor.execute(query, [args.get('value')])
     except psycopg2.Error as e:
         return jsonify({'message': 'Database error: ' + str(e)}), 400
     
@@ -212,11 +208,11 @@ def get_geojson_info():
             crash.crash_id
         FROM crash
         JOIN location ON location.crash_id = crash.crash_id
-        WHERE ST_WITHIN(location.geom, ST_GeomFromGeoJSON('{0}'));
+        WHERE ST_WITHIN(location.geom, ST_GeomFromGeoJSON(%s));
     """ 
         
     try:
-        cursor.execute(sql.SQL(query.format(geojson)))
+        cursor.execute(query, [geojson])
     except psycopg2.Error as e:
         return jsonify({'message': 'Database error: ' + str(e)}), 400
 
