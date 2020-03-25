@@ -186,7 +186,7 @@ def get_sidebar_info():
                 'mode': {
                     'bike': row[8],
                     'ped': row[9],
-                    'persons': row[10]
+                    'vehicle_occupants': row[10] - row[9] - row[8]
                 },
                 'type': {
                     str(row[11]): row[1]
