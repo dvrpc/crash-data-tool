@@ -41,7 +41,7 @@ class Map extends Component {
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            style: 'mapbox://styles/mapbox/navigation-guidance-night-v2?optimize=true',
+            style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
             center: [-75.2273, 40.071],
             zoom: 8.2
         })

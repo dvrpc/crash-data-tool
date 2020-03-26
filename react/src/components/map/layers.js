@@ -41,6 +41,7 @@ const municipalityFill = {
             1,
             0
         ],
+        'fill-color': 'rgba(0,0,0,0.1)'
     }
 }
 
