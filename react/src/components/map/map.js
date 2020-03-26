@@ -366,6 +366,7 @@ class Map extends Component {
 
         if(features.length > 0 ) {
             features = features[0]
+            const name = features.properties.name
             
             // remove old hover state
             if(hoveredMuni) {
@@ -385,6 +386,10 @@ class Map extends Component {
                     {hover: true}
                 )
             }
+
+            // update the overlay text (and visibility if necessary)
+            this.hoveredArea.style.visibility = 'visible'
+            this.hoveredArea.children[0].textContent = name
         }
 
         return hoveredMuni
@@ -540,7 +545,11 @@ class Map extends Component {
                     </div>
                 </div>
 
-                <div id="default-extent-btn" className="shadow overlays custom-toggle" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
+                <div id="hoveredArea" className="shadow overlays" ref={el => this.hoveredArea = el}>
+                    <h4>Skippack Township</h4>
+                </div>
+
+                <div id="default-extent-btn" className="shadow overlays" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
                     <img id="default-extent-img" src='https://www.dvrpc.org/img/banner/new/bug-favicon.png' alt='DVRPC logo' />
                 </div>
 

@@ -34,6 +34,13 @@
 }
 
 
+/* Hovered Geography Overlay */
+#hoveredArea{
+    visibility: hidden;
+    margin: 10px auto 0 50%;
+    padding: 6px 8px;
+}
+
 /* Default Extent Control Overlay */
 #default-extent-btn{
     height: 20px;
