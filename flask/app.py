@@ -24,7 +24,24 @@ def docs():
             to give details about how to use the API
     """
 
-    return '<html><p>this will be the docs page</p></html>'
+    return '''
+        <html>
+            <ul>
+                <li>"api/crash-data/v1/crashes/id"</li>
+                    <ul>
+                        <li>path parameter "id" required</li>
+                    </ul>
+                <li>"api/crash-data/v1/summary"</li>
+                    <ul>
+                        <li>"type" and "value" query parameters required</li>
+                    </ul>
+                <li>"api/crash-data/v1/crash_ids"</li>
+                    <ul>
+                        <li>"geojson" query parameter required</li>
+                    </ul>
+            </ul>
+        </html>
+    '''
 
 
 @app.route('/api/crash-data/v1/crashes/<id>', methods=['GET'])
