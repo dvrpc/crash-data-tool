@@ -16,7 +16,6 @@ class Map extends Component {
         super(props)
         this.state = {
             boundary: null,
-            heatZoom: true,
             polygon: false,
             // draw is on local state so that removeBoundary() can access the instance of MapboxDraw to call draw.deleteAll()
             draw: new MapboxDraw({
@@ -63,8 +62,9 @@ class Map extends Component {
                 url: 'https://tiles.dvrpc.org/data/crash.json'
             })
 
-            // add regional boundaries
+            // add county boundaries
             this.map.addLayer(layers.countyOutline)
+            this.map.addLayer(layers.countyFill)
 
             // add municipal boundaries
             this.map.addLayer(layers.municipalityOutline)
@@ -80,27 +80,29 @@ class Map extends Component {
             // add hover effect to municipalities
             this.map.on('mousemove', 'municipality-fill', e => hoveredMuni = this.hoverMuniFill(e, hoveredMuni))
             this.map.on('mouseleave', 'municipality-fill', () => hoveredMuni = this.removeMuniFill(hoveredMuni))
+            this.map.on('mousemove', 'county-fill', e => this.hoverCountyFill(e))
+            this.map.on('mouseleave', 'county-fill', e => this.removeCountyFill(e))
 
             // clicking a municipality triggers the same set of actions as searching by muni
             this.map.on('click', 'municipality-fill', e => this.clickMuni(e))
             
-            // update legend depending on zoom level (heatmap vs crash circles). use state.heatZoom state to avoid repainting if the user stays within the circle or heatmap zoom ranges
+            // update legend depending on zoom level (heatmap vs crash circles)
             this.map.on('zoomend', () => {
                 const zoom = this.map.getZoom()
+                const legendTitle = this.legendTitle.textContent
 
-                if(zoom >= 11 && this.state.heatZoom) {
+                if(zoom >= 11 && legendTitle[0] !== 'C') {
+                    console.log('called severity case')
                     this.legendTitle.textContent = 'Crash Severity'
                     this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #d62839)'
                     this.legendLabel.innerHTML = '<span>No Injury</span><span>Fatal</span>'
-                    this.setState({heatZoom: false})
                 }
 
-                if(zoom < 11 && !this.state.heatZoom){
+                if(zoom < 11 && legendTitle[0] !== 'N'){
                     let crashType = this.props.crashType || 'ksi'
                     this.legendTitle.textContent = `Number of Crashes (${crashType})`
                     this.legendGradient.style.background = 'linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248)'
                     this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
-                    this.setState({heatZoom: true})
                 }
             })
 
@@ -353,6 +355,17 @@ class Map extends Component {
             polygon: false
         })
     }
+
+    // @NOTE: this is just a test for the overlays for county. hoverCountyFill and hoverMuniFill will be the same function,
+    // as described in issue #48
+    hoverCountyFill = e  => {
+        let name = e.features[0].properties.name
+        if(name) {
+            this.hoveredArea.style.visibility = 'visible'
+            this.hoveredArea.children[0].textContent = `${name} County`
+        }
+    }
+    removeCountyFill = e => this.hoveredArea.style.visibility = 'hidden'
 
     // add fill effect when hovering over a municipality
     hoverMuniFill = (e, hoveredMuni) => {
