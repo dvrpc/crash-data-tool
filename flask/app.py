@@ -17,7 +17,7 @@ def get_db_cursor():
     return connection.cursor()
 
 
-@app.route('/api/crash-data/v2/documentation')
+@app.route('/api/crash-data/v1/documentation')
 def docs():
     """
     @TODO:  create documentation page using flask's render_template function to deliver an HTML file
@@ -27,19 +27,18 @@ def docs():
     return '<html><p>this will be the docs page</p></html>'
 
 
-@app.route('/api/crash-data/v2/popupInfo', methods=['GET'])
-def get_popup_info():
+@app.route('/api/crash-data/v1/crashes/<id>', methods=['GET'])
+def get_crash(id):
     '''
     @TODO: 
         - add docstring
-        - rename to ../v2/crashes/<id> ?
         - check psycopg2 docs for any exception provided for no empty result
     '''
 
-    id = request.args.get('id')
+    # id = request.args.get('id')
 
     if not id:
-        return jsonify({'message': 'Required parameter *id* not provided'}), 400
+        return jsonify({'message': 'Required path parameter *id* not provided'}), 400
     
     cursor = get_db_cursor()
     query = """
@@ -84,8 +83,8 @@ def get_popup_info():
     return jsonify(payload) 
 
 
-@app.route('/api/crash-data/v2/sidebarInfo', methods=['GET'])
-def get_sidebar_info():
+@app.route('/api/crash-data/v1/summary', methods=['GET'])
+def get_summary():
     '''
     Return summary of various attributes by year.
     *type* and *value* parameters will limit geographic area.
@@ -184,11 +183,11 @@ def get_sidebar_info():
     return jsonify(payload)
 
 
-@app.route('/api/crash-data/v2/crashId', methods=['GET'])
-def get_geojson_info():
-    '''Return list of crash_ids based on provided *geojson*.'''
+@app.route('/api/crash-data/v1/crash_ids', methods=['GET'])
+def get_crash_ids():
+    '''Return list of crash_ids based on provided parameters.'''
 
-    # @TODO: rename to .../crash_ids ?
+    # @TODO: more ways to get this info in addition to by geojson
 
     geojson = request.args.get('geojson')
     
