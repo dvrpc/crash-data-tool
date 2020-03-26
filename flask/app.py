@@ -1,14 +1,10 @@
 """
-author: Robert Beatty
-date: March 11, 2019
-modified: November 12, 2019
-purpose: simple REST API to retrieve summary information in DVRPC's crash data tool
-
 @TODO (not listed elsewhere in the code):
     - create list of possible values for the various area "types" - check against
     - add try/except for connecting to database
 
 """
+
 from flask import Flask, request, jsonify
 from config import PSQL_CREDS
 import psycopg2 
