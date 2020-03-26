@@ -3,8 +3,13 @@ import pytest
 endpoint = '/api/crash-data/v2/popupInfo'
 
 
-def test_no_id1(client):
+def test_400_when_no_params_provided(client):
     response = client.get(endpoint)
+    assert response.status_code == 400
+
+
+def test_400_when_id_param_not_provided(client):
+    response = client.get(endpoint, query_string={'not_id': '2016000817'})
     assert response.status_code == 400
 
 

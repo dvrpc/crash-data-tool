@@ -64,17 +64,34 @@ def test_double_spacing(client, value):
     assert response.status_code == 200
 
 
-def test_KSI_only1(client):
+@pytest.mark.parametrize('type,value', [
+    ('county', 'Bucks'), 
+    ('county', 'Montgomery'),
+    ('municipality', 'Hilltown Township'),
+    ('municipality', 'Lansdowne Borough'),
+    ('municipality', 'West Goshen Township'),
+])
+def test_KSI_only1(client, type, value):
     '''
-    ?
+    If requesting KSI crashes only, every year/severity should always have either a fatal or 
+    major value. 
     '''
     response = client.get(
         endpoint,
         query_string={
-            'type': 'county', 
-            'value': 'Bucks',
+            'type': type, 
+            'value': value,
             'ksi_only': 'yes'
         }
     )
-    
+    data = response.get_json()
+    fatal_and_major_values = []
+    for k, v in data.items():
+        fatal_and_major_values.append([v['severity']['fatal'], v['severity']['major']])
+
+    print(fatal_and_major_values)  # only prints if tests fails
+    # the inner any() creates a list of either True or False values (if either value is Truthy -
+    # i.e. above zero - value will be True) and the outer all() then checks that they are all True.
+    assert all([any(value_set) for value_set in fatal_and_major_values])
+
     assert False

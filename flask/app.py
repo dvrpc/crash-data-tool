@@ -9,7 +9,6 @@ from flask import Flask, request, jsonify
 from config import PSQL_CREDS
 import psycopg2 
 
-
 app = Flask(__name__)
 
 
@@ -33,7 +32,7 @@ def get_popup_info():
     '''
     @TODO: 
         - add docstring
-        - rename to ../v2/crash_detail/<id>?
+        - rename to ../v2/crashes/<id> ?
         - check psycopg2 docs for any exception provided for no empty result
     '''
 
@@ -93,7 +92,7 @@ def get_sidebar_info():
     If *ksi_only* == yes, return only fatal and major crashes.
     
     @TODO: 
-        - rename to .../v2/crashes_by_area?
+        - rename to .../v2/summary?
         - take closer look at how resulting payload is created
     '''
 
@@ -115,7 +114,8 @@ def get_sidebar_info():
     # to easily pass value parameter to execute in order to prevent SQL injection 
     query = """
         SELECT
-            crash.year, COUNT(crash.crash_id) AS count,
+            crash.year, 
+            COUNT(crash.crash_id) AS count,
             SUM(severity.fatal) AS fatalities, 
             SUM(severity.major) AS major_inj,
             SUM(severity.moderate) AS moderate_inj, 
@@ -158,7 +158,7 @@ def get_sidebar_info():
 
     # create dictionary to return, with data summarized by year
     payload = {}
-    
+     
     for row in result:
         if str(row[0]) in payload: 
             payload[str(row[0])]['type'][str(row[11])] = row[1]
@@ -188,7 +188,7 @@ def get_sidebar_info():
 def get_geojson_info():
     '''Return list of crash_ids based on provided *geojson*.'''
 
-    # @TODO: rename to .../crash_ids/<geojson> ? 
+    # @TODO: rename to .../crash_ids ?
 
     geojson = request.args.get('geojson')
     
