@@ -41,7 +41,7 @@ class Map extends Component {
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            style: 'mapbox://styles/mapbox/navigation-guidance-night-v2?optimize=true',
+            style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
             center: [-75.2273, 40.071],
             zoom: 8.2
         })
@@ -366,6 +366,7 @@ class Map extends Component {
 
         if(features.length > 0 ) {
             features = features[0]
+            const name = features.properties.name
             
             // remove old hover state
             if(hoveredMuni) {
@@ -385,6 +386,10 @@ class Map extends Component {
                     {hover: true}
                 )
             }
+
+            // update the overlay text (and visibility if necessary)
+            this.hoveredArea.style.visibility = 'visible'
+            this.hoveredArea.children[0].textContent = name
         }
 
         return hoveredMuni
@@ -405,6 +410,8 @@ class Map extends Component {
 
             this.map.setFeatureState({source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
             {hover: false})
+
+            this.hoveredArea.style.visibility = 'hidden'
         }
 
         hoveredMuni = null
@@ -447,6 +454,9 @@ class Map extends Component {
 
         // use featureId to remove the muni fill that hovering created
         this.removeMuniFill(featureId)
+
+        // hide the hover boundary
+        this.hoveredArea.style.visibility = 'hidden'
 
         // update boundary state to prevent hover effects when boundaries are present & so the ksi/all toggle can stay within the set bounds
         this.setState({boundary: filterObj})
@@ -540,7 +550,11 @@ class Map extends Component {
                     </div>
                 </div>
 
-                <div id="default-extent-btn" className="shadow overlays custom-toggle" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
+                <div id="hoveredArea" className="shadow overlays" ref={el => this.hoveredArea = el}>
+                    <h3></h3>
+                </div>
+
+                <div id="default-extent-btn" className="shadow overlays" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
                     <img id="default-extent-img" src='https://www.dvrpc.org/img/banner/new/bug-favicon.png' alt='DVRPC logo' />
                 </div>
 
