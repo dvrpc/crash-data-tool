@@ -10,13 +10,11 @@ purpose: simple REST API to retrieve summary information in DVRPC's crash data t
 
 """
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 from config import PSQL_CREDS
 import psycopg2 
 
 
 app = Flask(__name__)
-CORS(app)
 
 
 def get_db_cursor():
@@ -96,11 +94,10 @@ def get_sidebar_info():
     '''
     Return summary of various attributes by year.
     *type* and *value* parameters will limit geographic area.
-    If *ksi_only* == yes, return only fatal and major accidents.
+    If *ksi_only* == yes, return only fatal and major crashes.
     
     @TODO: 
         - rename to .../v2/crashes_by_area?
-        - do we want to add year and KSI/not KSI variables here?
         - take closer look at how resulting payload is created
     '''
 
