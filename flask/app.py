@@ -35,7 +35,7 @@ def docs():
                     <ul>
                         <li>"type" and "value" query parameters required</li>
                     </ul>
-                <li>"api/crash-data/v1/crash_ids"</li>
+                <li>"api/crash-data/v1/crash-ids"</li>
                     <ul>
                         <li>"geojson" query parameter required</li>
                     </ul>
