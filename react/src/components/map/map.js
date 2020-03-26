@@ -26,7 +26,7 @@ class Map extends Component {
                     // disable trash because we want the polygons and muni/county boundaries to follow the same flow (i.e. use the 'remove boundary' overlay for both)
                     trash: false
                 }
-            }),
+            })
         }
     }
     
