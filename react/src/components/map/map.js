@@ -410,6 +410,8 @@ class Map extends Component {
 
             this.map.setFeatureState({source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
             {hover: false})
+
+            this.hoveredArea.style.visibility = 'hidden'
         }
 
         hoveredMuni = null
@@ -452,6 +454,9 @@ class Map extends Component {
 
         // use featureId to remove the muni fill that hovering created
         this.removeMuniFill(featureId)
+
+        // hide the hover boundary
+        this.hoveredArea.style.visibility = 'hidden'
 
         // update boundary state to prevent hover effects when boundaries are present & so the ksi/all toggle can stay within the set bounds
         this.setState({boundary: filterObj})
@@ -546,7 +551,7 @@ class Map extends Component {
                 </div>
 
                 <div id="hoveredArea" className="shadow overlays" ref={el => this.hoveredArea = el}>
-                    <h4>Skippack Township</h4>
+                    <h3></h3>
                 </div>
 
                 <div id="default-extent-btn" className="shadow overlays" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
