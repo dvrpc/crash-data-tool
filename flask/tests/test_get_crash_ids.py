@@ -4,7 +4,7 @@ import pytest
 Testing getting crashId
 '''
 
-endpoint = '/api/crash-data/v1/crash_ids'
+endpoint = '/api/crash-data/v1/crash-ids'
 
 
 def test_bad_geojson(client):

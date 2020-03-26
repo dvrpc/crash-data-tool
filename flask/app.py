@@ -200,7 +200,7 @@ def get_summary():
     return jsonify(payload)
 
 
-@app.route('/api/crash-data/v1/crash_ids', methods=['GET'])
+@app.route('/api/crash-data/v1/crash-ids', methods=['GET'])
 def get_crash_ids():
     '''Return list of crash_ids based on provided parameters.'''
 
