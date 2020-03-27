@@ -21,16 +21,21 @@ export const modalContent = {
     `,
     how: `
       <ul>
-        <li>Use the map
-          <p>Clicking municipalities and whatnot</p>
-          <p>Drawing polygons and whatnot</p>
-          <p>Toggling crash types and whatnot</p>
+        <li>
+          <strong>Interact with the Sidebar</strong><br />
+          <span>View crash statistics for the selected geography (the default geography is the DVRPC Region). Interact with the data by toggling the forms to change the date range and crash types.</span><br />
+          <span>Crash data is visualized in a series of charts that give a detailed breakdown of trend, severity, mode and crash type.</span><br />
         </li>
-        <li>Use the nav search
-          <p>click the jawns and press search its not hard</p>
+        <li>
+          <strong>Interact with the Map</strong><br />
+          <span>At the county zoom level, hover over counties to see their name and click on them to get crash statistics for that county.</span></br >
+          <span>At the municipality zoom level, hover over municipalities to see their name and click on them to get crash statistics for that municipality.</span><br />
+          <span>Click on the polygon map overlay to draw a polygon over a selected area and get crash statistics for the selected area.</span><br />
+          <span>Click on the DVRPC logo map overlay to recenter the map on the entire region.</span>
         </li>
-        <li>Interact with the sidebar
-          <p>read the things and toggle the range if you're into that kind of thing</p>
+        <li>
+          <strong>Interact with the Navigation</strong><br />
+          <span>Select geography type from the "Search By" dropdowns and click "search" to view crash statistics for the selected area.</span>
         </li>
       </ul>
     `,
