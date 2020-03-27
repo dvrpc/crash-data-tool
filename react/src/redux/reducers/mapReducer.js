@@ -96,11 +96,8 @@ export default function mapReducer(state = [], action) {
 /// MAP Dispatchers
 export const getDataFromKeyword = boundaryObj => async dispatch => {
     const { type, name } = boundaryObj
-    
-    //  @BUG: SOME NJ municipalities return a blank object. The call is successful, it's just empty.
-    // Ex. Mount Laurel Township fails, Camden City works. 
-    
-    const api = `https://alpha.dvrpc.org/api/crash-data/v2/sidebarInfo?type=${type}&value=${name}`
+        
+    const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?type=${type}&value=${name}`
     const stream = await fetch(api, getOptions)
 
     //error handling - pass the failure message + the boundary object to give context to the displayed error response
@@ -159,7 +156,7 @@ export const getBoundingBox = id => async dispatch => {
 }
 
 export const getPolygonCrashes = bbox => async dispatch => {
-    const api = `https://alpha.dvrpc.org/api/crash-data/v2/crashId?geojson=${bbox}`
+    const api = `https://alpha.dvrpc.org/api/crash-data/v1/crash-ids?geojson=${bbox}`
     const stream = await fetch(api, getOptions)
 
     if(stream.ok) {
