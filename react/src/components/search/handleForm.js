@@ -40,8 +40,9 @@ const submitSearch = e => {
     const output = { 
         boundary: {
             type: '',
-            name: ''
-        } 
+            name: '',
+            isKSI: ''
+        }
     }
 
     const form = e.target

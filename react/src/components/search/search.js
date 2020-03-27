@@ -24,6 +24,10 @@ class Search extends Component {
     submitSearch = e => {
         const output = form.submitSearch(e)
 
+        // add KSI state to getData call
+        const ksiCheck = this.props.crashType || 'ksi'
+        output.boundary.isKSI = ksiCheck === 'ksi' ? 'yes' : 'no'
+
         // @TODO: short out for state searches for now since they aren't real yet (API response isn't set up for these yet)
         if(output.state) {
             alert('search by state isnt set up yet, please try again with municipalities, counties or address')
@@ -91,6 +95,12 @@ class Search extends Component {
     }
 }
 
+const mapStateToProps = state => {
+    return {
+        crashType: state.crashType,
+    }
+}
+
 const mapDispatchToProps = dispatch => {
     return {
         getData: boundaryObj => dispatch(getDataFromKeyword(boundaryObj)),
@@ -102,4 +112,4 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(Search);
+export default connect(mapStateToProps, mapDispatchToProps)(Search);
