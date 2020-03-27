@@ -6,10 +6,13 @@
 """
 
 from flask import Flask, request, jsonify
-from config import PSQL_CREDS
+from flask_cors import CORS
 import psycopg2 
 
+from config import PSQL_CREDS
+
 app = Flask(__name__)
+CORS(app)
 
 
 def get_db_cursor():
@@ -49,7 +52,6 @@ def get_crash(id):
     '''
     @TODO: 
         - add docstring
-        - check psycopg2 docs for any exception provided for no empty result
     '''
 
     # id = request.args.get('id')
@@ -86,18 +88,16 @@ def get_crash(id):
     if not result:
         return jsonify({'message': 'Crash not found'}), 404
     
-    payload = {
-        'features': {
-            'month': result[0],
-            'year': result[1],
-            'vehicle_count': result[2],
-            'bike': result[3],
-            'ped': result[4],
-            'persons': result[5],
-            'collision_type': result[6],
-        }
+    crash = {
+        'month': result[0],
+        'year': result[1],
+        'vehicle_count': result[2],
+        'bike': result[3],
+        'ped': result[4],
+        'persons': result[5],
+        'collision_type': result[6],
     }
-    return jsonify(payload) 
+    return jsonify(crash) 
 
 
 @app.route('/api/crash-data/v1/summary', methods=['GET'])
