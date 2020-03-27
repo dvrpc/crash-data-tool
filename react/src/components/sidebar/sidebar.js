@@ -71,13 +71,25 @@ class Sidebar extends Component {
         // update data and set crashType state
         if(selected !== this.state.crashType) {
 
-            // @TODO: need to pass bbox as the name for the selected value case...
-            const name = encodeURIComponent(this.props.context)
+            let nameTest = this.props.context.split(' ')
+            let countyCheck = nameTest.pop()
+            let isCounty = countyCheck === 'County' ? true : false
+
+            // @TODO: need to pass bbox as the name for the selected area case...
+            let name;
+            let type;
+
+            if (isCounty) {
+                name = encodeURIComponent(nameTest[0])
+                type = 'county'
+            } else {
+                name = encodeURIComponent(this.props.context)
+                type = 'municipality'
+            }
             let isKSI = selected === 'KSI' ? 'yes' : 'no'
             
-            // get updated data @TODO handle counties (need access to type. Hack solution since there's only 9 counties is to lookup if name in County obj...)
-            this.props.setCrashState({type: 'municipality', name, isKSI})
-
+            // get updated data and setState
+            this.props.setCrashState({type, name, isKSI})
             this.setState({crashType: selected})
         }
 
