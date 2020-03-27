@@ -92,7 +92,6 @@ class Map extends Component {
                 const legendTitle = this.legendTitle.textContent
 
                 if(zoom >= 11 && legendTitle[0] !== 'C') {
-                    console.log('called severity case')
                     this.legendTitle.textContent = 'Crash Severity'
                     this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #d62839)'
                     this.legendLabel.innerHTML = '<span>No Injury</span><span>Fatal</span>'
@@ -326,7 +325,9 @@ class Map extends Component {
         }
 
         // update sidebar information
-        const regionalStats = {type: 'municipality', name: '%'}
+        let newFilterType = this.props.crashType || 'ksi'
+        let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
+        const regionalStats = {type: 'municipality', name: '%', isKSI}
         this.props.setDefaultState(regionalStats)
         this.props.setSidebarHeaderContext('the DVRPC region')
 
@@ -334,7 +335,7 @@ class Map extends Component {
         const { county, muni } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
-        let newFilterType = this.props.crashType || 'ksi'
+        
         let range = this.props.range || {}
         const filterObj = {filterType: newFilterType, range}
 
@@ -446,11 +447,12 @@ class Map extends Component {
         const id = props.geoid
         const encodedName = encodeURIComponent(props.name)
         const featureId = e.features[0].id
-        const boundaryObj = {type: 'municipality', name: encodedName}
+        let newFilterType = this.props.crashType || 'ksi'
+        let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
+        const boundaryObj = {type: 'municipality', name: encodedName, isKSI}
 
         // update filter object w/muni id + toggle state
         let pennID = munis[props.name]
-        let newFilterType = this.props.crashType || 'ksi'
         let range = this.props.range || {}
         const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID, range, boundary: true}
 
@@ -490,10 +492,13 @@ class Map extends Component {
             }
         ))
 
+        let isKSI = this.props.crashType  == 'ksi' ? 'yes' : 'no'
+
         // create boundary object for the getData endpoint
         const boundaryObj = {
             type: 'geojson',
-            name: bboxFormatted
+            name: bboxFormatted,
+            isKSI
         }
 
         this.props.getPolygonCrashes(bboxFormatted)

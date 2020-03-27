@@ -95,9 +95,10 @@ export default function mapReducer(state = [], action) {
 /****** DISPATCHERS ******/
 /// MAP Dispatchers
 export const getDataFromKeyword = boundaryObj => async dispatch => {
-    const { type, name } = boundaryObj
+    const { type, name, isKSI } = boundaryObj
         
-    const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?type=${type}&value=${name}`
+    const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?type=${type}&value=${name}&ksi_only=${isKSI}`
+    console.log('api is ', api)
     const stream = await fetch(api, getOptions)
 
     //error handling - pass the failure message + the boundary object to give context to the displayed error response

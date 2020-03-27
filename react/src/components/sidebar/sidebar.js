@@ -13,7 +13,7 @@ class Sidebar extends Component {
         super(props)
 
         this.state = {
-            data: this.props.setDefaultState({type: 'municipality', name: '%'}),
+            data: this.props.setCrashState({type: 'municipality', name: '%', isKSI: 'yes'}),
             context: 'the DVRPC region',
             crashType: 'KSI',
             from: 2014,
@@ -65,11 +65,22 @@ class Sidebar extends Component {
         // use selected radio button to set map filter
         this.props.setCrashTypeFilter(selected)
 
-        // update crashType dynamic text
+        // update crashType dynamic text & filter
         selected = selected === 'ksi' ? 'KSI' : 'All'
-        if(selected !== this.state.crashType) this.setState({crashType: selected})
 
-        // make call to KSI endpoint for new data
+        // update data and set crashType state
+        if(selected !== this.state.crashType) {
+
+            // @TODO: need to pass bbox as the name for the selected value case...
+            const name = encodeURIComponent(this.props.context)
+            let isKSI = selected === 'KSI' ? 'yes' : 'no'
+            
+            // get updated data @TODO handle counties (need access to type. Hack solution since there's only 9 counties is to lookup if name in County obj...)
+            this.props.setCrashState({type: 'municipality', name, isKSI})
+
+            this.setState({crashType: selected})
+        }
+
 
     }
 
@@ -172,7 +183,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        setDefaultState: region => dispatch(getDataFromKeyword(region)),
+        setCrashState: region => dispatch(getDataFromKeyword(region)),
         setCrashTypeFilter: filter => dispatch(sidebarCrashType(filter)),
         setCrashRange: range => dispatch(sidebarRange(range))
     }
