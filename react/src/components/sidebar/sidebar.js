@@ -13,7 +13,7 @@ class Sidebar extends Component {
         super(props)
 
         this.state = {
-            data: this.props.setCrashState({type: 'municipality', name: '%', isKSI: 'yes'}),
+            data: this.props.getCrashData({type: 'municipality', name: '%', isKSI: 'yes'}),
             context: 'the DVRPC region',
             crashType: 'KSI',
             from: 2014,
@@ -75,21 +75,26 @@ class Sidebar extends Component {
             let countyCheck = nameTest.pop()
             let isCounty = countyCheck === 'County' ? true : false
 
-            // @TODO: need to pass bbox as the name for the selected area case...
             let name;
             let type;
+            const bbox = this.props.polygonBbox
 
+            // assign values to name, type and isKSI
             if (isCounty) {
                 name = encodeURIComponent(nameTest[0])
                 type = 'county'
-            } else {
+            } else if (bbox) {
+                name = bbox
+                type = 'geojson'
+            }
+            else {
                 name = encodeURIComponent(this.props.context)
                 type = 'municipality'
             }
             let isKSI = selected === 'KSI' ? 'yes' : 'no'
             
-            // get updated data and setState
-            this.props.setCrashState({type, name, isKSI})
+            // update data and local state
+            this.props.getCrashData({type, name, isKSI})
             this.setState({crashType: selected})
         }
 
@@ -190,12 +195,13 @@ const mapStateToProps = state => {
     return {
         data: state.data,
         context: state.area,
+        polygonBbox: state.polygonBbox
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        setCrashState: region => dispatch(getDataFromKeyword(region)),
+        getCrashData: region => dispatch(getDataFromKeyword(region)),
         setCrashTypeFilter: filter => dispatch(sidebarCrashType(filter)),
         setCrashRange: range => dispatch(sidebarRange(range))
     }

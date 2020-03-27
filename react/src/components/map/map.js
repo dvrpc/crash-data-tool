@@ -7,7 +7,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import * as layers from './layers.js'
 import * as popups from './popups.js';
 import { createBoundaryFilter, removeBoundaryFilter } from './boundaryFilters.js';
-import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter, getPolygonCrashes, removePolyCRNS  } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter, getPolygonCrashes, setPolygonBbox, removePolyCRNS  } from '../../redux/reducers/mapReducer.js'
 import { munis } from '../search/dropdowns.js'
 import './map.css';
 
@@ -491,8 +491,9 @@ class Map extends Component {
                 }
             }
         ))
-
-        let isKSI = this.props.crashType  == 'ksi' ? 'yes' : 'no'
+        
+        let typeCheck = this.props.crashType || 'ksi'
+        let isKSI = typeCheck  == 'ksi' ? 'yes' : 'no'
 
         // create boundary object for the getData endpoint
         const boundaryObj = {
@@ -501,8 +502,10 @@ class Map extends Component {
             isKSI
         }
 
+        // update store w/bbox info
         this.props.getPolygonCrashes(bboxFormatted)
         this.props.getData(boundaryObj)
+        this.props.setPolygonBbox(bboxFormatted)
     }
 
     // handle popup creation and pagination
@@ -605,6 +608,7 @@ const mapDispatchToProps = dispatch => {
         setDefaultState: region => dispatch(getDataFromKeyword(region)),
         setMapFilter: filter => dispatch(setMapFilter(filter)),
         getPolygonCrashes: bbox => dispatch(getPolygonCrashes(bbox)),
+        setPolygonBbox: formattedBbox => dispatch(setPolygonBbox(formattedBbox)),
         removePolyCRNS: () => dispatch(removePolyCRNS())
     }
 }

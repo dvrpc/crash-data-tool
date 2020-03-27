@@ -37,6 +37,7 @@ const SET_SIDEBAR_HEADER_CONTEXT = 'SET_SIDEBAR_HEADER_CONTEXT'
 const GET_BOUNDING_BOX = 'GET_BOUNDING_BOX'
 const SET_MAP_FILTER = 'SET_MAP_FILTER'
 const GET_POLYGON_CRNS = 'GET_POLYGON_CRNS'
+const SET_POLYGON_BBOX = 'SET_POLYGON_BBOX'
 const SIDEBAR_CRASH_TYPE = 'SIDEBAR_CRASH_TYPE'
 const SIDEBAR_RANGE = 'SIDEBAR_RANGE'
 
@@ -50,6 +51,7 @@ const set_sidebar_header_context = area => ( { type: SET_SIDEBAR_HEADER_CONTEXT,
 const get_bounding_box = bbox => ({ type: GET_BOUNDING_BOX, bbox })
 const set_map_filter = filter => ({ type: SET_MAP_FILTER, filter })
 const get_polygon_crns = polyCRNS => ({ type: GET_POLYGON_CRNS, polyCRNS })
+const set_polygon_bbox = polygonBbox => ({type: SET_POLYGON_BBOX, polygonBbox })
 const sidebar_crash_type = crashType => ({type: SIDEBAR_CRASH_TYPE, crashType})
 const sidebar_range = range => ({type: SIDEBAR_RANGE, range})
 
@@ -79,6 +81,9 @@ export default function mapReducer(state = [], action) {
         case GET_POLYGON_CRNS:
             const polyCRNS = action.polyCRNS
             return Object.assign({}, state, { polyCRNS })
+        case SET_POLYGON_BBOX:
+            const polygonBbox = action.polygonBbox
+            return Object.assign({}, state, { polygonBbox })
         case SIDEBAR_CRASH_TYPE:
             const crashType = action.crashType
             return Object.assign({}, state, { crashType })
@@ -167,6 +172,8 @@ export const getPolygonCrashes = bbox => async dispatch => {
     }
 }
 
+export const setPolygonBbox = formattedBbox => dispatch => dispatch(set_polygon_bbox(formattedBbox))
+
 export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
 
 // handle boundary, crash type and range
@@ -207,6 +214,7 @@ export const setMapFilter = filter => dispatch => {
 
     dispatch(set_map_filter(mapFilter))
 }
+
 
 // SIDEBAR Dispatchers
 export const sidebarCrashType = type => dispatch => dispatch(sidebar_crash_type(type))
