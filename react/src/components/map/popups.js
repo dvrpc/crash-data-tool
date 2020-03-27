@@ -24,18 +24,12 @@ const getPopupInfo = async crash => {
 
     // otherwise get the reponse body and combine it with the existing output fields
     let response = await stream.json()
-
-    // @TODO: updated crashes enpoint will return an object instead of a features obejct so just consume response straight up. No need for this line
-    response = response.features
     output = {...output, ...response}
-
     return output
 }
 
 const setPopup = (popupInfo, index, length) => {
     popupInfo.severity = severityLookup[popupInfo.severity]
-
-    // @TODO: replace Persons involved with new vehicle_occupants field
 
     return `
         <h3 class="crash-popup-header">Crash Record Number: ${popupInfo.crn}</h3>
@@ -44,8 +38,8 @@ const setPopup = (popupInfo, index, length) => {
             <li>Collision Type: ${popupInfo.collision_type}</li>
             <li>Max Severity: ${popupInfo.severity}</li>
             <li>Crash Date: ${popupInfo.month}, ${popupInfo.year}</li>
-            <li>Persons involved: ${popupInfo.persons}</li>
             <li>Vehicles involved: ${popupInfo.vehicle_count}</li>
+            <li>Vehicle Occupants involved: ${popupInfo.vehicle_occupants}</li>
             <li>Pedestrians involved: ${popupInfo.ped}</li>
             <li>Bicyclists involved: ${popupInfo.bike}</li>
         </ul>
