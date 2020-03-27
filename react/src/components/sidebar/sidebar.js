@@ -13,7 +13,7 @@ class Sidebar extends Component {
         super(props)
 
         this.state = {
-            data: this.props.getCrashData({type: 'municipality', name: '%', isKSI: 'yes'}),
+            data: this.props.getCrashData({type: '', name: '', isKSI: 'yes'}),
             context: 'the DVRPC region',
             crashType: 'KSI',
             from: 2014,
