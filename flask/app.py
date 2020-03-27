@@ -35,7 +35,9 @@ def docs():
                     </ul>
                 <li>"api/crash-data/v1/summary"</li>
                     <ul>
-                        <li>"type" and "value" query parameters required</li>
+                        <li>Optional parameters "type", "value", and "ksi_only". If one of "type"
+                            or "value" is included, the other has to be included as well. Set
+                            "ksi_only" = "yes" to receive KSI crashes.</li>
                     </ul>
                 <li>"api/crash-data/v1/crash-ids"</li>
                     <ul>
@@ -97,27 +99,37 @@ def get_crash(id):
 def get_summary():
     '''
     Return summary of various attributes by year.
-    *type* and *value* parameters will limit geographic area.
+    If provided, *type* and *value* query parameters will limit result by geographic area.
     If *ksi_only* == yes, return only fatal and major crashes.
     
     @TODO: 
-        - rename to .../v2/summary?
-        - take closer look at how resulting payload is created
+        - explore query/resulting data
     '''
 
-    args = request.args
-    keys = list(args.keys())
+    keys = list(request.args)
+    area_type = request.args.get('type')
+    value = request.args.get('value')
+    ksi_only = request.args.get('ksi_only') 
 
-    if 'type' not in keys or 'value' not in keys:
-        return jsonify({'message': '*type* and *value* are required parameters'}), 400
-
-    if args.get('type') not in ['county', 'municipality', 'geojson']:
+    # if one of "type" or "value" included, the other has to be as well
+    if (area_type and not value) or (value and not area_type):
         return jsonify(
-            {
-                'message': 
-                '*type* must be one of *county*, *municipality*, or *geojson*'
-            }
+            {'message': 'If either *type* or *value* is included in request, both are required'}
         ), 400
+
+    if area_type:
+        area_type = area_type.lower()
+        if area_type not in ['county', 'municipality', 'geojson']:
+            return jsonify(
+                {'message': '*type* must be one of *county*, *municipality*, or *geojson*'}
+            ), 400
+
+    # be extra helpful to user - just checks spelling of ksi_only at this point
+    for key in keys:
+        if key not in ['type', 'value', 'ksi_only']:
+            return jsonify(
+                {'message': 'Query parameter *{}* not recognized'.format(key)}
+            ), 400
 
     # build query incrementally, to add possible WHERE clauses before GROUP BY and 
     # to easily pass value parameter to execute in order to prevent SQL injection 
@@ -141,14 +153,14 @@ def get_summary():
         JOIN type ON type.crash_id = crash.crash_id
     """
 
-    if args.get('type') == 'county':
+    if area_type == 'county':
         query += " WHERE crash.county = %s"
-    elif args.get('type') == 'municipality':
+    elif area_type == 'municipality':
         query += " WHERE crash.municipality = %s"
-    elif args.get('type') == 'geojson':
+    elif area_type == 'geojson':
         query += " WHERE ST_WITHIN(location.geom,ST_GeomFromGeoJSON(%s))"
     
-    if args.get('ksi_only') == 'yes':
+    if ksi_only == 'yes':
         query += " AND (severity.fatal > 0 OR severity.major > 0)"
     
     query += " GROUP BY crash.year, type.collision_type;"
@@ -156,7 +168,7 @@ def get_summary():
     cursor = get_db_cursor() 
    
     try:
-        cursor.execute(query, [args.get('value')])
+        cursor.execute(query, [value])
     except psycopg2.Error as e:
         return jsonify({'message': 'Database error: ' + str(e)}), 400
     
@@ -165,14 +177,13 @@ def get_summary():
     if not result:
         return jsonify({'message': 'No information found for given type/value.'}), 404
 
-    # create dictionary to return, with data summarized by year
-    payload = {}
+    summary = {}
      
     for row in result:
-        if str(row[0]) in payload: 
-            payload[str(row[0])]['type'][str(row[11])] = row[1]
+        if str(row[0]) in summary: 
+            summary[str(row[0])]['type'][str(row[11])] = row[1]
         else:
-            payload[str(row[0])] = {
+            summary[str(row[0])] = {
                 'severity': {
                     'fatal': row[2],
                     'major': row[3],
@@ -190,7 +201,7 @@ def get_summary():
                     str(row[11]): row[1]
                 }
             }
-    return jsonify(payload)
+    return jsonify(summary)
 
 
 @app.route('/api/crash-data/v1/crash-ids', methods=['GET'])

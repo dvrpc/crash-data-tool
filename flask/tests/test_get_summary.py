@@ -7,7 +7,7 @@ Testing get_sidebar_info()
 endpoint = '/api/crash-data/v1/summary'
 
 
-def test_type_and_value_required_1(client):
+def test_error_on_unknown_params(client):
     response = client.get(
         endpoint,
         query_string={'one': '1'},
@@ -15,7 +15,7 @@ def test_type_and_value_required_1(client):
     assert response.status_code == 400
 
 
-def test_type_and_value_required_2(client):
+def test_error_if_type_included_but_not_value(client):
     response = client.get(
         endpoint,
         query_string={'type': '1'},
@@ -23,7 +23,7 @@ def test_type_and_value_required_2(client):
     assert response.status_code == 400
 
 
-def test_type_and_value_required_3(client):
+def test_error_if_value_included_but_not_type(client):
     response = client.get(
         endpoint,
         query_string={'value': '1'},
@@ -44,9 +44,6 @@ def test_success1(client):
         endpoint,
         query_string={'type': 'county', 'value': 'Montgomery'}
     )
-
-    # print(response.data)
-    # assert False
     assert response.status_code == 200
 
 
