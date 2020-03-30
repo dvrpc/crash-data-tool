@@ -77,13 +77,14 @@ class Map extends Component {
             // status of the hovered municipality
             let hoveredMuni = null
             
-            // add hover effect to municipalities
-            this.map.on('mousemove', 'municipality-fill', e => hoveredMuni = this.hoverMuniFill(e, hoveredMuni))
-            this.map.on('mouseleave', 'municipality-fill', () => hoveredMuni = this.removeMuniFill(hoveredMuni))
-            this.map.on('mousemove', 'county-fill', e => this.hoverCountyFill(e))
-            this.map.on('mouseleave', 'county-fill', e => this.removeCountyFill(e))
+            // add hover effect to municipalities and counties
+            this.map.on('mousemove', 'municipality-fill', e => hoveredMuni = this.hoverGeographyFill(e, hoveredMuni))
+            this.map.on('mouseleave', 'municipality-fill', () => hoveredMuni = this.removeGeographyFill(hoveredMuni))
+            this.map.on('mousemove', 'county-fill', e => this.hoverGeographyFill(e, hoveredMuni))
+            this.map.on('mouseleave', 'county-fill', () => hoveredMuni = this.removeGeographyFill(hoveredMuni))
 
             // clicking a municipality triggers the same set of actions as searching by muni
+            // @TODO add click to county layer
             this.map.on('click', 'municipality-fill', e => this.clickMuni(e))
             
             // update legend depending on zoom level (heatmap vs crash circles)
@@ -358,46 +359,37 @@ class Map extends Component {
         })
     }
 
-    // @NOTE: this is just a test for the overlays for county. hoverCountyFill and hoverMuniFill will be the same function,
-    // as described in issue #48
-    hoverCountyFill = e  => {
-        let name = e.features[0].properties.name
-        if(name) {
-            this.hoveredArea.style.visibility = 'visible'
-            this.hoveredArea.children[0].textContent = `${name} County`
-        }
-    }
-    removeCountyFill = e => this.hoveredArea.style.visibility = 'hidden'
+    // add fill effect when hovering over a geography type (county or municipality) in the region
+    hoverGeographyFill = (e, hoveredMuni) => {
 
-    // add fill effect when hovering over a municipality
-    hoverMuniFill = (e, hoveredMuni) => {
+        // escape if a boundary is set or if the user is drawing a polygon
+        if(this.state.boundary || this.state.polygon) return
 
-        // escape if zoom level isn't right, if a boundary is set or if the user is drawing a polygon
-        if(this.map.getZoom() < 8.4 || this.state.boundary || this.state.polygon) return
-
+        let sourceLayer = this.map.getZoom() < 8.5 ? 'county' : 'municipalities'
         let features = e.features
 
         this.map.getCanvas().style.cursor = 'pointer'
 
         if(features.length > 0 ) {
             features = features[0]
-            const name = features.properties.name
+            const name =  sourceLayer === 'county' ? features.properties.name + ' County' : features.properties.name
             
             // remove old hover state
             if(hoveredMuni) {
                 this.map.setFeatureState(
-                    {source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
+                    {source: 'Boundaries', sourceLayer, id: hoveredMuni},
                     {hover: false}
                 )
             }
 
             // update hover layer
+            console.log('name is ', name)
             hoveredMuni = features.id
             
             // handle edge cases where hoveredMuni is null or NaN (I think this check is only necessary right now b/c it sometimes serves the old VT's and sometimes doesn't. Can be removed eventually)
             if(hoveredMuni) {
                 this.map.setFeatureState(
-                    {source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
+                    {source: 'Boundaries', sourceLayer, id: hoveredMuni},
                     {hover: true}
                 )
             }
@@ -411,19 +403,19 @@ class Map extends Component {
     }
 
     // remove fill effect when hovering over a new municipality or leaving the region
-    removeMuniFill = hoveredMuni => {
+    removeGeographyFill = hoveredMuni => {
+        console.log('hovered muni at removeGeography fill ', hoveredMuni)
 
-        // escape if zoom level isn't right
-        if(this.map.getZoom() < 8.4) return
+        // escape if zoom level isn't right @TODO make this a county or zoom level decision
+        let sourceLayer = this.map.getZoom() < 8.5 ? 'county' : 'municipalities'
 
         this.map.getCanvas().style.cursor = ''
 
-        // handle municipality-fill (fill effect within munis) and municipalities (edge cases - moving your mouse outside the region or on borders)
         if(hoveredMuni) {
-            this.map.setFeatureState({source: 'Boundaries', sourceLayer: 'municipality-fill', id: hoveredMuni},
+            this.map.setFeatureState({source: 'Boundaries', sourceLayer: `${sourceLayer}-fill`, id: hoveredMuni},
             {hover: false})
 
-            this.map.setFeatureState({source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
+            this.map.setFeatureState({source: 'Boundaries', sourceLayer, id: hoveredMuni},
             {hover: false})
 
             this.hoveredArea.style.visibility = 'hidden'
@@ -469,7 +461,7 @@ class Map extends Component {
         this.showBoundaryOverlay()
 
         // use featureId to remove the muni fill that hovering created
-        this.removeMuniFill(featureId)
+        this.removeGeographyFill(featureId)
 
         // hide the hover boundary
         this.hoveredArea.style.visibility = 'hidden'
@@ -494,7 +486,7 @@ class Map extends Component {
         ))
         
         let typeCheck = this.props.crashType || 'ksi'
-        let isKSI = typeCheck  == 'ksi' ? 'yes' : 'no'
+        let isKSI = typeCheck === 'ksi' ? 'yes' : 'no'
 
         // create boundary object for the getData endpoint
         const boundaryObj = {

@@ -3,6 +3,7 @@ const countyOutline = {
     type: 'line',
     source: 'Boundaries',
     'source-layer': 'county',
+    maxzoom: 8.5,
     paint: {
         'line-width': 2.5,
         'line-color': '#fafafa'
