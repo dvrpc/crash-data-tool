@@ -328,6 +328,7 @@ class Map extends Component {
         let newFilterType = this.props.crashType || 'ksi'
         let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
         const regionalStats = {type: '', name: '', isKSI}
+        
         this.props.setDefaultState(regionalStats)
         this.props.setSidebarHeaderContext('the DVRPC region')
 
