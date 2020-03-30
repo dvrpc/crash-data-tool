@@ -119,14 +119,15 @@ def get_summary():
 
     if area_type:
         area_type = area_type.lower()
-        if area_type not in ['county', 'municipality', 'geojson']:
+        if area_type not in ['county', 'municipality', 'geojson', 'state']:
             return jsonify(
-                {'message': '*type* must be one of *county*, *municipality*, or *geojson*'}
+                {'message': '*type* must be one of *county*, *municipality*, *state*, or *geojson*'}
             ), 400
+
 
     # be extra helpful to user - just checks spelling of ksi_only at this point
     for key in keys:
-        if key not in ['type', 'value', 'ksi_only']:
+        if key not in ['type', 'value', 'state', 'ksi_only']:
             return jsonify(
                 {'message': 'Query parameter *{}* not recognized'.format(key)}
             ), 400
@@ -149,7 +150,6 @@ def get_summary():
             type.collision_type AS type
         FROM crash
         JOIN severity ON severity.crash_id = crash.crash_id
-        JOIN location ON location.crash_id = crash.crash_id
         JOIN type ON type.crash_id = crash.crash_id
     """
 
@@ -157,7 +157,10 @@ def get_summary():
         query += " WHERE crash.county = %s"
     elif area_type == 'municipality':
         query += " WHERE crash.municipality = %s"
+    elif area_type == 'state':
+        query += " WHERE crash.state = %s"
     elif area_type == 'geojson':
+        query += " JOIN location ON location.crash_id = crash.crash_id"
         query += " WHERE ST_WITHIN(location.geom,ST_GeomFromGeoJSON(%s))"
     
     if ksi_only == 'yes':

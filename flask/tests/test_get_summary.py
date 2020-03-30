@@ -1,7 +1,7 @@
 import pytest
 
 '''
-Testing get_sidebar_info()
+Testing get_summary()
 '''
 
 endpoint = '/api/crash-data/v1/summary'
@@ -43,6 +43,15 @@ def test_success1(client):
     response = client.get(
         endpoint,
         query_string={'type': 'county', 'value': 'Montgomery'}
+    )
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize('value', ['pa', 'nj'])
+def test_success2(client, value):
+    response = client.get(
+        endpoint,
+        query_string={'type': 'state', 'value': value}
     )
     assert response.status_code == 200
 
@@ -93,6 +102,27 @@ def test_KSI_only1(client, type, value):
     assert all([any(value_set) for value_set in fatal_and_major_values])
 
 
-def test_the_actual_numbers_output_by_get_summary():
-    '''Query needs to be rewritten.'''
-    assert False
+#######################################
+# COMPARING NUMBERS TO DATA NAVIGATOR #
+#######################################
+
+
+def test_county_numbers1(client):
+    response = client.get(
+        endpoint,
+        query_string={'type': 'county', 'value': 'Burlington'},
+    )
+    data = response.get_json()
+    y_17 = data['2017']
+    y_18 = data['2018']
+
+    total_injured_17 = y_17['severity']['major'] + \
+        y_17['severity']['moderate'] + \
+        y_17['severity']['minor']
+
+    assert (y_18['severity']['fatal'] == 43 and 
+            y_18['mode']['bike'] == 59 and
+            y_18['mode']['ped'] == 107 and
+            total_injured_17 == 3884)
+
+
