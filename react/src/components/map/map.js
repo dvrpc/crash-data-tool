@@ -75,13 +75,13 @@ class Map extends Component {
             this.map.addLayer(layers.crashCircles)
 
             // status of the hovered municipality
-            let hoveredMuni = null
+            let hoveredGeom = null
             
             // add hover effect to municipalities and counties
-            this.map.on('mousemove', 'municipality-fill', e => hoveredMuni = this.hoverGeographyFill(e, hoveredMuni))
-            this.map.on('mouseleave', 'municipality-fill', () => hoveredMuni = this.removeGeographyFill(hoveredMuni))
-            this.map.on('mousemove', 'county-fill', e => this.hoverGeographyFill(e, hoveredMuni))
-            this.map.on('mouseleave', 'county-fill', () => hoveredMuni = this.removeGeographyFill(hoveredMuni))
+            this.map.on('mousemove', 'municipality-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
+            this.map.on('mouseleave', 'municipality-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
+            this.map.on('mousemove', 'county-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
+            this.map.on('mouseleave', 'county-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
 
             // clicking a municipality triggers the same set of actions as searching by muni
             // @TODO add click to county layer
@@ -359,13 +359,13 @@ class Map extends Component {
         })
     }
 
-    // add fill effect when hovering over a geography type (county or municipality) in the region
-    hoverGeographyFill = (e, hoveredMuni) => {
+    // add fill effect when hovering over a geography type (county or municipality)
+    hoverGeographyFill = (e, hoveredGeom) => {
 
         // escape if a boundary is set or if the user is drawing a polygon
         if(this.state.boundary || this.state.polygon) return
 
-        let sourceLayer = this.map.getZoom() < 8.5 ? 'county' : 'municipalities'
+        let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
         let features = e.features
 
         this.map.getCanvas().style.cursor = 'pointer'
@@ -373,23 +373,21 @@ class Map extends Component {
         if(features.length > 0 ) {
             features = features[0]
             const name =  sourceLayer === 'county' ? features.properties.name + ' County' : features.properties.name
-            
             // remove old hover state
-            if(hoveredMuni) {
+            if(hoveredGeom) {
                 this.map.setFeatureState(
-                    {source: 'Boundaries', sourceLayer, id: hoveredMuni},
+                    {source: 'Boundaries', sourceLayer, id: hoveredGeom},
                     {hover: false}
                 )
             }
 
             // update hover layer
-            console.log('name is ', name)
-            hoveredMuni = features.id
+            hoveredGeom = features.id
             
-            // handle edge cases where hoveredMuni is null or NaN (I think this check is only necessary right now b/c it sometimes serves the old VT's and sometimes doesn't. Can be removed eventually)
-            if(hoveredMuni) {
+            // handle edge cases where hoveredGeom is null or NaN (I think this check is only necessary right now b/c it sometimes serves the old VT's and sometimes doesn't. Can be removed eventually)
+            if(hoveredGeom) {
                 this.map.setFeatureState(
-                    {source: 'Boundaries', sourceLayer, id: hoveredMuni},
+                    {source: 'Boundaries', sourceLayer, id: hoveredGeom},
                     {hover: true}
                 )
             }
@@ -399,31 +397,30 @@ class Map extends Component {
             this.hoveredArea.children[0].textContent = name
         }
 
-        return hoveredMuni
+        return hoveredGeom
     }
 
     // remove fill effect when hovering over a new municipality or leaving the region
-    removeGeographyFill = hoveredMuni => {
-        console.log('hovered muni at removeGeography fill ', hoveredMuni)
+    removeGeographyFill = hoveredGeom => {
 
         // escape if zoom level isn't right @TODO make this a county or zoom level decision
-        let sourceLayer = this.map.getZoom() < 8.5 ? 'county' : 'municipalities'
+        let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
 
         this.map.getCanvas().style.cursor = ''
 
-        if(hoveredMuni) {
-            this.map.setFeatureState({source: 'Boundaries', sourceLayer: `${sourceLayer}-fill`, id: hoveredMuni},
+        if(hoveredGeom) {
+            this.map.setFeatureState({source: 'Boundaries', sourceLayer: `${sourceLayer}-fill`, id: hoveredGeom},
             {hover: false})
 
-            this.map.setFeatureState({source: 'Boundaries', sourceLayer, id: hoveredMuni},
+            this.map.setFeatureState({source: 'Boundaries', sourceLayer, id: hoveredGeom},
             {hover: false})
 
             this.hoveredArea.style.visibility = 'hidden'
         }
 
-        hoveredMuni = null
+        hoveredGeom = null
 
-        return hoveredMuni
+        return hoveredGeom
     }
 
     // draw a boundary, zoom to, filter crash data and update sidebar on muni click

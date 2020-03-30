@@ -3,7 +3,7 @@ const countyOutline = {
     type: 'line',
     source: 'Boundaries',
     'source-layer': 'county',
-    maxzoom: 8.5,
+    maxzoom: 8.4,
     paint: {
         'line-width': 2.5,
         'line-color': '#fafafa'
@@ -21,7 +21,7 @@ const countyFill = {
     source: 'Boundaries',
     'source-layer': 'county',
     layout: {},
-    maxzoom: 8.5,
+    maxzoom: 8.4,
     paint: {
         'fill-outline-color': '#f7c59f',
         'fill-opacity': ['case',
@@ -43,7 +43,7 @@ const municipalityOutline = {
     type: 'line',
     source: 'Boundaries',
     'source-layer': 'municipalities',
-    minzoom: 8.5,
+    minzoom: 8.4,
     paint: {
         'line-width': 0.5,
         'line-color': '#e3f2fd'
@@ -56,7 +56,7 @@ const municipalityFill = {
     source: 'Boundaries',
     'source-layer': 'municipalities',
     layout: {},
-    minzoom: 8.5,
+    minzoom: 8.4,
     paint: {
         'fill-outline-color': '#f7c59f',
         'fill-opacity': ['case',
