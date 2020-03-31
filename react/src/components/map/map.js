@@ -8,7 +8,7 @@ import * as layers from './layers.js'
 import * as popups from './popups.js';
 import { createBoundaryFilter, removeBoundaryFilter } from './boundaryFilters.js';
 import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter, getPolygonCrashes, setPolygonBbox, removePolyCRNS  } from '../../redux/reducers/mapReducer.js'
-import { munis } from '../search/dropdowns.js'
+import { munis, counties } from '../search/dropdowns.js'
 import './map.css';
 
 class Map extends Component {
@@ -75,16 +75,17 @@ class Map extends Component {
             this.map.addLayer(layers.crashCircles)
 
             // status of the hovered municipality
-            let hoveredMuni = null
+            let hoveredGeom = null
             
-            // add hover effect to municipalities
-            this.map.on('mousemove', 'municipality-fill', e => hoveredMuni = this.hoverMuniFill(e, hoveredMuni))
-            this.map.on('mouseleave', 'municipality-fill', () => hoveredMuni = this.removeMuniFill(hoveredMuni))
-            this.map.on('mousemove', 'county-fill', e => this.hoverCountyFill(e))
-            this.map.on('mouseleave', 'county-fill', e => this.removeCountyFill(e))
+            // add hover effect to geographies
+            this.map.on('mousemove', 'municipality-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
+            this.map.on('mouseleave', 'municipality-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
+            this.map.on('mousemove', 'county-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
+            this.map.on('mouseleave', 'county-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
 
-            // clicking a municipality triggers the same set of actions as searching by muni
-            this.map.on('click', 'municipality-fill', e => this.clickMuni(e))
+            // clicking a GEOGRAPHY triggers the same set of actions as searching by muni
+            this.map.on('click', 'municipality-fill', e => this.clickGeography(e))
+            this.map.on('click', 'county-fill', e => this.clickGeography(e))
             
             // update legend depending on zoom level (heatmap vs crash circles)
             this.map.on('zoomend', () => {
@@ -358,46 +359,35 @@ class Map extends Component {
         })
     }
 
-    // @NOTE: this is just a test for the overlays for county. hoverCountyFill and hoverMuniFill will be the same function,
-    // as described in issue #48
-    hoverCountyFill = e  => {
-        let name = e.features[0].properties.name
-        if(name) {
-            this.hoveredArea.style.visibility = 'visible'
-            this.hoveredArea.children[0].textContent = `${name} County`
-        }
-    }
-    removeCountyFill = e => this.hoveredArea.style.visibility = 'hidden'
+    // add fill effect when hovering over a geography type (county or municipality)
+    hoverGeographyFill = (e, hoveredGeom) => {
 
-    // add fill effect when hovering over a municipality
-    hoverMuniFill = (e, hoveredMuni) => {
+        // escape if a boundary is set or if the user is drawing a polygon
+        if(this.state.boundary || this.state.polygon) return
 
-        // escape if zoom level isn't right, if a boundary is set or if the user is drawing a polygon
-        if(this.map.getZoom() < 8.4 || this.state.boundary || this.state.polygon) return
-
+        let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
         let features = e.features
 
         this.map.getCanvas().style.cursor = 'pointer'
 
         if(features.length > 0 ) {
             features = features[0]
-            const name = features.properties.name
-            
+            const name =  sourceLayer === 'county' ? features.properties.name + ' County' : features.properties.name
             // remove old hover state
-            if(hoveredMuni) {
+            if(hoveredGeom) {
                 this.map.setFeatureState(
-                    {source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
+                    {source: 'Boundaries', sourceLayer, id: hoveredGeom},
                     {hover: false}
                 )
             }
 
             // update hover layer
-            hoveredMuni = features.id
+            hoveredGeom = features.id
             
-            // handle edge cases where hoveredMuni is null or NaN (I think this check is only necessary right now b/c it sometimes serves the old VT's and sometimes doesn't. Can be removed eventually)
-            if(hoveredMuni) {
+            // handle edge cases where hoveredGeom is null or NaN (I think this check is only necessary right now b/c it sometimes serves the old VT's and sometimes doesn't. Can be removed eventually)
+            if(hoveredGeom) {
                 this.map.setFeatureState(
-                    {source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
+                    {source: 'Boundaries', sourceLayer, id: hoveredGeom},
                     {hover: true}
                 )
             }
@@ -407,69 +397,88 @@ class Map extends Component {
             this.hoveredArea.children[0].textContent = name
         }
 
-        return hoveredMuni
+        return hoveredGeom
     }
 
     // remove fill effect when hovering over a new municipality or leaving the region
-    removeMuniFill = hoveredMuni => {
+    removeGeographyFill = hoveredGeom => {
 
-        // escape if zoom level isn't right
-        if(this.map.getZoom() < 8.4) return
+        // escape if zoom level isn't right @TODO make this a county or zoom level decision
+        let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
 
         this.map.getCanvas().style.cursor = ''
 
-        // handle municipality-fill (fill effect within munis) and municipalities (edge cases - moving your mouse outside the region or on borders)
-        if(hoveredMuni) {
-            this.map.setFeatureState({source: 'Boundaries', sourceLayer: 'municipality-fill', id: hoveredMuni},
+        if(hoveredGeom) {
+            this.map.setFeatureState({source: 'Boundaries', sourceLayer: `${sourceLayer}-fill`, id: hoveredGeom},
             {hover: false})
 
-            this.map.setFeatureState({source: 'Boundaries', sourceLayer: 'municipalities', id: hoveredMuni},
+            this.map.setFeatureState({source: 'Boundaries', sourceLayer, id: hoveredGeom},
             {hover: false})
 
             this.hoveredArea.style.visibility = 'hidden'
         }
 
-        hoveredMuni = null
+        hoveredGeom = null
 
-        return hoveredMuni
+        return hoveredGeom
     }
 
     // draw a boundary, zoom to, filter crash data and update sidebar on muni click
-    clickMuni = e => {
-
+    clickGeography = e => {
+        
         // short out if the user is drawing polygons
         if(this.state.polygon) return
-
+        
         // short out if a user clicks on a crash circle
         const circleTest = this.map.queryRenderedFeatures(e.point)[0]
         if(circleTest.source === 'Crashes') return
+        
+        // get source layer and exit if the wrong one is triggered
+        let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipality'
+        const features = e.features[0]
+        if(sourceLayer[0] !== features.sourceLayer[0]) return
+        
+        // get feature properties
+        const props = features.properties
+        const name = props.name
+        const featureID = features.id
+        
+        // set layer-dependent variables
+        let geoID;
+        let tileType;
+        let countyName;
+        if(sourceLayer === 'county'){
+            geoID = counties[name]
+            tileType = 'c'
+            countyName = `${name} County`
+        }else {
+            geoID = munis[name]
+            tileType = 'm'
+        }
+        const encodedName = encodeURIComponent(name)
 
-        const props = e.features[0].properties
-        const id = props.geoid
-        const encodedName = encodeURIComponent(props.name)
-        const featureId = e.features[0].id
+        // create boundary object
         let newFilterType = this.props.crashType || 'ksi'
         let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
-        const boundaryObj = {type: 'municipality', name: encodedName, isKSI}
+        const boundaryObj = {type: sourceLayer, name: encodedName, isKSI}
 
-        // update filter object w/muni id + toggle state
-        let pennID = munis[props.name]
+        // update filter object
         let range = this.props.range || {}
-        const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID, range, boundary: true}
+        const filterObj = {filterType: newFilterType, tileType, id: geoID, range, boundary: true}
 
         // do all the things that search does
-        this.props.setSidebarHeaderContext(props.name)
+        this.props.setSidebarHeaderContext(countyName || name)
         this.props.getData(boundaryObj)
         this.props.setMapBounding(boundaryObj)
-        this.props.getBoundingBox(id)
+        this.props.getBoundingBox(geoID)
         this.props.setMapFilter(filterObj)
 
         // set bounding filters
         this.setBoundary(boundaryObj)
         this.showBoundaryOverlay()
 
-        // use featureId to remove the muni fill that hovering created
-        this.removeMuniFill(featureId)
+        // use featureID to remove the muni fill that hovering created
+        this.removeGeographyFill(featureID)
 
         // hide the hover boundary
         this.hoveredArea.style.visibility = 'hidden'
@@ -494,7 +503,7 @@ class Map extends Component {
         ))
         
         let typeCheck = this.props.crashType || 'ksi'
-        let isKSI = typeCheck  == 'ksi' ? 'yes' : 'no'
+        let isKSI = typeCheck === 'ksi' ? 'yes' : 'no'
 
         // create boundary object for the getData endpoint
         const boundaryObj = {
@@ -573,7 +582,7 @@ class Map extends Component {
                 </div>
 
                 <div id="hoveredArea" className="shadow overlays" ref={el => this.hoveredArea = el}>
-                    <h3></h3>
+                    <h3>default</h3>
                 </div>
 
                 <div id="default-extent-btn" className="shadow overlays" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
