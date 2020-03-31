@@ -8,7 +8,7 @@ import * as layers from './layers.js'
 import * as popups from './popups.js';
 import { createBoundaryFilter, removeBoundaryFilter } from './boundaryFilters.js';
 import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter, getPolygonCrashes, setPolygonBbox, removePolyCRNS  } from '../../redux/reducers/mapReducer.js'
-import { munis } from '../search/dropdowns.js'
+import { munis, counties } from '../search/dropdowns.js'
 import './map.css';
 
 class Map extends Component {
@@ -77,15 +77,17 @@ class Map extends Component {
             // status of the hovered municipality
             let hoveredGeom = null
             
-            // add hover effect to municipalities and counties
+            // add hover effect to geographies
             this.map.on('mousemove', 'municipality-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
             this.map.on('mouseleave', 'municipality-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
             this.map.on('mousemove', 'county-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
             this.map.on('mouseleave', 'county-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
 
-            // clicking a municipality triggers the same set of actions as searching by muni
-            // @TODO add click to county layer
-            this.map.on('click', 'municipality-fill', e => this.clickMuni(e))
+            // clicking a GEOGRAPHY triggers the same set of actions as searching by muni
+            const muniL = 'MUNI'
+            const countyL = 'COUNTY'
+            this.map.on('click', 'municipality-fill', e => this.clickGeography(e, muniL))
+            this.map.on('click', 'county-fill', e => this.clickGeography(e, countyL))
             
             // update legend depending on zoom level (heatmap vs crash circles)
             this.map.on('zoomend', () => {
@@ -424,7 +426,9 @@ class Map extends Component {
     }
 
     // draw a boundary, zoom to, filter crash data and update sidebar on muni click
-    clickMuni = e => {
+    clickGeography = (e, layer) => {
+        console.log('zoom level is ', this.map.getZoom())
+        console.log('called click geography with layer: ', layer)
 
         // short out if the user is drawing polygons
         if(this.state.polygon) return
@@ -433,18 +437,34 @@ class Map extends Component {
         const circleTest = this.map.queryRenderedFeatures(e.point)[0]
         if(circleTest.source === 'Crashes') return
 
-        const props = e.features[0].properties
-        const id = props.geoid
+        // get feature properties
+        const features = e.features[0]
+        console.log('features is ', features)
+        const props = features.properties
+        const featureId = features.id
+        const id = props.geoid || featureId // handle county case - no ID on their props
+        
+        // determine source layer & set depndent variables
+        let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipality'
+        let geoID;
+        let tileType;
+        if(sourceLayer === 'county'){
+            geoID = counties[props.name]
+            tileType = 'c'
+        }else {
+            geoID = munis[props.name]
+            tileType = 'm'
+        }
+
+        // create boundary object
         const encodedName = encodeURIComponent(props.name)
-        const featureId = e.features[0].id
         let newFilterType = this.props.crashType || 'ksi'
         let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
-        const boundaryObj = {type: 'municipality', name: encodedName, isKSI}
+        const boundaryObj = {type: sourceLayer, name: encodedName, isKSI}
 
         // update filter object w/muni id + toggle state
-        let pennID = munis[props.name]
         let range = this.props.range || {}
-        const filterObj = {filterType: newFilterType, tileType: 'm', id: pennID, range, boundary: true}
+        const filterObj = {filterType: newFilterType, tileType, id: geoID, range, boundary: true}
 
         // do all the things that search does
         this.props.setSidebarHeaderContext(props.name)
