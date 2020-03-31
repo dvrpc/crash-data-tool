@@ -84,10 +84,8 @@ class Map extends Component {
             this.map.on('mouseleave', 'county-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
 
             // clicking a GEOGRAPHY triggers the same set of actions as searching by muni
-            const muniL = 'MUNI'
-            const countyL = 'COUNTY'
-            this.map.on('click', 'municipality-fill', e => this.clickGeography(e, muniL))
-            this.map.on('click', 'county-fill', e => this.clickGeography(e, countyL))
+            this.map.on('click', 'municipality-fill', e => this.clickGeography(e))
+            this.map.on('click', 'county-fill', e => this.clickGeography(e))
             
             // update legend depending on zoom level (heatmap vs crash circles)
             this.map.on('zoomend', () => {
@@ -426,59 +424,61 @@ class Map extends Component {
     }
 
     // draw a boundary, zoom to, filter crash data and update sidebar on muni click
-    clickGeography = (e, layer) => {
-        console.log('zoom level is ', this.map.getZoom())
-        console.log('called click geography with layer: ', layer)
-
+    clickGeography = e => {
+        
         // short out if the user is drawing polygons
         if(this.state.polygon) return
-
+        
         // short out if a user clicks on a crash circle
         const circleTest = this.map.queryRenderedFeatures(e.point)[0]
         if(circleTest.source === 'Crashes') return
-
-        // get feature properties
-        const features = e.features[0]
-        console.log('features is ', features)
-        const props = features.properties
-        const featureId = features.id
-        const id = props.geoid || featureId // handle county case - no ID on their props
         
-        // determine source layer & set depndent variables
+        // get source layer and exit if the wrong one is triggered
         let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipality'
+        const features = e.features[0]
+        if(sourceLayer[0] !== features.sourceLayer[0]) return
+        
+        // get feature properties
+        const props = features.properties
+        const name = props.name
+        const featureID = features.id
+        
+        // set layer-dependent variables
         let geoID;
         let tileType;
+        let countyName;
         if(sourceLayer === 'county'){
-            geoID = counties[props.name]
+            geoID = counties[name]
             tileType = 'c'
+            countyName = `${name} County`
         }else {
-            geoID = munis[props.name]
+            geoID = munis[name]
             tileType = 'm'
         }
+        const encodedName = encodeURIComponent(name)
 
         // create boundary object
-        const encodedName = encodeURIComponent(props.name)
         let newFilterType = this.props.crashType || 'ksi'
         let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
         const boundaryObj = {type: sourceLayer, name: encodedName, isKSI}
 
-        // update filter object w/muni id + toggle state
+        // update filter object
         let range = this.props.range || {}
         const filterObj = {filterType: newFilterType, tileType, id: geoID, range, boundary: true}
 
         // do all the things that search does
-        this.props.setSidebarHeaderContext(props.name)
+        this.props.setSidebarHeaderContext(countyName || name)
         this.props.getData(boundaryObj)
         this.props.setMapBounding(boundaryObj)
-        this.props.getBoundingBox(id)
+        this.props.getBoundingBox(geoID)
         this.props.setMapFilter(filterObj)
 
         // set bounding filters
         this.setBoundary(boundaryObj)
         this.showBoundaryOverlay()
 
-        // use featureId to remove the muni fill that hovering created
-        this.removeGeographyFill(featureId)
+        // use featureID to remove the muni fill that hovering created
+        this.removeGeographyFill(featureID)
 
         // hide the hover boundary
         this.hoveredArea.style.visibility = 'hidden'
@@ -582,7 +582,7 @@ class Map extends Component {
                 </div>
 
                 <div id="hoveredArea" className="shadow overlays" ref={el => this.hoveredArea = el}>
-                    <h3></h3>
+                    <h3>default</h3>
                 </div>
 
                 <div id="default-extent-btn" className="shadow overlays" aria-label="Default DVRPC Extent" onClick={this.resetControl}>
