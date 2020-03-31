@@ -70,9 +70,18 @@ class Sidebar extends Component {
 
         // update data and set crashType state
         if(selected !== this.state.crashType) {
+            let context = this.props.context || this.state.context
+            let isKSI = selected === 'KSI' ? 'yes' : 'no'
 
-            let nameTest = this.props.context.split(' ')
-            let countyCheck = nameTest.pop()
+            // return special case for regional states
+            if(context === 'the DVRPC region') {
+                this.props.getCrashData({type:'', name:'', isKSI})
+                this.setState({crashType: selected})
+                return
+            }
+
+            let nameTest = context.split(' ')
+            const countyCheck = nameTest.pop()
             let isCounty = countyCheck === 'County' ? true : false
 
             let name;
@@ -88,10 +97,9 @@ class Sidebar extends Component {
                 type = 'geojson'
             }
             else {
-                name = encodeURIComponent(this.props.context)
+                name = encodeURIComponent(context)
                 type = 'municipality'
             }
-            let isKSI = selected === 'KSI' ? 'yes' : 'no'
             
             // update data and local state
             this.props.getCrashData({type, name, isKSI})
