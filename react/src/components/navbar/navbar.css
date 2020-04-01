@@ -36,7 +36,23 @@
 /* Media Queries */
 @media all and (max-width: 800px) {
     #navbar {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
         margin-bottom: 0;
         padding: 5px 10px;
+    }
+    #crash-map-nav-home{
+        margin-right: 10px;
+    }
+    #crash-map-nav-info-btn{
+        font-size: 0.7rem;
+        padding: 2px 6px;
+    }
+    #search-form{
+        align-self: center;
+    }
+    #seearch-by-label, #search-form select, #search-form input{
+        font-size: 10px;
     }
 }
