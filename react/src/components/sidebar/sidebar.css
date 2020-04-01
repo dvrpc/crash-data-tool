@@ -74,7 +74,17 @@
 @media all and (max-width: 800px) {
     #sidebar{
         width: calc(100% - 20px);
-        height: 55%;
+        height: 50%;
         padding: 15px 10px;
+    }
+    #crash-map-sidebar-header{
+        margin: 0;
+        font-size: 1.2rem;
+    }
+    .crash-map-sidebar-subheader{
+        font-size: 1rem;
+    }
+    .sidebar-paragraphs{
+        font-size: 0.85rem;
     }
 }
