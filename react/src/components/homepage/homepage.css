@@ -121,20 +121,30 @@ header{
 
 /* Media Queries */
 @media all and (max-width: 800px) {
-    #homepage-h1{
-        font-size: 3rem;
+    header{
+        padding: 2%;
+    }
+    #header-logo{
+        width: 65px;
+    }
+    #homepage-header{
+        font-size: 2.5rem;
+        top: calc(2% + 170px);
     }
 
-
     /* Content */
+    #crash-toolkit-main{
+        padding: 5% 2%;
+    }
     #crash-apps-container{
         padding: calc(10% + 50px) 0 10% 0;
         flex-direction: column;
         align-items: center;
+        margin: 0;
     }
     .crash-app{
-        width: 40%;
-        margin-bottom: 20%;
+        width: 70%;
+        margin-bottom: 30%;
     }
     .crash-app:last-child{
         margin-bottom: 0;
@@ -143,5 +153,8 @@ header{
         height: 150px;
         width: 150px;
         margin-left: -75px;
+    }
+    #safe-streets-container p{
+        width: 90%;
     }
 }
