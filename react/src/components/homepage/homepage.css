@@ -11,6 +11,7 @@
     align-items: center;
     justify-content: space-between;
     font-size: 1.6rem;
+    padding: 3% 0;
 }
 .homepage-h2:before, .homepage-h2:after{
     content: "";
@@ -34,7 +35,7 @@ header{
 
 /* Banner */
 #banner{
-    height: 350px;
+    height: 420px;
     width: 100%;
     filter: blur(3px);
     background: url('https://images.wallpaperscraft.com/image/bridge_traffic_cars_139343_2560x1440.jpg') no-repeat center;
@@ -44,7 +45,7 @@ header{
     width: 100%;
     text-align: center;
     /* set top to half of banner height + header padding */
-    top: calc(2% + 150px);
+    top: calc(2% + 210px);
     z-index: 5;
     color: #ecebe4;
     font-size: 3.5rem;
@@ -54,8 +55,7 @@ header{
 
 /* Content */
 #crash-toolkit-main{
-    padding: 3% 2%;
-    /* light blue: edf2f4 */
+    padding: 2% 2% 5% 2%;
     background: #f7f7f7;
 }
 #crash-apps-container{
