@@ -116,13 +116,24 @@ def test_county_numbers1(client):
     y_17 = data['2017']
     y_18 = data['2018']
 
-    total_injured_17 = y_17['severity']['major'] + \
-        y_17['severity']['moderate'] + \
-        y_17['severity']['minor']
-
+    total_injured_18 = (y_18['severity']['major'] + 
+        y_18['severity']['moderate'] + 
+        y_18['severity']['minor'])
+    print(y_18['severity'])
     assert (y_18['severity']['fatal'] == 43 and 
             y_18['mode']['bike'] == 59 and
             y_18['mode']['ped'] == 107 and
-            total_injured_17 == 3884)
+            total_injured_18 == 3883)
 
+
+def test_county_numbers2(client):
+    response = client.get(
+        endpoint,
+        query_string={'type': 'county', 'value': 'Burlington'}
+    )
+    data = response.get_json()
+    y_17 = data['2017']
+    y_18 = data['2018']
+    print(y_18['type'])
+    assert False
 

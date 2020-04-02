@@ -1,8 +1,10 @@
 node_modules/
 
 ## api files
-.idea
 __pycache__
 venv
-/flask/ve
-/flask/config.py
+/api/ve
+/api/config.py
+/data/config.py
+/data/*.csv
+/data/*.txt
