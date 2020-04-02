@@ -5,6 +5,8 @@
     - for get_crash(), figure out how to return 400 if <id> not provided
 """
 
+import calendar
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import psycopg2 
@@ -79,7 +81,7 @@ def get_crash(id):
         return jsonify({'message': 'Crash not found'}), 404
     
     crash = {
-        'month': result[0],
+        'month': calendar.month_name[result[0]],
         'year': result[1],
         'vehicle_count': result[2],
         'bike': result[3],

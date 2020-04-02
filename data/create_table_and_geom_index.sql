@@ -16,7 +16,7 @@ CREATE TABLE crash (
     longitude numeric,
     geom geometry(Point, 4326),
     year integer NOT NULL,
-    month text NOT NULL,
+    month integer NOT NULL,
     collision_type text NOT NULL,
     vehicle_count integer NOT NULL,
     person_count integer,
