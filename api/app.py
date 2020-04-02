@@ -57,20 +57,15 @@ def get_crash(id):
     cursor = get_db_cursor()
     query = """
         SELECT
-            crash.month,
-            crash.year,
-            type.vehicle_count,
-            type.bicycle,
-            type.ped,
-            type.persons_involved,
-            type.collision_type
+            month,
+            year,
+            vehicle_count,
+            bicycle_count,
+            ped_count,
+            person_count,
+            collision_type
         FROM crash
-        JOIN
-            type 
-        ON 
-            crash.crash_id = type.crash_id
-        WHERE
-            crash.crash_id = %s 
+        WHERE id = %s 
         """
 
     try:    
@@ -101,10 +96,7 @@ def get_summary():
     Return summary of various attributes by year.
     If provided, *type* and *value* query parameters will limit result by geographic area.
     If *ksi_only* == yes, return only fatal and major crashes.
-    
-    @TODO: 
-        - explore query/resulting data
-    '''
+    '''    
 
     keys = list(request.args)
     area_type = request.args.get('type')
@@ -124,7 +116,6 @@ def get_summary():
                 {'message': '*type* must be one of *county*, *municipality*, *state*, or *geojson*'}
             ), 400
 
-
     # be extra helpful to user - just checks spelling of ksi_only at this point
     for key in keys:
         if key not in ['type', 'value', 'state', 'ksi_only']:
@@ -134,44 +125,53 @@ def get_summary():
 
     # build query incrementally, to add possible WHERE clauses before GROUP BY and 
     # to easily pass value parameter to execute in order to prevent SQL injection 
-    query = """
-        SELECT
-            crash.year, 
-            COUNT(crash.crash_id) AS count,
-            SUM(severity.fatal) AS fatalities, 
-            SUM(severity.major) AS major_inj,
-            SUM(severity.moderate) AS moderate_inj, 
-            SUM(severity.minor) AS minor_inj, 
-            SUM(severity.uninjured) AS uninjured, 
-            SUM(severity.unknown) AS unknown,
-            SUM(type.bicycle) AS bike, 
-            SUM(type.ped) AS ped,
-            SUM(type.persons_involved) AS persons_involved,
-            type.collision_type AS type
+    severity_and_mode_query = """
+        SELECT 
+            year,
+            SUM(fatality_count),
+            SUM(maj_inj),
+            SUM(mod_inj),
+            SUM(min_inj),
+            SUM(unk_inj),
+            SUM(uninjured_count),
+            SUM(bicycle_count),
+            SUM(ped_count),
+            SUM(person_count),
+            count(id)
         FROM crash
-        JOIN severity ON severity.crash_id = crash.crash_id
-        JOIN type ON type.crash_id = crash.crash_id
+    """
+
+    collision_type_query = """
+        SELECT 
+            year,
+            collision_type,
+            count(id)
+        FROM crash
     """
 
     if area_type == 'county':
-        query += " WHERE crash.county = %s"
+        severity_and_mode_query += " WHERE county = %s"
+        collision_type_query += " WHERE county = %s"
     elif area_type == 'municipality':
-        query += " WHERE crash.municipality = %s"
+        severity_and_mode_query += " WHERE municipality = %s"
+        collision_type_query += " WHERE municipality = %s"
     elif area_type == 'state':
-        query += " WHERE crash.state = %s"
+        severity_and_mode_query += " WHERE state = %s"
+        collision_type_query += " WHERE state = %s"
     elif area_type == 'geojson':
-        query += " JOIN location ON location.crash_id = crash.crash_id"
-        query += " WHERE ST_WITHIN(location.geom,ST_GeomFromGeoJSON(%s))"
+        severity_and_mode_query += " WHERE ST_WITHIN(geom,ST_GeomFromGeoJSON(%s))"
+        collision_type_query += " WHERE ST_WITHIN(geom,ST_GeomFromGeoJSON(%s))"
     
     if ksi_only == 'yes':
-        query += " AND (severity.fatal > 0 OR severity.major > 0)"
-    
-    query += " GROUP BY crash.year, type.collision_type;"
-    
+        severity_and_mode_query += " AND (fatality_count > 0 OR maj_inj > 0)"
+         
+    severity_and_mode_query += " GROUP BY year"
+    collision_type_query += " GROUP BY year, collision_type"
+ 
     cursor = get_db_cursor() 
    
     try:
-        cursor.execute(query, [value])
+        cursor.execute(severity_and_mode_query, [value])
     except psycopg2.Error as e:
         return jsonify({'message': 'Database error: ' + str(e)}), 400
     
@@ -181,29 +181,42 @@ def get_summary():
         return jsonify({'message': 'No information found for given type/value.'}), 404
 
     summary = {}
-     
+
     for row in result:
-        if str(row[0]) in summary: 
-            summary[str(row[0])]['type'][str(row[11])] = row[1]
-        else:
-            summary[str(row[0])] = {
-                'severity': {
-                    'fatal': row[2],
-                    'major': row[3],
-                    'moderate': row[4],
-                    'minor': row[5],
-                    'uninjured': row[6],
-                    'unknown': row[7]
-                },
-                'mode': {
-                    'bike': row[8],
-                    'ped': row[9],
-                    'vehicle_occupants': row[10] - row[9] - row[8]
-                },
-                'type': {
-                    str(row[11]): row[1]
-                }
-            }
+        summary[str(row[0])] = {
+            'severity': {
+                'fatal': row[1],
+                'major': row[2],
+                'moderate': row[3],
+                'minor': row[4],
+                'unknown': row[5],
+                'uninjured': row[6],
+            },
+            'mode': {
+                'bike': row[7],
+                'ped': row[8],
+                'vehicle_occupants': row[9] - row[8] - row[7]
+            },
+            'type': {},
+        } 
+
+    # now get numbers/types of collisions per year and add to summary
+    '''
+    collision_type_query = cursor.execute(collision_type_query, [value])
+    result = cursor.fetchall()
+
+    collisions_by_year = {}
+
+    for row in result:
+        try:
+            collisions_by_year[row[0]][row[1]] = row[2]
+        except KeyError:
+            collisions_by_year[row[0]] = {}
+            collisions_by_year[row[0]][row[1]] = row[2] 
+    
+    for each in summary.keys():
+        each['type'] = collisions_by_year[each]
+    '''
     return jsonify(summary)
 
 
@@ -220,11 +233,9 @@ def get_crash_ids():
 
     cursor = get_db_cursor()
     query = """
-        SELECT
-            crash.crash_id
+        SELECT id
         FROM crash
-        JOIN location ON location.crash_id = crash.crash_id
-        WHERE ST_WITHIN(location.geom, ST_GeomFromGeoJSON(%s));
+        WHERE ST_WITHIN(geom, ST_GeomFromGeoJSON(%s));
     """ 
         
     try:
