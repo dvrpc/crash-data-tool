@@ -136,7 +136,7 @@ export const getBoundingBox = id => async dispatch => {
     // counties and munis have different code types
     featureServer ? codeType = `FIPS=${id}` : codeType = `GEOID_10=${id}` 
 
-    // boundary query string w/appropriate featureServer & id 
+    // boundary query string w/appropriate featureServer & id
     // @TODO: plug this back in when ESRI gets their stuff together
     //const api = `https://services1.arcgis.com/LWtWv6q6BJyKidj8/ArcGIS/rest/services/DVRPC_Boundaries/FeatureServer/${featureServer}/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=pgeojson`
     
