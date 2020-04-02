@@ -63,7 +63,9 @@ def get_crash(id):
             year,
             vehicle_count,
             bicycle_count,
+            bicycle_fatalities,
             ped_count,
+            ped_fatalities,
             person_count,
             collision_type
         FROM crash
@@ -84,10 +86,12 @@ def get_crash(id):
         'month': calendar.month_name[result[0]],
         'year': result[1],
         'vehicle_count': result[2],
-        'bike': result[3],
-        'ped': result[4],
-        'vehicle_occupants': result[5] - result[4] - result[3],
-        'collision_type': result[6],
+        'bicycle_count': result[3],
+        'bicycle_fatalities': result[4],
+        'ped_count': result[5],
+        'ped_fatalities': result[6],
+        'vehicle_occupants': result[7] - result[3] - result[5],
+        'collision_type': result[8],
     }
     return jsonify(crash) 
 
@@ -147,7 +151,7 @@ def get_summary():
         SELECT 
             year,
             collision_type,
-            count(id)
+            
         FROM crash
     """
 
@@ -186,6 +190,7 @@ def get_summary():
 
     for row in result:
         summary[str(row[0])] = {
+            'total_crashes': row[10],
             'severity': {
                 'fatal': row[1],
                 'major': row[2],

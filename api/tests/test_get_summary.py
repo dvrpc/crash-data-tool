@@ -18,7 +18,7 @@ def test_error_on_unknown_params(client):
 def test_error_if_type_included_but_not_value(client):
     response = client.get(
         endpoint,
-        query_string={'type': '1'},
+        query_string={'type': 'county'},
     )
     assert response.status_code == 400
 
@@ -26,7 +26,7 @@ def test_error_if_type_included_but_not_value(client):
 def test_error_if_value_included_but_not_type(client):
     response = client.get(
         endpoint,
-        query_string={'value': '1'},
+        query_string={'value': 'Montgomery'},
     )
     assert response.status_code == 400
 
@@ -39,19 +39,25 @@ def test_type_arg_not_in_required_list(client):
     assert response.status_code == 400
 
 
-def test_success1(client):
+@pytest.mark.parametrize('type,value', [
+    ('state', 'pa'),
+    ('state', 'nj'),
+    ('county', 'Bucks'),
+    ('county', 'Burlington'),
+    ('county', 'Camden'),
+    ('county', 'Chester'),
+    ('county', 'Delaware'),
+    ('county', 'Gloucester'),
+    ('county', 'Mercer'),
+    ('county', 'Montgomery'),
+    ('county', 'Philadelphia'),
+    ('municipality', 'West'),
+    ('municipality', 'Mount Laurel Township'),
+])
+def test_minimal_success_by_type1(client, type, value):
     response = client.get(
         endpoint,
-        query_string={'type': 'county', 'value': 'Montgomery'}
-    )
-    assert response.status_code == 200
-
-
-@pytest.mark.parametrize('value', ['pa', 'nj'])
-def test_success2(client, value):
-    response = client.get(
-        endpoint,
-        query_string={'type': 'state', 'value': value}
+        query_string={'type': type, 'value': value}
     )
     assert response.status_code == 200
 
@@ -66,17 +72,21 @@ def test_double_spacing(client, value):
         endpoint,
         query_string={'type': 'municipality', 'value': value}
     )
-
     assert response.status_code == 200
 
 
 @pytest.mark.parametrize('type,value', [
-    ('county', 'Bucks'), 
-    ('county', 'Montgomery'),
+    ('municipality', 'Abington Township'),
+    ('municipality', 'Aldan Borough'),
+    ('municipality', 'Ambler Borough'),
+    ('municipality', 'Aston Township'),
+    ('municipality', 'Atglen Borough'),
+    ('municipality', 'Audubon Borough'),
+    ('municipality', 'Downingtown Borough'),
     ('municipality', 'Hilltown Township'),
     ('municipality', 'Lansdowne Borough'),
+    ('municipality', 'Upper North'),
     ('municipality', 'West Goshen Township'),
-    ('municipality', 'Downingtown Borough'),
 ])
 def test_KSI_only1(client, type, value):
     '''
@@ -116,14 +126,25 @@ def test_county_numbers1(client):
     y_17 = data['2017']
     y_18 = data['2018']
 
-    total_injured_18 = (y_18['severity']['major'] + 
+    total_injured_18 = (
+        y_18['severity']['major'] + 
         y_18['severity']['moderate'] + 
-        y_18['severity']['minor'])
-    print(y_18['severity'])
-    assert (y_18['severity']['fatal'] == 43 and 
-            y_18['mode']['bike'] == 59 and
-            y_18['mode']['ped'] == 107 and
-            total_injured_18 == 3883)
+        y_18['severity']['minor']
+    )
+
+    total_injured_17 = (
+        y_17['severity']['major'] + 
+        y_17['severity']['moderate'] + 
+        y_17['severity']['minor']
+    )
+    assert y_17['severity']['fatal'] == 51  # Data Navigator has incorrect number - 52
+    assert y_17['mode']['bike'] == 57  # Data Nav has incorrect number - 56
+    assert y_17['mode']['ped'] == 100  # Data Nav has 104
+    assert total_injured_17 == 4139  # Data Nav has 4084
+    assert y_18['severity']['fatal'] == 43
+    assert y_18['mode']['bike'] == 59
+    assert y_18['mode']['ped'] == 107
+    assert total_injured_18 == 3883
 
 
 def test_county_numbers2(client):
