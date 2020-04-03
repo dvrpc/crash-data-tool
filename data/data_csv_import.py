@@ -46,10 +46,10 @@ lookup_pa = {
         '0': 'Non-collision',
         '1': 'Rear-end',
         '2': 'Head-on',
-        '3': 'Rear-to-Rear (Backing)',
+        '3': 'Rear-to-rear (backing)',
         '4': 'Angle',
-        '5': 'Sideswipe, same direction',
-        '6': 'Sideswipe, opp. direction',
+        '5': 'Sideswipe (same direction)',
+        '6': 'Sideswipe (opposite direction)',
         '7': 'Hit fixed object',
         '8': 'Hit pedestrian',
         '9': 'Other or unknown'
@@ -57,24 +57,24 @@ lookup_pa = {
 }
 
 lookup_nj_collision = {
-    '10': 'Non collision',
+    '10': 'Non-collision',
     '01': 'Rear-end',
     '07': 'Head-on',
     '04': 'Head-on',
-    '08': 'Rear-to-rear (Backing)',
+    '08': 'Rear-to-rear (backing)',
     '03': 'Angle',
-    '02': 'Sideswipe (same dir.)',
-    '05': 'Sideswipe (Opposite dir.)',
+    '02': 'Sideswipe (same direction)',
+    '05': 'Sideswipe (opposite direction)',
     '11': 'Hit fixed object',
     '06': 'Hit fixed object',
     '14': 'Hit pedestrian',
     '13': 'Hit pedestrian',
-    '12': 'Other or Unknown',
-    '99': 'Other or Unknown',
-    '00': 'Other or Unknown',
-    '15': 'Other or Unknown',
-    '16': 'Other or Unknown',
-    '09': 'Other or Unknown'
+    '12': 'Other or unknown',
+    '99': 'Other or unknown',
+    '00': 'Other or unknown',
+    '15': 'Other or unknown',
+    '16': 'Other or unknown',
+    '09': 'Other or unknown'
 }
 
 # connect to postgres database
