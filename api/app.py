@@ -169,9 +169,13 @@ def get_summary():
         collision_type_query += " WHERE ST_WITHIN(geom,ST_GeomFromGeoJSON(%s))"
     
     if ksi_only == 'yes':
-        severity_and_mode_query += " AND (fatality_count > 0 OR maj_inj > 0)"
-        collision_type_query += " AND (fatality_count > 0 OR maj_inj > 0)"
-         
+        if area_type:
+            severity_and_mode_query += " AND (fatality_count > 0 OR maj_inj > 0)"
+            collision_type_query += " AND (fatality_count > 0 OR maj_inj > 0)"
+        else:
+            severity_and_mode_query += " WHERE (fatality_count > 0 OR maj_inj > 0)"
+            collision_type_query += " WHERE (fatality_count > 0 OR maj_inj > 0)"
+
     severity_and_mode_query += " GROUP BY year"
     collision_type_query += " GROUP BY year, collision_type"
  

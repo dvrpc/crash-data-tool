@@ -31,7 +31,7 @@ def test_error_if_value_included_but_not_type(client):
     assert response.status_code == 400
 
 
-def test_type_arg_not_in_required_list(client):
+def test_error_if_type_arg_not_in_required_list(client):
     response = client.get(
         endpoint,
         query_string={'type': 'not_in_the_list', 'value': 'Montgomery'}
@@ -40,24 +40,59 @@ def test_type_arg_not_in_required_list(client):
 
 
 @pytest.mark.parametrize('type,value', [
-    ('state', 'pa'),
-    ('state', 'nj'),
-    ('county', 'Bucks'),
-    ('county', 'Burlington'),
-    ('county', 'Camden'),
-    ('county', 'Chester'),
-    ('county', 'Delaware'),
-    ('county', 'Gloucester'),
-    ('county', 'Mercer'),
-    ('county', 'Montgomery'),
-    ('county', 'Philadelphia'),
-    ('municipality', 'West'),
-    ('municipality', 'Mount Laurel Township'),
+    ('state', 'CA'),
+    ('county', 'Allegheny'),
+    ('municipality', 'Erie City')
 ])
-def test_minimal_success_by_type1(client, type, value):
+def test_unknown_values_return_404(client, type, value):
     response = client.get(
         endpoint,
         query_string={'type': type, 'value': value}
+    )
+    assert response.status_code == 404
+
+
+@pytest.mark.parametrize('type,value,ksi_only', [
+    ('state', 'pa', 'no'),
+    ('state', 'pa', 'yes'),
+    ('state', 'nj', 'no'),
+    ('state', 'nj', 'yes'),
+    ('county', 'Bucks', 'no'),
+    ('county', 'Bucks', 'yes'),
+    ('county', 'Burlington', 'no'),
+    ('county', 'Burlington', 'yes'),
+    ('county', 'Camden', 'no'),
+    ('county', 'Camden', 'yes'),
+    ('county', 'Chester', 'no'),
+    ('county', 'Chester', 'yes'),
+    ('county', 'Delaware', 'no'),
+    ('county', 'Delaware', 'yes'),
+    ('county', 'Gloucester', 'no'),
+    ('county', 'Gloucester', 'yes'),
+    ('county', 'Mercer', 'no'),
+    ('county', 'Mercer', 'yes'),
+    ('county', 'Montgomery', 'no'),
+    ('county', 'Montgomery', 'yes'),
+    ('county', 'Philadelphia', 'no'),
+    ('county', 'Philadelphia', 'yes'),
+    ('municipality', 'West', 'no'),
+    ('municipality', 'West', 'yes'),
+    ('municipality', 'Mount Laurel Township', 'no'),
+    ('municipality', 'Mount Laurel Township', 'yes'),
+])
+def test_minimal_success_by_type_and_ksi(client, type, value, ksi_only):
+    response = client.get(
+        endpoint,
+        query_string={'type': type, 'value': value, 'ksi_only': ksi_only}
+    )
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize('ksi_only', ['yes', 'no'])
+def test_region_ksi_and_not_ksi_success(client, ksi_only):
+    response = client.get(
+        endpoint,
+        query_string={'ksi_only': ksi_only}
     )
     assert response.status_code == 200
 

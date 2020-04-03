@@ -5,6 +5,8 @@ __pycache__
 venv
 /api/ve
 /api/config.py
+/api/htmlcov
+/api/.coverage
 /data/config.py
 /data/*.csv
 /data/*.txt
