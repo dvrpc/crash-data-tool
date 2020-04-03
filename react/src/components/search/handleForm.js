@@ -72,6 +72,7 @@ const submitSearch = e => {
                     // this wont stay here but remember that geocoded inputs should be reserved for address searches
                     output.coords = geocode(query)
                 }else {
+                    // @UPDATE: id is the new name field (but still need name for sidebar update)
                     output.boundary.id = type === 'county' ? counties[input] : munis[input]
                 }
 

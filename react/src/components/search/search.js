@@ -43,6 +43,7 @@ class Search extends Component {
         }
 
         // hit the api's to get sidebar info (if applicable)
+        // @UPDATE: update to use geoID
         if(output.boundary.name){
             const boundary = output.boundary
 

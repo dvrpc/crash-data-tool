@@ -455,6 +455,8 @@ class Map extends Component {
             geoID = munis[name]
             tileType = 'm'
         }
+
+        // @UPDATE: drop this in favor of using geoID (keep name for sidebar context tho)
         const encodedName = encodeURIComponent(name)
 
         // create boundary object
