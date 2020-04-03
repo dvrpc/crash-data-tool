@@ -101,7 +101,10 @@ export default function mapReducer(state = [], action) {
 /// MAP Dispatchers
 export const getDataFromKeyword = boundaryObj => async dispatch => {
     const { type, name, isKSI } = boundaryObj
-        
+    // @UPDATE: type and name values/formats change for geoID:
+        // type = geoid or geojson
+        // value = the geoid or the formatted bbox
+        // ksi_only = unchanged
     const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?type=${type}&value=${name}&ksi_only=${isKSI}`
     const stream = await fetch(api, getOptions)
 
