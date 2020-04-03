@@ -151,7 +151,7 @@ def get_summary():
         SELECT 
             year,
             collision_type,
-            
+            count(collision_type) 
         FROM crash
     """
 
@@ -170,6 +170,7 @@ def get_summary():
     
     if ksi_only == 'yes':
         severity_and_mode_query += " AND (fatality_count > 0 OR maj_inj > 0)"
+        collision_type_query += " AND (fatality_count > 0 OR maj_inj > 0)"
          
     severity_and_mode_query += " GROUP BY year"
     collision_type_query += " GROUP BY year, collision_type"
@@ -208,7 +209,7 @@ def get_summary():
         } 
 
     # now get numbers/types of collisions per year and add to summary
-    '''
+    
     collision_type_query = cursor.execute(collision_type_query, [value])
     result = cursor.fetchall()
 
@@ -216,14 +217,14 @@ def get_summary():
 
     for row in result:
         try:
-            collisions_by_year[row[0]][row[1]] = row[2]
+            collisions_by_year[str(row[0])][row[1]] = row[2]
         except KeyError:
-            collisions_by_year[row[0]] = {}
-            collisions_by_year[row[0]][row[1]] = row[2] 
-    
-    for each in summary.keys():
-        each['type'] = collisions_by_year[each]
-    '''
+            collisions_by_year[str(row[0])] = {}
+            collisions_by_year[str(row[0])][row[1]] = row[2] 
+
+    for k in summary.keys():
+        summary[k]['type'] = collisions_by_year[k]
+
     return jsonify(summary)
 
 

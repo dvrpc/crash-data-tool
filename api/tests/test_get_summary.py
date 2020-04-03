@@ -112,6 +112,44 @@ def test_KSI_only1(client, type, value):
     assert all([any(value_set) for value_set in fatal_and_major_values])
 
 
+@pytest.mark.parametrize('type,value,ksi_only', [
+    ('state', 'pa', ''),
+    ('state', 'pa', 'yes'),
+    ('state', 'nj', ''),
+    ('state', 'nj', 'yes'),
+    ('county', 'Bucks', ''),
+    ('county', 'Bucks', 'yes'),
+    ('county', 'Burlington', ''),
+    ('county', 'Burlington', 'yes'),
+    ('county', 'Camden', ''),
+    ('county', 'Camden', 'yes'),
+    ('county', 'Chester', ''),
+    ('county', 'Chester', 'yes'),
+    ('county', 'Delaware', ''),
+    ('county', 'Delaware', 'yes'),
+    ('county', 'Gloucester', ''),
+    ('county', 'Gloucester', 'yes'),
+    ('county', 'Mercer', ''),
+    ('county', 'Mercer', 'yes'),
+    ('county', 'Montgomery', ''),
+    ('county', 'Montgomery', 'yes'),
+    ('county', 'Philadelphia', ''),
+    ('county', 'Philadelphia', 'yes'),
+    ('municipality', 'West', ''),
+    ('municipality', 'West', 'yes'),
+])
+def test_summed_collision_types_equals_total_crashes(client, type, value, ksi_only):
+    response = client.get(
+        endpoint,
+        query_string={'type': type, 'value': value, 'ksi_only': ksi_only}
+    )
+    data = response.get_json()
+    yr_17_sum_collisions = sum([value for value in data['2017']['type'].values()])
+    yr_18_sum_collisions = sum([value for value in data['2018']['type'].values()])
+    assert yr_17_sum_collisions == data['2017']['total_crashes']
+    assert yr_18_sum_collisions == data['2018']['total_crashes']
+
+
 #######################################
 # COMPARING NUMBERS TO DATA NAVIGATOR #
 #######################################
@@ -127,7 +165,7 @@ def test_county_numbers1(client):
     y_18 = data['2018']
 
     total_injured_18 = (
-        y_18['severity']['major'] + 
+        y_18['severity']['major'] +
         y_18['severity']['moderate'] + 
         y_18['severity']['minor']
     )
@@ -137,10 +175,12 @@ def test_county_numbers1(client):
         y_17['severity']['moderate'] + 
         y_17['severity']['minor']
     )
+    assert y_17['total_crashes'] == 11825  # Data Navigator has incorrect number - 11924
     assert y_17['severity']['fatal'] == 51  # Data Navigator has incorrect number - 52
     assert y_17['mode']['bike'] == 57  # Data Nav has incorrect number - 56
     assert y_17['mode']['ped'] == 100  # Data Nav has 104
     assert total_injured_17 == 4139  # Data Nav has 4084
+    assert y_18['total_crashes'] == 12237
     assert y_18['severity']['fatal'] == 43
     assert y_18['mode']['bike'] == 59
     assert y_18['mode']['ped'] == 107
@@ -155,6 +195,6 @@ def test_county_numbers2(client):
     data = response.get_json()
     y_17 = data['2017']
     y_18 = data['2018']
-    print(y_18['type'])
+    print(data)
     assert False
 
