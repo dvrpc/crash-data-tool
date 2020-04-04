@@ -1,7 +1,7 @@
 openapi: "3.0.0"
 info: 
   version: 1.0.0
-  title: DVPRC Crash Data API
+  title: DVRPC Crash Data API
 servers:
   - url: https://alpha.dvrpc.org/api/crash-data/v1
 paths:
