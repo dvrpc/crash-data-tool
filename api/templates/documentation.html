@@ -1,0 +1,76 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+<body>
+
+  <header>
+    <img src="/static/dvrpclogo70px.png" style="float:left">
+    <h1>{{ spec.info.title }}</h1>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="#intro">Introduction</a></li>
+      {% for path in spec.paths %}
+        <li><a href="#{{path}}">{{ path }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+  <main>
+    <h2><a id="intro"></a>Introduction</h2>
+    <p>Base URL: {{ spec.servers[0].url }}</p>
+    <p>This API provides access to DVRPC's crash database used in the webapp located <b>here</b>. Available endpoints are documented below. Each is accessible to the public by combining the base url ({{ spec.servers[0].url }}) with an endpoint, e.g. {{spec.servers[0].url}}/summary 
+
+    {% for each in spec.paths %}
+      <div class="endpoint">
+        <h2 class="endpoint_name endpoint_name_get">
+          <a id="{{ each }}"></a>
+          <span class="method_name method_name_get">GET</span>
+          {{ each }} 
+        </h2>
+
+        <h3>Parameters</h3>        
+        <table>
+          <th>Name</th><th>Type</th><th>Required?</th><th>Description</th>
+          {% for param in spec.paths[each]['get'].parameters %}
+            <tr>
+              <td>{{param.name}}</td>
+              <td>{{param.in}}</td>
+              <td>{{param.required}}</td>
+              <td>
+                {{param.description}}
+                {% if param.schema %}
+                  {% if param.schema['enum'] %}
+                    Accepted values are:
+                    {% for value in param.schema['enum'] %}
+                      <span class="code">{{value}}</span>
+                    {% endfor %}
+                  {% endif %}
+                {% endif %}
+               </td>
+            </tr>
+          {% endfor %}
+        </table>
+
+        <h3>Responses</h3>
+          {% for response in spec.paths[each]['get'].responses %}
+            <b>{{response}}</b>
+            {% if response == '200' %}
+              {{spec.paths[each]['get'].responses['200'].description}}
+              {% if spec.paths[each]['get'].responses['200'].content %}
+                <br>
+                {{ spec.paths[each]['get'].responses['200'].content['application/json']['schema']['properties']}}
+              {% endif %}
+            {% elif response == '400' %}
+              {{spec.paths[each]['get'].responses['400'].description}}
+            {% elif response == '404' %}
+              {{spec.paths[each]['get'].responses['404'].description}}
+            {% endif %}
+            <br>
+          {% endfor %}
+      </div>
+    {% endfor %}
+  </main>  
+</body>
+</html>

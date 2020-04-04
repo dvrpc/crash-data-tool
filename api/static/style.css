@@ -1,0 +1,99 @@
+html {
+  font-size: 18px;
+  font-family: 'Open Sans', sans-serif;
+}
+body {
+  margin: 0 auto;
+  background-color: hsl(0, 0%, 97%);
+  color: hsl(0, 0%, 10%);
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: 'header header' 'nav main';
+  height: 100vh;
+}
+header {
+  grid-area: header;
+  padding: 15px 25px 10px 25px;
+  text-align: center;
+  border-bottom: 2px solid hsl(0, 0%, 25%);
+}
+nav {
+  grid-area: nav;
+  background: hsl(0, 0%, 50%);
+  padding: 25px;
+  border-right: 2px solid hsl(0, 0%, 25%);
+}
+nav ul {
+  list-style-type: none;
+}
+nav li {
+  padding-bottom: 15px;
+}
+nav a:link,
+nav a:visited {
+  text-decoration: none;
+  color: hsl(0, 0%, 5%);
+}
+nav a:hover {
+  text-decoration: underline;
+}
+main {
+  grid-area: main;
+  padding: 0 25px 25px 25px;
+}
+h1 {
+  font-size: 1.75rem;
+}
+h2 {
+  font-size: 1.2rem;
+}
+h3 {
+  font-size: 1rem;
+  font-weight: bold;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+table th {
+  background: hsl(0, 0%, 80%);
+  height: 2rem;
+}
+table th {
+  padding: 15px;
+}
+table td {
+  padding: 10px;
+}
+table,
+td,
+th {
+  border: 1px solid hsl(0, 0%, 25%);
+}
+.code {
+  background: hsl(0, 0%, 85%);
+  color: #E12B63;
+  border-radius: 5px;
+}
+.endpoint {
+  margin-top: 50px;
+}
+.endpoint_name {
+  padding: 10px;
+  border-radius: 5px;
+}
+.endpoint_name_get {
+  color: hsl(208, 100%, 54%);
+  background: hsl(208, 100%, 90%);
+}
+.method_name {
+  border-radius: 5px;
+  padding: 2px 10px 2px 10px;
+  font-size: 1rem;
+  font-weight: normal;
+}
+.method_name_get {
+  background-color: hsl(208, 100%, 54%);
+  color: hsl(0, 0%, 10%);
+}

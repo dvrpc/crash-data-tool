@@ -1,0 +1,178 @@
+openapi: "3.0.0"
+info: 
+  version: 1.0.0
+  title: DVPRC Crash Data API
+servers:
+  - url: https://alpha.dvrpc.org/api/crash-data/v1
+paths:
+  /crashes/{id}:
+    get:
+      summary: Return information on crash by id.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Crash id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  month:
+                    type: string
+                    example: January
+                  year:
+                    type: integer
+                    example: 2017
+                  vehicle_count:
+                    type: integer
+                    example: 2
+                  bicycle_count:
+                    type: integer
+                    example: 1
+                  bicycle_fatalities:
+                    type: integer
+                    example: 0
+                  ped_count:
+                    type: integer
+                    example: 1
+                  ped_fatalities:
+                    type: integer
+                    example: 1
+                  vehicle_occupants:
+                    type: integer
+                    example: 3
+                  collision_type:
+                    type: string
+                    example: Hit pedestrian
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+            
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Crash not found
+  /summary:
+    get:
+      summary: Return summary of crashes by year
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum:
+              - state
+              - county
+              - municipality
+              - geojson
+              - geoid
+          required: false
+          description: Type of geographic area being requested. Required if `value` is also sent.
+        - name: value
+          in: query
+          schema:
+            type: string
+          required: false
+          description: The value of the type. Required if `type` is also sent.
+          example: "Montgomery"
+        - name: ksi_only
+          in: query
+          schema:
+            type: string
+            example: "yes"
+          required: false
+          description: Set to "yes" to return information on crashes with fatalities or majori injuries only. 
+      responses:
+        '200': 
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_crashes:
+                    type: integer
+                  severity:
+                    type: object
+                    properties:
+                      fatal:
+                        type: integer
+                      major:
+                        type: integer 
+                      moderate:
+                        type: integer
+                      minor:
+                        type: integer
+                      unknown:
+                        type: integer
+                      uninjured:
+                        type: integer
+                  mode:
+                    type: object
+                    properties:
+                      bike:
+                        type: integer
+                      ped:
+                        type: integer
+                      vehicle_occupants:
+                        type: integer
+                  type:
+                    type: object
+        '400': 
+          description: Bad Request
+        '404': 
+          description: Not Found
+  /crash-ids:
+    get:
+      summary: Get ids of crashes according to parameters.
+      parameters:
+        - name: geojson
+          in: query
+          required: true
+          description: Geojson object
+          schema:
+            type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+            
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

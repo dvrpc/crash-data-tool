@@ -7,9 +7,10 @@
 
 import calendar
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import psycopg2 
+import yaml
 
 from config import PSQL_CREDS
 
@@ -24,30 +25,15 @@ def get_db_cursor():
 
 @app.route('/api/crash-data/v1/documentation')
 def docs():
-    """
-    @TODO: Most of this. 
-    """
+    '''Documentation for the API'''
+    with open("openapi.yaml", 'r') as stream:
+        spec = yaml.safe_load(stream)
 
-    return '''
-        <html>
-            <ul>
-                <li>"api/crash-data/v1/crashes/id"</li>
-                    <ul>
-                        <li>path parameter "id" required</li>
-                    </ul>
-                <li>"api/crash-data/v1/summary"</li>
-                    <ul>
-                        <li>Optional parameters "type", "value", and "ksi_only". If one of "type"
-                            or "value" is included, the other has to be included as well. Set
-                            "ksi_only" = "yes" to receive KSI crashes.</li>
-                    </ul>
-                <li>"api/crash-data/v1/crash-ids"</li>
-                    <ul>
-                        <li>"geojson" query parameter required</li>
-                    </ul>
-            </ul>
-        </html>
-    '''
+    print(spec)
+    # print(spec['paths'])
+    for path in spec['paths']:
+        print(spec['paths'][path]['get']['responses'])
+    return render_template('documentation.html', spec=spec)
 
 
 @app.route('/api/crash-data/v1/crashes/<id>', methods=['GET'])
