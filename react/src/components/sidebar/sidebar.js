@@ -84,6 +84,11 @@ class Sidebar extends Component {
             const countyCheck = nameTest.pop()
             let isCounty = countyCheck === 'County' ? true : false
 
+            // @UPDATE: this needs some work depending on how the API update ends up. 
+                // Import the muni/county lookup tables from dropdown.js
+                // use context to lookup the geoid
+                    // IF all the API needs is geoid and type doesn't matter anymore, that's it
+                    // IF the API still needs type (county/muni) then figure something else out because the "Duplicate (X Co)" won't work here
             let name;
             let type;
             const bbox = this.props.polygonBbox
