@@ -20,7 +20,8 @@ def test_error_if_argument_not_in_parameter_list(client):
 @pytest.mark.parametrize('area,value', [
     ('state', 'CA'),
     ('county', 'Allegheny'),
-    ('municipality', 'Erie City')
+    ('municipality', 'Erie City'),
+    ('geoid', 5454554)
 ])
 def test_unknown_values_return_404(client, area, value):
     response = client.get(endpoint, query_string={area: value})
@@ -54,6 +55,16 @@ def test_unknown_values_return_404(client, area, value):
     ('municipality', 'West', 'yes'),
     ('municipality', 'Mount Laurel Township', 'no'),
     ('municipality', 'Mount Laurel Township', 'yes'),
+    ('geoid', '42', 'no'),
+    ('geoid', '34', 'yes'),
+    ('geoid', '42017', 'no'),
+    ('geoid', '42017', 'yes'),
+    ('geoid', '42029', 'yes'),
+    ('geoid', '42029', 'no'),
+    ('geoid', '34015', 'yes'),
+    ('geoid', '34015', 'no'),
+    ('geoid', '34007', 'yes'),
+    ('geoid', '34007', 'no'),
 ])
 def test_minimal_success_by_type_and_ksi(client, area, value, ksi_only):
     response = client.get(endpoint, query_string={area: value, 'ksi_only': ksi_only})
@@ -131,6 +142,14 @@ def test_KSI_only1(client, area, value):
     ('county', 'Philadelphia', 'yes'),
     ('municipality', 'West', ''),
     ('municipality', 'West', 'yes'),
+    ('geoid', '42045', 'no'),
+    ('geoid', '42045', 'yes'),
+    ('geoid', '42091', 'no'),
+    ('geoid', '42091', 'yes'),
+    ('geoid', '34005', 'no'),
+    ('geoid', '34005', 'yes'),
+    ('geoid', '34021', 'no'),
+    ('geoid', '34021', 'yes'),
 ])
 def test_summed_collision_types_equals_total_crashes(client, area, value, ksi_only):
     response = client.get(endpoint, query_string={area: value, 'ksi_only': ksi_only})
@@ -141,12 +160,12 @@ def test_summed_collision_types_equals_total_crashes(client, area, value, ksi_on
     assert yr_18_sum_collisions == data['2018']['total_crashes']
 
 
-#######################################
-# COMPARING NUMBERS TO DATA NAVIGATOR #
-#######################################
+###################
+# COMPARING TO DB # 
+###################
 
 
-def test_county_numbers1(client):
+def test_data_Burlington(client):
     response = client.get(endpoint, query_string={'county': 'Burlington'})
     data = response.get_json()
     y_17 = data['2017']
@@ -163,11 +182,11 @@ def test_county_numbers1(client):
         y_17['severity']['moderate'] + 
         y_17['severity']['minor']
     )
-    assert y_17['total_crashes'] == 11825  # Data Navigator has incorrect number - 11924
-    assert y_17['severity']['fatal'] == 51  # Data Navigator has incorrect number - 52
-    assert y_17['mode']['bike'] == 57  # Data Nav has incorrect number - 56
-    assert y_17['mode']['ped'] == 100  # Data Nav has 104
-    assert total_injured_17 == 4139  # Data Nav has 4084
+    assert y_17['total_crashes'] == 11825  
+    assert y_17['severity']['fatal'] == 51  
+    assert y_17['mode']['bike'] == 57  
+    assert y_17['mode']['ped'] == 100  
+    assert total_injured_17 == 4139  
     assert y_18['total_crashes'] == 12237
     assert y_18['severity']['fatal'] == 43
     assert y_18['mode']['bike'] == 59
@@ -175,11 +194,121 @@ def test_county_numbers1(client):
     assert total_injured_18 == 3883
 
 
-def test_county_numbers2(client):
-    response = client.get(endpoint, query_string={'county': 'Burlington'})
+def test_data_Camden(client):
+    response = client.get(endpoint, query_string={'county': 'Camden'})
     data = response.get_json()
     y_17 = data['2017']
     y_18 = data['2018']
-    print(data)
-    assert False
+
+    total_injured_18 = (
+        y_18['severity']['major'] +
+        y_18['severity']['moderate'] + 
+        y_18['severity']['minor']
+    )
+
+    total_injured_17 = (
+        y_17['severity']['major'] + 
+        y_17['severity']['moderate'] + 
+        y_17['severity']['minor']
+    )
+    assert y_17['total_crashes'] == 15179
+    assert y_17['severity']['fatal'] == 47 
+    assert y_17['mode']['bike'] == 109 
+    assert y_17['mode']['ped'] == 268 
+    assert total_injured_17 == 5623 
+    assert y_18['total_crashes'] == 15758
+    assert y_18['severity']['fatal'] == 49
+    assert y_18['mode']['bike'] == 122
+    assert y_18['mode']['ped'] == 260
+    assert total_injured_18 == 5763
+
+
+def test_data_Gloucester(client):
+    response = client.get(endpoint, query_string={'county': 'Gloucester'})
+    data = response.get_json()
+    y_17 = data['2017']
+    y_18 = data['2018']
+
+    total_injured_18 = (
+        y_18['severity']['major'] +
+        y_18['severity']['moderate'] + 
+        y_18['severity']['minor']
+    )
+
+    total_injured_17 = (
+        y_17['severity']['major'] + 
+        y_17['severity']['moderate'] + 
+        y_17['severity']['minor']
+    )
+    assert y_17['total_crashes'] == 7517
+    assert y_17['severity']['fatal'] == 46 
+    assert y_17['mode']['bike'] == 34 
+    assert y_17['mode']['ped'] == 61 
+    assert total_injured_17 == 2635 
+    assert y_18['total_crashes'] == 7715
+    assert y_18['severity']['fatal'] == 40
+    assert y_18['mode']['bike'] == 39
+    assert y_18['mode']['ped'] == 65
+    assert total_injured_18 == 2538
+
+
+def test_data_PA(client):
+    response = client.get(endpoint, query_string={'state': 'pa'})
+    data = response.get_json()
+    y_14 = data['2014']
+    y_15 = data['2015']
+    y_16 = data['2016']
+    y_17 = data['2017']
+    y_18 = data['2018']
+
+    total_injured_18 = (
+        y_18['severity']['major'] +
+        y_18['severity']['moderate'] + 
+        y_18['severity']['minor']
+    )
+    total_injured_17 = (
+        y_17['severity']['major'] + 
+        y_17['severity']['moderate'] + 
+        y_17['severity']['minor']
+    )
+    total_injured_16 = (
+        y_16['severity']['major'] + 
+        y_16['severity']['moderate'] + 
+        y_16['severity']['minor']
+    )
+    total_injured_15 = (
+        y_15['severity']['major'] + 
+        y_15['severity']['moderate'] + 
+        y_15['severity']['minor']
+    )
+    total_injured_14 = (
+        y_14['severity']['major'] + 
+        y_17['severity']['moderate'] + 
+        y_14['severity']['minor']
+    )
+    assert y_14['total_crashes'] == 
+    assert y_14['severity']['fatal'] == 
+    assert y_14['mode']['bike'] == 
+    assert y_14['mode']['ped'] == 
+    assert total_injured_14 == 
+    assert y_15['total_crashes'] == 
+    assert y_15['severity']['fatal'] == 
+    assert y_15['mode']['bike'] == 
+    assert y_15['mode']['ped'] == 
+    assert total_injured_15 == 
+    assert y_16['total_crashes'] == 
+    assert y_16['severity']['fatal'] == 
+    assert y_16['mode']['bike'] == 
+    assert y_16['mode']['ped'] == 
+    assert total_injured_16 == 
+    assert y_17['total_crashes'] == 
+    assert y_17['severity']['fatal'] == 
+    assert y_17['mode']['bike'] == 
+    assert y_17['mode']['ped'] == 
+    assert total_injured_17 == 
+    assert y_18['total_crashes'] == 
+    assert y_18['severity']['fatal'] == 
+    assert y_18['mode']['bike'] == 
+    assert y_18['mode']['ped'] == 
+    assert total_injured_18 == 
 

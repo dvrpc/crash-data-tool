@@ -29,10 +29,6 @@ def docs():
     with open("openapi.yaml", 'r') as stream:
         spec = yaml.safe_load(stream)
 
-    print(spec)
-    # print(spec['paths'])
-    for path in spec['paths']:
-        print(spec['paths'][path]['get']['responses'])
     return render_template('documentation.html', spec=spec)
 
 
@@ -136,8 +132,8 @@ def get_summary():
     sub_clauses = []  # the individual "x = y" clauses
     values = []  # list of values that will be in the WHERE clause when executed
 
-    # state, county, and municipality can be chained together in the same query
     if state or county or municipality:
+        # state, county, and municipality can be chained together in the same query
         if state:
             sub_clauses.append("state = %s")
             values.append(state)
@@ -149,7 +145,7 @@ def get_summary():
             values.append(municipality)
     elif geoid:
         # get the name and area type for this geoid
-        cursor.execute("SELECT name, area_type from geoid where geoid = %s", [geoid])
+        cursor.execute("SELECT area_type, name from geoid where geoid = %s", [geoid])
         result = cursor.fetchone()
         if not result:
             return jsonify({"message": "No location found with the provide geoid"}), 404
