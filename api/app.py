@@ -91,29 +91,17 @@ def get_summary():
     '''    
 
     keys = list(request.args)
-    area_type = request.args.get('type')
-    value = request.args.get('value')
-    ksi_only = request.args.get('ksi_only') 
 
-    # if one of "type" or "value" included, the other has to be as well
-    if (area_type and not value) or (value and not area_type):
-        return jsonify(
-            {'message': 'If either *type* or *value* is included in request, both are required'}
-        ), 400
-
-    if area_type:
-        area_type = area_type.lower()
-        if area_type not in ['county', 'municipality', 'geojson', 'state']:
-            return jsonify(
-                {'message': '*type* must be one of *county*, *municipality*, *state*, or *geojson*'}
-            ), 400
-
-    # be extra helpful to user - just checks spelling of ksi_only at this point
     for key in keys:
-        if key not in ['type', 'value', 'state', 'ksi_only']:
-            return jsonify(
-                {'message': 'Query parameter *{}* not recognized'.format(key)}
-            ), 400
+        if key not in ['state', 'county', 'municipality', 'geoid', 'geojson', 'ksi_only']:
+            return jsonify({'message': f'Query parameter *{key}* not recognized'}), 400
+
+    state = request.args.get('state')
+    county = request.args.get('county')
+    municipality = request.args.get('municipality')
+    geoid = request.args.get('geoid')
+    geojson = request.args.get('geojson')
+    ksi_only = request.args.get('ksi_only')
 
     # build query incrementally, to add possible WHERE clauses before GROUP BY and 
     # to easily pass value parameter to execute in order to prevent SQL injection 
@@ -141,34 +129,53 @@ def get_summary():
         FROM crash
     """
 
-    if area_type == 'county':
-        severity_and_mode_query += " WHERE county = %s"
-        collision_type_query += " WHERE county = %s"
-    elif area_type == 'municipality':
-        severity_and_mode_query += " WHERE municipality = %s"
-        collision_type_query += " WHERE municipality = %s"
-    elif area_type == 'state':
-        severity_and_mode_query += " WHERE state = %s"
-        collision_type_query += " WHERE state = %s"
-    elif area_type == 'geojson':
-        severity_and_mode_query += " WHERE ST_WITHIN(geom,ST_GeomFromGeoJSON(%s))"
-        collision_type_query += " WHERE ST_WITHIN(geom,ST_GeomFromGeoJSON(%s))"
-    
-    if ksi_only == 'yes':
-        if area_type:
-            severity_and_mode_query += " AND (fatality_count > 0 OR maj_inj > 0)"
-            collision_type_query += " AND (fatality_count > 0 OR maj_inj > 0)"
-        else:
-            severity_and_mode_query += " WHERE (fatality_count > 0 OR maj_inj > 0)"
-            collision_type_query += " WHERE (fatality_count > 0 OR maj_inj > 0)"
-
-    severity_and_mode_query += " GROUP BY year"
-    collision_type_query += " GROUP BY year, collision_type"
- 
     cursor = get_db_cursor() 
-   
+    
+    # build the where clause
+
+    sub_clauses = []  # the individual "x = y" clauses
+    values = []  # list of values that will be in the WHERE clause when executed
+
+    # state, county, and municipality can be chained together in the same query
+    if state or county or municipality:
+        if state:
+            sub_clauses.append("state = %s")
+            values.append(state)
+        if county:
+            sub_clauses.append("county = %s")
+            values.append(county)
+        if municipality:
+            sub_clauses.append("municipality = %s")
+            values.append(municipality)
+    elif geoid:
+        # get the name and area type for this geoid
+        cursor.execute("SELECT name, area_type from geoid where geoid = %s", [geoid])
+        result = cursor.fetchone()
+        if not result:
+            return jsonify({"message": "No location found with the provide geoid"}), 404
+        # now set up where clause
+        sub_clauses.append(f"{result[0]} = %s")
+        values.append(result[1])
+    elif geojson:
+        sub_clauses.append("ST_WITHIN(geom,ST_GeomFromGeoJSON(%s))")
+        values.append(geojson)
+            
+    if ksi_only == 'yes':
+        sub_clauses.append("(fatality_count > 0 OR maj_inj > 0)")
+
+    # put the where clauses together
+    if len(sub_clauses) == 0:
+        where = ''
+    elif len(sub_clauses) == 1:
+        where = ' WHERE ' + sub_clauses[0]
+    else:
+        where = ' WHERE ' + ' AND '.join(sub_clauses)
+
+    severity_and_mode_query += where + " GROUP BY year"
+    collision_type_query += where + " GROUP BY year, collision_type"
+    
     try:
-        cursor.execute(severity_and_mode_query, [value])
+        cursor.execute(severity_and_mode_query, values)
     except psycopg2.Error as e:
         return jsonify({'message': 'Database error: ' + str(e)}), 400
     
@@ -200,7 +207,7 @@ def get_summary():
 
     # now get numbers/types of collisions per year and add to summary
     
-    collision_type_query = cursor.execute(collision_type_query, [value])
+    collision_type_query = cursor.execute(collision_type_query, values)
     result = cursor.fetchall()
 
     collisions_by_year = {}

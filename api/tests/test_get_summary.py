@@ -15,44 +15,28 @@ def test_error_on_unknown_params(client):
     assert response.status_code == 400
 
 
-def test_error_if_type_included_but_not_value(client):
+def test_error_if_argument_not_in_parameter_list(client):
     response = client.get(
         endpoint,
-        query_string={'type': 'county'},
+        query_string={'city': 'Philadelphia'}
     )
     assert response.status_code == 400
 
 
-def test_error_if_value_included_but_not_type(client):
-    response = client.get(
-        endpoint,
-        query_string={'value': 'Montgomery'},
-    )
-    assert response.status_code == 400
-
-
-def test_error_if_type_arg_not_in_required_list(client):
-    response = client.get(
-        endpoint,
-        query_string={'type': 'not_in_the_list', 'value': 'Montgomery'}
-    )
-    assert response.status_code == 400
-
-
-@pytest.mark.parametrize('type,value', [
+@pytest.mark.parametrize('area,value', [
     ('state', 'CA'),
     ('county', 'Allegheny'),
     ('municipality', 'Erie City')
 ])
-def test_unknown_values_return_404(client, type, value):
+def test_unknown_values_return_404(client, area, value):
     response = client.get(
         endpoint,
-        query_string={'type': type, 'value': value}
+        query_string={area: value}
     )
     assert response.status_code == 404
 
 
-@pytest.mark.parametrize('type,value,ksi_only', [
+@pytest.mark.parametrize('area,value,ksi_only', [
     ('state', 'pa', 'no'),
     ('state', 'pa', 'yes'),
     ('state', 'nj', 'no'),
@@ -80,20 +64,17 @@ def test_unknown_values_return_404(client, type, value):
     ('municipality', 'Mount Laurel Township', 'no'),
     ('municipality', 'Mount Laurel Township', 'yes'),
 ])
-def test_minimal_success_by_type_and_ksi(client, type, value, ksi_only):
+def test_minimal_success_by_type_and_ksi(client, area, value, ksi_only):
     response = client.get(
         endpoint,
-        query_string={'type': type, 'value': value, 'ksi_only': ksi_only}
+        query_string={area: value, 'ksi_only': ksi_only}
     )
     assert response.status_code == 200
 
 
 @pytest.mark.parametrize('ksi_only', ['yes', 'no'])
 def test_region_ksi_and_not_ksi_success(client, ksi_only):
-    response = client.get(
-        endpoint,
-        query_string={'ksi_only': ksi_only}
-    )
+    response = client.get(endpoint, query_string={'ksi_only': ksi_only})
     assert response.status_code == 200
 
 
@@ -105,12 +86,12 @@ def test_double_spacing(client, value):
     '''
     response = client.get(
         endpoint,
-        query_string={'type': 'municipality', 'value': value}
+        query_string={'municipality': value}
     )
     assert response.status_code == 200
 
 
-@pytest.mark.parametrize('type,value', [
+@pytest.mark.parametrize('area,value', [
     ('municipality', 'Abington Township'),
     ('municipality', 'Aldan Borough'),
     ('municipality', 'Ambler Borough'),
@@ -123,19 +104,12 @@ def test_double_spacing(client, value):
     ('municipality', 'Upper North'),
     ('municipality', 'West Goshen Township'),
 ])
-def test_KSI_only1(client, type, value):
+def test_KSI_only1(client, area, value):
     '''
     If requesting KSI crashes only, every year/severity should always have either a fatal or 
     major value. 
     '''
-    response = client.get(
-        endpoint,
-        query_string={
-            'type': type, 
-            'value': value,
-            'ksi_only': 'yes'
-        }
-    )
+    response = client.get(endpoint, query_string={area: value, 'ksi_only': 'yes'})
     data = response.get_json()
     fatal_and_major_values = []
     for k, v in data.items():
@@ -147,7 +121,7 @@ def test_KSI_only1(client, type, value):
     assert all([any(value_set) for value_set in fatal_and_major_values])
 
 
-@pytest.mark.parametrize('type,value,ksi_only', [
+@pytest.mark.parametrize('area,value,ksi_only', [
     ('state', 'pa', ''),
     ('state', 'pa', 'yes'),
     ('state', 'nj', ''),
@@ -173,12 +147,10 @@ def test_KSI_only1(client, type, value):
     ('municipality', 'West', ''),
     ('municipality', 'West', 'yes'),
 ])
-def test_summed_collision_types_equals_total_crashes(client, type, value, ksi_only):
-    response = client.get(
-        endpoint,
-        query_string={'type': type, 'value': value, 'ksi_only': ksi_only}
-    )
+def test_summed_collision_types_equals_total_crashes(client, area, value, ksi_only):
+    response = client.get(endpoint, query_string={area: value, 'ksi_only': ksi_only})
     data = response.get_json()
+    print(data)
     yr_17_sum_collisions = sum([value for value in data['2017']['type'].values()])
     yr_18_sum_collisions = sum([value for value in data['2018']['type'].values()])
     assert yr_17_sum_collisions == data['2017']['total_crashes']
@@ -191,10 +163,7 @@ def test_summed_collision_types_equals_total_crashes(client, type, value, ksi_on
 
 
 def test_county_numbers1(client):
-    response = client.get(
-        endpoint,
-        query_string={'type': 'county', 'value': 'Burlington'},
-    )
+    response = client.get(endpoint, query_string={'county': 'Burlington'})
     data = response.get_json()
     y_17 = data['2017']
     y_18 = data['2018']
@@ -223,10 +192,7 @@ def test_county_numbers1(client):
 
 
 def test_county_numbers2(client):
-    response = client.get(
-        endpoint,
-        query_string={'type': 'county', 'value': 'Burlington'}
-    )
+    response = client.get(endpoint, query_string={'county': 'Burlington'})
     data = response.get_json()
     y_17 = data['2017']
     y_18 = data['2018']
