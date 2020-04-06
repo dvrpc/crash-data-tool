@@ -8,18 +8,12 @@ endpoint = '/api/crash-data/v1/summary'
 
 
 def test_error_on_unknown_params(client):
-    response = client.get(
-        endpoint,
-        query_string={'one': '1'},
-    )
+    response = client.get(endpoint, query_string={'one': '1'})
     assert response.status_code == 400
 
 
 def test_error_if_argument_not_in_parameter_list(client):
-    response = client.get(
-        endpoint,
-        query_string={'city': 'Philadelphia'}
-    )
+    response = client.get(endpoint, query_string={'city': 'Philadelphia'})
     assert response.status_code == 400
 
 
@@ -29,10 +23,7 @@ def test_error_if_argument_not_in_parameter_list(client):
     ('municipality', 'Erie City')
 ])
 def test_unknown_values_return_404(client, area, value):
-    response = client.get(
-        endpoint,
-        query_string={area: value}
-    )
+    response = client.get(endpoint, query_string={area: value})
     assert response.status_code == 404
 
 
@@ -65,10 +56,7 @@ def test_unknown_values_return_404(client, area, value):
     ('municipality', 'Mount Laurel Township', 'yes'),
 ])
 def test_minimal_success_by_type_and_ksi(client, area, value, ksi_only):
-    response = client.get(
-        endpoint,
-        query_string={area: value, 'ksi_only': ksi_only}
-    )
+    response = client.get(endpoint, query_string={area: value, 'ksi_only': ksi_only})
     assert response.status_code == 200
 
 
@@ -84,10 +72,7 @@ def test_double_spacing(client, value):
     Test that double-spacing error is fixed (some municipalities and counties had two spaces
     between words rather than one).
     '''
-    response = client.get(
-        endpoint,
-        query_string={'municipality': value}
-    )
+    response = client.get(endpoint, query_string={'municipality': value})
     assert response.status_code == 200
 
 
@@ -150,7 +135,6 @@ def test_KSI_only1(client, area, value):
 def test_summed_collision_types_equals_total_crashes(client, area, value, ksi_only):
     response = client.get(endpoint, query_string={area: value, 'ksi_only': ksi_only})
     data = response.get_json()
-    print(data)
     yr_17_sum_collisions = sum([value for value in data['2017']['type'].values()])
     yr_18_sum_collisions = sum([value for value in data['2018']['type'].values()])
     assert yr_17_sum_collisions == data['2017']['total_crashes']
