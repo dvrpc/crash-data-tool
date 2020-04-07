@@ -43,12 +43,12 @@ def get_crash(id):
         SELECT
             month,
             year,
-            vehicle_count,
-            bicycle_count,
-            bicycle_fatalities,
-            ped_count,
+            vehicles,
+            bicyclists,
+            bike_fatalities,
+            pedestrians,
             ped_fatalities,
-            person_count,
+            persons,
             collision_type
         FROM crash
         WHERE id = %s 
@@ -104,15 +104,16 @@ def get_summary():
     severity_and_mode_query = """
         SELECT 
             year,
-            SUM(fatality_count),
+            SUM(fatalities),
             SUM(maj_inj),
             SUM(mod_inj),
             SUM(min_inj),
             SUM(unk_inj),
-            SUM(uninjured_count),
-            SUM(bicycle_count),
-            SUM(ped_count),
-            SUM(person_count),
+            SUM(uninjured),
+            SUM(unknown),
+            SUM(bicyclists),
+            SUM(pedestrians),
+            SUM(persons),
             count(id)
         FROM crash
     """
@@ -157,7 +158,7 @@ def get_summary():
         values.append(geojson)
             
     if ksi_only == 'yes':
-        sub_clauses.append("(fatality_count > 0 OR maj_inj > 0)")
+        sub_clauses.append("(fatalities > 0 OR maj_inj > 0)")
 
     # put the where clauses together
     if len(sub_clauses) == 0:
@@ -184,19 +185,20 @@ def get_summary():
 
     for row in result:
         summary[str(row[0])] = {
-            'total_crashes': row[10],
+            'total crashes': row[11],
             'severity': {
                 'fatal': row[1],
                 'major': row[2],
                 'moderate': row[3],
                 'minor': row[4],
-                'unknown': row[5],
+                'unknown severity': row[5],
                 'uninjured': row[6],
+                'unknown if injured': row[7]
             },
             'mode': {
-                'bike': row[7],
-                'ped': row[8],
-                'vehicle_occupants': row[9] - row[8] - row[7]
+                'bike': row[8],
+                'ped': row[9],
+                'vehicle occupants': row[10] - row[9] - row[8]
             },
             'type': {},
         } 

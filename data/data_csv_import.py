@@ -91,8 +91,103 @@ with open('PA_MCDlist.txt', newline='') as csvfile:
     reader = csv.reader(csvfile, delimiter=',')
     next(reader)  # skip header
     for row in reader:
-        lookup_pa['muni'][str(row[0])] = row[1]
+        # Birmingham Township in Delaware County was renamed to Chadds Ford Township in 1996, but
+        # PennDot still calls it b-ham. Change this in the lookup so the new name gets added 
+        # to the data table below
+        if row[0] == '23202':
+            lookup_pa['muni'][row[0]] = 'Chadds Ford Township'
+        else:
+            lookup_pa['muni'][row[0]] = row[1]
 
+"""
+0 CRN
+1 DISTRICT
+2 COUNTY
+3 MUNICIPALITY
+4 POLICE_AGCY
+5 CRASH_YEAR
+6 CRASH_MONTH
+7 DAY_OF_WEEK
+8 TIME_OF_DAY
+9 HOUR_OF_DAY
+10 ILLUMINATION
+11 WEATHER
+12 ROAD_CONDITION
+13 COLLISION_TYPE
+14 RELATION_TO_ROAD
+15 INTERSECT_TYPE
+16 TCD_TYPE
+17 URBAN_RURAL
+18 LOCATION_TYPE
+19 SCH_BUS_IND
+20 SCH_ZONE_IND
+21 TOTAL_UNITS
+22 PERSON_COUNT
+23 VEHICLE_COUNT
+24 AUTOMOBILE_COUNT
+25 MOTORCYCLE_COUNT
+26 BUS_COUNT
+27 SMALL_TRUCK_COUNT
+28 HEAVY_TRUCK_COUNT
+29 SUV_COUNT
+30 VAN_COUNT
+31 BICYCLE_COUNT
+32 FATAL_COUNT
+33 TOT_INJ_COUNT
+34 MAJ_INJ_COUNT
+35 MOD_INJ_COUNT
+36 MIN_INJ_COUNT
+37 UNK_INJ_DEG_COUNT
+38 UNK_INJ_PER_COUNT
+39 UNBELTED_OCC_COUNT
+40 UNB_DEATH_COUNT
+41 UNB_MAJ_INJ_COUNT
+42 BELTED_DEATH_COUNT
+43 BELTED_MAJ_INJ_COUNT
+44 MCYCLE_DEATH_COUNT
+45 MCYCLE_MAJ_INJ_COUNT
+46 BICYCLE_DEATH_COUNT
+47 BICYCLE_MAJ_INJ_COUNT
+48 PED_COUNT
+49 PED_DEATH_COUNT
+50 PED_MAJ_INJ_COUNT
+51 COMM_VEH_COUNT
+52 MAX_SEVERITY_LEVEL
+53 DRIVER_COUNT_16YR
+54 DRIVER_COUNT_17YR
+55 DRIVER_COUNT_18YR
+56 DRIVER_COUNT_19YR
+57 DRIVER_COUNT_20YR
+58 DRIVER_COUNT_50_64YR
+59 DRIVER_COUNT_65_74YR
+60 DRIVER_COUNT_75PLUS
+61 LATITUDE
+62 LONGITUDE
+63 DEC_LAT
+64 DEC_LONG
+65 ARRIVAL_TM
+66 DISPATCH_TM
+67 EST_HRS_CLOSED
+68 LANE_CLOSED
+69 LN_CLOSE_DIR
+70 NTFY_HIWY_MAINT
+71 RDWY_SURF_TYPE_CD
+72 SPEC_JURIS_CD
+73 TCD_FUNC_CD
+74 TFC_DETOUR_IND
+75 WORK_ZONE_IND
+76 WORK_ZONE_TYPE
+77 WORK_ZONE_LOC
+78 CONS_ZONE_SPD_LIM
+79 WORKERS_PRES
+80 WZ_CLOSE_DETOUR
+81 WZ_FLAGGER
+82 WZ_LAW_OFFCR_IND
+83 WZ_LN_CLOSURE
+84 WZ_MOVING
+85 WZ_OTHER
+86 WZ_SHLDER_MDN
+"""
 # insert PA crash data into db
 with open('PA_CRASH.txt', newline='') as csvfile:
     reader = csv.reader(csvfile, delimiter=',')
@@ -118,14 +213,16 @@ with open('PA_CRASH.txt', newline='') as csvfile:
             INSERT INTO crash (
                 id, state, county, municipality,
                 latitude, longitude, year, month, collision_type,
-                vehicle_count, person_count, bicycle_count, ped_count,
-                fatality_count, injured_count, 
-                uninjured_count, 
+                vehicles, persons, bicyclists, pedestrians,
+                fatalities, injuries, 
+                uninjured,
+                unknown, 
                 maj_inj, mod_inj, min_inj, unk_inj,
-                bicycle_fatalities, ped_fatalities
+                bike_fatalities, ped_fatalities
             )
             VALUES (
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                %s, %s
             )
             """, [
                 row[0], 'pa', lookup_pa['county'][row[2]], lookup_pa['muni'][row[3]], 
@@ -133,7 +230,8 @@ with open('PA_CRASH.txt', newline='') as csvfile:
                 int(row[23]), int(row[22]), int(row[31]), int(row[48]),
                 int(row[32]), int(row[33]), 
                 int(row[22]) - int(row[32]) - int(row[33]) - int(row[38]),
-                int(row[34]), int(row[35]), int(row[36]), int(row[37]) + int(row[38]),
+                int(row[38]),
+                int(row[34]), int(row[35]), int(row[36]), int(row[37]),
                 int(row[46]), int(row[49])
             ]
         )
@@ -224,6 +322,8 @@ with open('NJ_1_Accidents.csv', newline='') as csvfile:
             lon = None
         else:
             lon = -(abs(float(row[46])))
+        
+        unknown = 0 if not row[57] else int(row[57])
 
         # some missing values for TotalPersons
         if not row[53].strip():
@@ -231,35 +331,33 @@ with open('NJ_1_Accidents.csv', newline='') as csvfile:
             uninjured = None
         else:
             person_count = int(row[53])
-            uninjured = person_count - int(row[9]) - int(row[10])
+            uninjured = person_count - int(row[9]) - int(row[10]) - unknown
 
         maj_inj = 0 if not row[54] else int(row[54])
         mod_inj = 0 if not row[55] else int(row[55])
         min_inj = 0 if not row[56] else int(row[56])
-        unk_inj = 0 if not row[57] else int(row[57])
 
         cur.execute("""
             INSERT INTO crash (
                 id, state, county, municipality,
                 latitude, longitude, year, month,
                 collision_type,
-                vehicle_count, person_count,
-                fatality_count, injured_count, 
-                uninjured_count, 
+                vehicles, persons,
+                fatalities, injuries, uninjured, unknown, 
                 maj_inj, mod_inj, min_inj, unk_inj,
-                bicycle_count, bicycle_fatalities, ped_count, ped_fatalities
+                bicyclists, bike_fatalities, pedestrians, ped_fatalities
             )
             VALUES (
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                %s, %s
             )
             """, [
                 row[0], 'nj', row[1].title(), municipality.title(), 
                 lat, lon, row[3].split('/')[2], row[3].split('/')[0], 
                 lookup_nj_collision[row[17]],
                 int(row[18]), person_count,
-                int(row[9]), int(row[10]), 
-                uninjured,
-                maj_inj, mod_inj, min_inj, unk_inj,
+                int(row[9]), int(row[10]), uninjured, unknown,
+                maj_inj, mod_inj, min_inj, 0,
                 0, 0, 0, 0,
             ]
         )
@@ -319,23 +417,23 @@ with open('NJ_4_Pedestrians.txt', newline='') as csvfile:
             ped_fatality = 0
             
         if row[33].strip() == 'Y':  # IsBicyclist
-            bicycle = 1
-            ped = 0
+            bicyclist = 1
+            pedestrian = 0
         else:
-            bicycle = 0
-            ped = 1
+            bicyclist = 0
+            pedestrian = 1
 
         cur.execute("""
             UPDATE crash
             SET 
-                bicycle_count = bicycle_count + %s,
-                ped_count = ped_count + %s,
-                bicycle_fatalities = bicycle_fatalities + %s,
+                bicyclists = bicyclists + %s,
+                pedestrians = pedestrians + %s,
+                bike_fatalities = bike_fatalities + %s,
                 ped_fatalities = ped_fatalities + %s
             WHERE id = %s
             """, [
-                bicycle,
-                ped,
+                bicyclist,
+                pedestrian,
                 bicycle_fatality,
                 ped_fatality,
                 row[0]
