@@ -4,7 +4,7 @@ import pytest
 Testing get_summary()
 '''
 
-endpoint = '/api/crash-data/v1/summary'
+endpoint = '/summary'
 
 
 @pytest.mark.parametrize('area,value', [
@@ -111,7 +111,7 @@ def test_KSI_only1(client, area, value):
 
 
 @pytest.mark.parametrize('area,value,ksi_only', [
-    # ('state', 'pa', 'no'),
+    ('state', 'pa', 'no'),
     ('state', 'pa', 'yes'),
     ('state', 'nj', 'no'),
     ('state', 'nj', 'yes'),

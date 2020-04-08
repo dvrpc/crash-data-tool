@@ -1,6 +1,6 @@
 import pytest
 
-endpoint = '/api/crash-data/v1/crashes/'  # <id>
+endpoint = '/crashes/'  # <id>
 
 
 def test_404_when_id_param_not_provided(client):
@@ -21,6 +21,7 @@ def test_id_success1(client):
 def test_id_data_correct1(client):
     response = client.get(endpoint + '201808052018-34718')
     data = response.json()
+    print(data)
     assert len(data) == 9
     assert data['month'] == 'December'
     assert data['year'] == 2018

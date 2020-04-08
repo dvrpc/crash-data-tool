@@ -72,10 +72,11 @@ def custom_openapi():
         description="Application Programming Interface for the Delaware Valley Regional " 
                     "Planning Commission's data on crashes in the region.",
         routes=app.routes,
+        openapi_prefix='/api/crash-data/v1'
     )
-    openapi_schema["servers"] = [
-        {"url": "https://alpha.dvrpc.org/api/crash-data/v1"}
-    ]
+    # openapi_schema["servers"] = [
+        # {"url": "https://alpha.dvrpc.org/api/crash-data/v1"}
+    # ]
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
@@ -101,7 +102,7 @@ app.add_middleware(
 
 
 @app.get(
-    '/api/crash-data/v1/crashes/{id}', 
+    '/crashes/{id}', 
     response_model=CrashResponse,
     responses=responses,
 )
@@ -150,7 +151,7 @@ def get_crash(id: str):
 
 
 @app.get(
-    '/api/crash-data/v1/summary',
+    '/summary',
     response_model=Dict[str, YearResponse],
     responses=responses,
 )
@@ -313,7 +314,7 @@ def get_summary(
     return summary
 
 
-@app.get('/api/crash-data/v1/crash-ids')
+@app.get('/crash-ids')
 def get_crash_ids(geojson: str):
     '''Get a list of crash ids based on given criteria.'''
 
