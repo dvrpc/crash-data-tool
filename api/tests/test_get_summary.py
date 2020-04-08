@@ -15,7 +15,10 @@ endpoint = '/api/crash-data/v1/summary'
 ])
 def test_unknown_values_return_404(client, area, value):
     response = client.get(endpoint + f'?{area}={value}')
+    data = response.json() 
+    print(data)
     assert response.status_code == 404
+    assert data['message'] == "No information found for given parameters"
 
 
 @pytest.mark.parametrize('area,value,ksi_only', [

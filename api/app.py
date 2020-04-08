@@ -1,21 +1,17 @@
-"""
-@TODO (not listed elsewhere in the code):
-    - create list of possible values for the various area "types" - check against
-    - add try/except for connecting to database
-    - for get_crash(), figure out how to return 400 if <id> not provided
-"""
-
 import calendar
 from typing import Dict
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 import psycopg2 
 
 from config import PSQL_CREDS
 
 
-class crashResponse(BaseModel):
+class CrashResponse(BaseModel):
     month: str
     year: int
     vehicle_count: int
@@ -27,7 +23,7 @@ class crashResponse(BaseModel):
     collision_type: str 
     
 
-class severityResponse(BaseModel):
+class SeverityResponse(BaseModel):
     fatal: int
     major: int
     moderate: int
@@ -37,24 +33,51 @@ class severityResponse(BaseModel):
     unknown_if_injured: int = Field(..., alias="unknown if injured")
 
 
-class modeResponse(BaseModel):
+class ModeResponse(BaseModel):
     bike: int
     ped: int
     vehicle_occupants: int = Field(..., alias="vehicle occupants")
 
 
-class yearResponse(BaseModel):
+class CollisionTypeResponse(BaseModel):
+    non_collision: int = Field(0, alias="Non-collision")
+    rear_end: int = Field(0, alias="Rear-end")
+    head_on: int = Field(0, alias="Head-on")
+    rear_to_rear: int = Field(0, alias="Rear-to-rear (backing)")
+    angle: int = Field(0, alias="Angle")
+    sideswipe_same: int = Field(0, alias="Sideswipe (same direction)")
+    sideswipe_opp: int = Field(0, alias="Sideswipe (opposite direction)")
+    hit_fixed: int = Field(0, alias="Hit fixed object")
+    hit_ped: int = Field(0, alias="Hit pedestrian")
+    other: int = Field(0, alias="Other or unknown")
+
+
+class YearResponse(BaseModel):
     total_crashes: int = Field(..., alias="total crashes")
-    severity: severityResponse
-    mode: modeResponse
-    type: dict
+    severity: SeverityResponse
+    mode: ModeResponse
+    type: CollisionTypeResponse 
 
 
-class summaryResponse(BaseModel):
-    str: yearResponse
+class Message(BaseModel):
+    message: str
 
 
-app = FastAPI(docs_url="/api/crash-data/v1/docs", redoc_url=None)
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="DVRPC Crash Data API",
+        version="1.0",
+        description="Application Programming Interface for the Delaware Valley Regional " 
+                    "Planning Commission's data on crashes in the region.",
+        routes=app.routes,
+    )
+    openapi_schema["servers"] = [
+        {"url": "https://alpha.dvrpc.org/api/crash-data/v1"}
+    ]
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
 
 
 def get_db_cursor():
@@ -62,7 +85,26 @@ def get_db_cursor():
     return connection.cursor()
 
 
-@app.get('/api/crash-data/v1/crashes/{id}', response_model=crashResponse)
+app = FastAPI(docs_url="/api/crash-data/v1/docs", redoc_url=None)
+app.openapi = custom_openapi
+responses = {
+    400: {"model": Message, "description": "Bad Request"},
+    404: {"model": Message, "description": "Not Found"},
+}
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
+
+
+@app.get(
+    '/api/crash-data/v1/crashes/{id}', 
+    response_model=CrashResponse,
+    responses=responses,
+)
 def get_crash(id: str):
     '''Get information about an individual crash.'''
     cursor = get_db_cursor()
@@ -84,12 +126,14 @@ def get_crash(id: str):
     try:    
         cursor.execute(query, [id])
     except psycopg2.Error as e:
-        raise HTTPException(status_code=400, detail='Database error: ' + str(e))
+        # raise HTTPException(status_code=400, detail='Database error: ' + str(e))
+        return JSONResponse(status_code=400, content={"message": "Database error: " + str(e)})
         
     result = cursor.fetchone()
     
     if not result:
-        raise HTTPException(status_code=404, detail='Crash not found')
+        # raise HTTPException(status_code=404, message='Crash not found')
+        return JSONResponse(status_code=404, content={"message": "Crash not found"})
     
     crash = {
         'month': calendar.month_name[result[0]],
@@ -105,7 +149,11 @@ def get_crash(id: str):
     return crash 
 
 
-@app.get('/api/crash-data/v1/summary', response_model=Dict[str, yearResponse])
+@app.get(
+    '/api/crash-data/v1/summary',
+    response_model=Dict[str, YearResponse],
+    responses=responses,
+)
 def get_summary(
     state: str = Query(
         None,
@@ -187,9 +235,9 @@ def get_summary(
         cursor.execute("SELECT area_type, name from geoid where geoid = %s", [geoid])
         result = cursor.fetchone()
         if not result:
-            raise HTTPException(
+            return JSONResponse(
                 status_code=404, 
-                detail='No information found for given geoid.'
+                content={"message": "No information found for given parameters"}
             )
         # now set up where clause
         sub_clauses.append(f"{result[0]} = %s")
@@ -215,16 +263,13 @@ def get_summary(
     try:
         cursor.execute(severity_and_mode_query, values)
     except psycopg2.Error as e:
-        raise HTTPException(
-            status_code=400, 
-            detail='Database error: ' + str(e)
-        )
+        return JSONResponse(status_code=400, content={"message": "Database error: " + str(e)})
     
     result = cursor.fetchall()
     if not result:
-        raise HTTPException(
+        return JSONResponse(
             status_code=404, 
-            detail='No information found for given type/value.'
+            content={"message": "No information found for given parameters"}
         )
 
     summary = {}
@@ -284,15 +329,15 @@ def get_crash_ids(geojson: str):
     try:
         cursor.execute(query, [geojson])
     except psycopg2.Error as e:
-        raise HTTPException(
-            status_code=400, 
-            detail='Database error: ' + str(e)
-        )
+        return JSONResponse(status_code=400, content={"message": "Database error: " + str(e)})
 
     result = cursor.fetchall()
     
     if not result:
-        return {'message': 'No crashes found for provided geojson'}
+        return JSONResponse(
+            status_code=404, 
+            content={"message": "No crash ids found for given parameters."}
+        )
     
     ids = []
 
