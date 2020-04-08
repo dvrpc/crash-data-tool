@@ -106,8 +106,8 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
     //     // value = the geoid or the formatted bbox
     //     // ksi_only = unchanged
     // const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?type=${type}&value=${name}&ksi_only=${isKSI}`
-    const { geoid, isKSI } = boundaryObj
-    const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?geoid=${geoid}&ksi_only=${isKSI}`
+    const { geoID, isKSI } = boundaryObj
+    const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?geoid=${geoID}&ksi_only=${isKSI}`
 
     console.log('api is ', api)
     const stream = await fetch(api, getOptions)
@@ -124,10 +124,7 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
 
 export const setMapCenter = center => dispatch => dispatch(set_map_center(center))
 
-export const setMapBounding = bounding => dispatch => {
-    bounding.name = decodeURIComponent(bounding.name)
-    dispatch(set_map_bounding(bounding))
-}
+export const setMapBounding = bounding => dispatch => dispatch(set_map_bounding(bounding))
 
 export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
 

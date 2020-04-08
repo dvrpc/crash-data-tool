@@ -1,9 +1,10 @@
 // return an object of filters that can be passed to the appropriate layers
 const createBoundaryFilter = boundingObj => {
     const { type, name } = {...boundingObj}
-
+    
     let resetBaseLayer, resetBaseFilter, resetLineWidth, resetColor;
 
+    // @TODO: remove all the reset stuff. Only need to return baseFilter...
     if(type === 'municipality'){
         resetBaseLayer = 'county'
         resetBaseFilter = ['==', 'dvrpc', 'Yes']

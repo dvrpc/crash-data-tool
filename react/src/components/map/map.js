@@ -296,22 +296,23 @@ class Map extends Component {
         // testing polygon
         // @TODO: remove?
         if(this.state.polygon){
-            console.log('boundary object is ', boundaryObj)
+            console.log('called setBoundary with a POLYGON ', boundaryObj)
             return
         }
         
         // derive layer styles from boundaryObj
+        // @TODO: remove all the restFilter stuff
         const { baseFilter, resetFilter} = createBoundaryFilter(boundaryObj)
 
         // set the appropriate filters
         this.map.setFilter(baseFilter.layer, baseFilter.filter)
-        this.map.setFilter(resetFilter.layer, resetFilter.filter)
+        //this.map.setFilter(resetFilter.layer, resetFilter.filter)
         
         // make the appropraite paint changes
         this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
         this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f4a22d')
-        this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
-        this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
+        //this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
+        //this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
     }
 
     // hide the boundary overlay and reset map filters, styles and sidebar info to default
@@ -328,7 +329,7 @@ class Map extends Component {
         // update sidebar information
         let newFilterType = this.props.crashType || 'ksi'
         let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
-        const regionalStats = {geoid: '', isKSI}
+        const regionalStats = {geoID: '', isKSI}
         
         this.props.setDefaultState(regionalStats)
         this.props.setSidebarHeaderContext('the DVRPC region')
@@ -456,13 +457,13 @@ class Map extends Component {
             tileType = 'm'
         }
 
-        // @UPDATE: drop this in favor of using geoID (keep name for sidebar context tho)
-        const encodedName = encodeURIComponent(name)
-
-        // create boundary object
+        // determine KSI filter
         let newFilterType = this.props.crashType || 'ksi'
         let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
-        const boundaryObj = {type: sourceLayer, name: encodedName, isKSI}
+        
+        // create data and boundary objects
+        const dataObj = { geoID, isKSI }
+        const boundaryObj = { type: sourceLayer, name }
 
         // update filter object
         let range = this.props.range || {}
@@ -470,7 +471,7 @@ class Map extends Component {
 
         // do all the things that search does
         this.props.setSidebarHeaderContext(countyName || name)
-        this.props.getData(boundaryObj)
+        this.props.getData(dataObj)
         this.props.setMapBounding(boundaryObj)
         this.props.getBoundingBox(geoID)
         this.props.setMapFilter(filterObj)
@@ -508,7 +509,7 @@ class Map extends Component {
         let isKSI = typeCheck === 'ksi' ? 'yes' : 'no'
 
         // create boundary object for the getData endpoint
-        const boundaryObj = {
+        const dataObj = {
             type: 'geojson',
             name: bboxFormatted,
             isKSI
@@ -516,7 +517,7 @@ class Map extends Component {
 
         // update store w/bbox info
         this.props.getPolygonCrashes(bboxFormatted)
-        this.props.getData(boundaryObj)
+        this.props.getData(dataObj)
         this.props.setPolygonBbox(bboxFormatted)
     }
 
@@ -613,7 +614,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        getData: boundaryObj => dispatch(getDataFromKeyword(boundaryObj)),
+        getData: dataObj => dispatch(getDataFromKeyword(dataObj)),
         setMapBounding: boundingObj => dispatch(setMapBounding(boundingObj)),
         setSidebarHeaderContext: area => dispatch(setSidebarHeaderContext(area)),
         getBoundingBox: id => dispatch(getBoundingBox(id)),

@@ -13,7 +13,7 @@ class Sidebar extends Component {
         super(props)
 
         this.state = {
-            data: this.props.getCrashData({geoid: '', isKSI: 'yes'}),
+            data: this.props.getCrashData({geoID: '', isKSI: 'yes'}),
             context: 'the DVRPC region',
             crashType: 'KSI',
             from: 2014,
@@ -75,7 +75,7 @@ class Sidebar extends Component {
 
             // return special case for regional states
             if(context === 'the DVRPC region') {
-                this.props.getCrashData({geoid: '', isKSI})
+                this.props.getCrashData({geoID: '', isKSI})
                 this.setState({crashType: selected})
                 return
             }
