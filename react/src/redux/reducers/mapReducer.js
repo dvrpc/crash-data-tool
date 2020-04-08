@@ -100,16 +100,12 @@ export default function mapReducer(state = [], action) {
 /****** DISPATCHERS ******/
 /// MAP Dispatchers
 export const getDataFromKeyword = boundaryObj => async dispatch => {
-    // const { type, name, isKSI } = boundaryObj
-    // // @UPDATE: type and name values/formats change for geoID:
-    //     // type = geoid or geojson
-    //     // value = the geoid or the formatted bbox
-    //     // ksi_only = unchanged
-    // const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?type=${type}&value=${name}&ksi_only=${isKSI}`
-    const { geoID, isKSI } = boundaryObj
-    const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?geoid=${geoID}&ksi_only=${isKSI}`
-
-    console.log('api is ', api)
+    const { geoID, geojson, isKSI } = boundaryObj
+    
+    // handle geography & polygon queries    
+    const query = geojson === undefined ? `geoid=${geoID}&ksi_only=${isKSI}` : `geojson=${geojson}&ksi_only=${isKSI}`
+    const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?${query}`
+    
     const stream = await fetch(api, getOptions)
 
     //error handling - pass the failure message + the boundary object to give context to the displayed error response

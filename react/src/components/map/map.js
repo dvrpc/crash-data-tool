@@ -504,10 +504,9 @@ class Map extends Component {
         let typeCheck = this.props.crashType || 'ksi'
         let isKSI = typeCheck === 'ksi' ? 'yes' : 'no'
 
-        // create boundary object for the getData endpoint
+        // create data object for API call
         const dataObj = {
-            type: 'geojson',
-            name: bboxFormatted,
+            geojson: bboxFormatted,
             isKSI
         }
 
