@@ -22,19 +22,14 @@ class Search extends Component {
     }
 
     submitSearch = e => {
-        const output = form.submitSearch(e)
+        const output = form.parseSearch(e)
 
-        // add KSI state to getData call
+        // get KSI and range state from store
+        const range = this.props.range || {}
         const ksiCheck = this.props.crashType || 'ksi'
-        output.boundary.isKSI = ksiCheck === 'ksi' ? 'yes' : 'no'
+        output.isKSI = ksiCheck === 'ksi' ? 'yes' : 'no'
 
-        // @TODO: short out for state searches for now since they aren't real yet (API response isn't set up for these yet)
-        if(output.state) {
-            alert('search by state isnt set up yet, please try again with municipalities, counties or address')
-            return
-        }
-
-        // push the new map center when applicable
+        // zoom to address for address searches
         if(output.coords) {
             output.coords.then(result => {
                 const center = result.features[0].center
@@ -42,26 +37,22 @@ class Search extends Component {
             })
         }
 
-        // hit the api's to get sidebar info (if applicable)
-        // @UPDATE: update to use geoID
-        if(output.boundary.name){
-            const boundary = output.boundary
+        const tileType = output.type[0]
+        let sidebarName = tileType === 'c' ? `${output.name} County` : output.name
 
-            let decodedName = boundary.type === 'county' ? decodeURI(boundary.name) + ' County' : decodeURI(boundary.name)
-            let tileType = boundary.type[0]
+        // create data, filter and boundary objects
+        const dataObj = { geoID: output.geoID, isKSI: output.isKSI }
+        const boundaryObj = { type: output.type, name: output.name }
+        const filterObj = {filterType: ksiCheck, tileType, id: output.geoID, range, boundary: true}
+        
+        console.log('filterObj is : ', filterObj)
 
-            // let map local state fill in the correct filterType
-            const filterObj = {filterType: '', tileType, id: boundary.id, boundary: true}
-            
-            // add filter obj to boundary obj
-            boundary.filter = filterObj
-                        
-            // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
-            this.props.setSidebarHeaderContext(decodedName)
-            this.props.getData(boundary)
-            this.props.setMapBounding(boundary)
-            this.props.getBoundingBox(boundary.id)
-        }
+        // // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
+        this.props.setSidebarHeaderContext(sidebarName)
+        this.props.getData(dataObj)
+        this.props.setMapBounding(boundaryObj)
+        this.props.getBoundingBox(output.geoID)
+        this.props.setMapFilter(filterObj)
     }
 
     render() {
@@ -99,6 +90,7 @@ class Search extends Component {
 const mapStateToProps = state => {
     return {
         crashType: state.crashType,
+        range: state.range
     }
 }
 

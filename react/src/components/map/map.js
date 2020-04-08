@@ -201,7 +201,7 @@ class Map extends Component {
                 filterObj.id = boundary.id
                 filterObj.tileType = boundary.tileType
                 filterObj.boundary = true
-            }
+            }   
             this.props.setMapFilter(filterObj)
         }
 
@@ -334,7 +334,6 @@ class Map extends Component {
         const { county, muni } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
-        
         let range = this.props.range || {}
         const filterObj = {filterType: newFilterType, range}
 
@@ -439,7 +438,12 @@ class Map extends Component {
         const props = features.properties
         const name = props.name
         const featureID = features.id
-        
+
+        // get KSI and range state from store
+        const range = this.props.range || {}
+        const newFilterType = this.props.crashType || 'ksi'
+        let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
+
         // set layer-dependent variables
         let geoID;
         let tileType;
@@ -452,20 +456,13 @@ class Map extends Component {
             geoID = munis[name]
             tileType = 'm'
         }
-
-        // determine KSI filter
-        let newFilterType = this.props.crashType || 'ksi'
-        let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
         
-        // create data and boundary objects
+        // create data, filter and boundary objects
         const dataObj = { geoID, isKSI }
         const boundaryObj = { type: sourceLayer, name }
-
-        // update filter object
-        let range = this.props.range || {}
         const filterObj = {filterType: newFilterType, tileType, id: geoID, range, boundary: true}
 
-        // do all the things that search does
+        // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
         this.props.setSidebarHeaderContext(countyName || name)
         this.props.getData(dataObj)
         this.props.setMapBounding(boundaryObj)

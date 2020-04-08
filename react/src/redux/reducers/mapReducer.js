@@ -125,6 +125,7 @@ export const setMapBounding = bounding => dispatch => dispatch(set_map_bounding(
 export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
 
 export const getBoundingBox = id => async dispatch => {
+    console.log('id at getBoundingBox: ', id)
     id = id.toString()
 
     let featureServer;

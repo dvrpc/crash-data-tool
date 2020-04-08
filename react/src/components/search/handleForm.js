@@ -34,57 +34,49 @@ const handleSelect = value => {
 }
 
 // parse form inputs and figure out what to do with them
-const submitSearch = e => {
+const parseSearch = e => {
     e.preventDefault()
 
     const output = { 
-        boundary: {
-            type: '',
-            name: '',
-            isKSI: ''
-        }
+        type: '',
+        geoID: '',
+        isKSI: ''
     }
 
     const form = e.target
     const data = new FormData(form)
     let query;
     
-    // extract form data to finish das form
+    // extract form data
     for(var [key, input] of data.entries()) {
         switch(key) {
             case 'type':
-                output.boundary.type = input
+                output.type = input
                 break
             case 'boundary':
-                query = encodeURIComponent(input)
-                output.boundary.name = query
+                output.name = input
 
-                // get the boundary ID for filtering
-                const type = output.boundary.type
-
-                // handle boundary type
-                if(type === 'state'){
-                    // @TODO: temporary state field to break out of state searchs
-                    output.state = true
-                    output.boundary.id = input
-
-                    // @TODO: don't always geocode - the reason it was only for address searches before was because the mapbox geocoder isn't reliable - names can overlap.
-                    // this wont stay here but remember that geocoded inputs should be reserved for address searches
-                    output.coords = geocode(query)
-                }else {
-                    // @UPDATE: id is the new name field (but still need name for sidebar update)
-                    output.boundary.id = type === 'county' ? counties[input] : munis[input]
+                switch(output.type){
+                    case 'county':
+                        output.geoID = counties[input]
+                        break
+                    case 'municipality':
+                        output.geoID = munis[input]
+                        break
+                    default:
+                        output.geoID = states[input]
                 }
-
+                
                 break
             default:
                 query = encodeURIComponent(input)
                 output.coords = geocode(query)
-                output.boundary.name = false
+                output.name = input
+                output.geoID = ''
         }
     }
 
     return output
 }
 
-export  { handleSelect, submitSearch }
+export  { handleSelect, parseSearch }
