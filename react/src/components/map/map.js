@@ -301,18 +301,14 @@ class Map extends Component {
         }
         
         // derive layer styles from boundaryObj
-        // @TODO: remove all the restFilter stuff
-        const { baseFilter, resetFilter} = createBoundaryFilter(boundaryObj)
+        const filter = createBoundaryFilter(boundaryObj)
 
         // set the appropriate filters
-        this.map.setFilter(baseFilter.layer, baseFilter.filter)
-        //this.map.setFilter(resetFilter.layer, resetFilter.filter)
+        this.map.setFilter(filter.layer, filter.filter)
         
         // make the appropraite paint changes
-        this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
-        this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f4a22d')
-        //this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
-        //this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
+        this.map.setPaintProperty(filter.layer, 'line-width', 4)
+        this.map.setPaintProperty(filter.layer, 'line-color', '#f4a22d')
     }
 
     // hide the boundary overlay and reset map filters, styles and sidebar info to default
