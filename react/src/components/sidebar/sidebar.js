@@ -13,7 +13,7 @@ class Sidebar extends Component {
         super(props)
 
         this.state = {
-            data: this.props.getCrashData({type: '', name: '', isKSI: 'yes'}),
+            data: this.props.getCrashData({geoid: '', isKSI: 'yes'}),
             context: 'the DVRPC region',
             crashType: 'KSI',
             from: 2014,
@@ -75,7 +75,7 @@ class Sidebar extends Component {
 
             // return special case for regional states
             if(context === 'the DVRPC region') {
-                this.props.getCrashData({type:'', name:'', isKSI})
+                this.props.getCrashData({geoid: '', isKSI})
                 this.setState({crashType: selected})
                 return
             }
@@ -88,7 +88,6 @@ class Sidebar extends Component {
                 // Import the muni/county lookup tables from dropdown.js
                 // use context to lookup the geoid
                     // IF all the API needs is geoid and type doesn't matter anymore, that's it
-                    // IF the API still needs type (county/muni) then figure something else out because the "Duplicate (X Co)" won't work here
             let name;
             let type;
             const bbox = this.props.polygonBbox
