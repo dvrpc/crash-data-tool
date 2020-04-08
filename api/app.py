@@ -6,16 +6,55 @@
 """
 
 import calendar
+from typing import Dict
 
-from flask import Flask, request, jsonify, render_template
-from flask_cors import CORS
+from fastapi import FastAPI, HTTPException, Query
+from pydantic import BaseModel, Field
 import psycopg2 
-import yaml
 
 from config import PSQL_CREDS
 
-app = Flask(__name__)
-CORS(app)
+
+class crashResponse(BaseModel):
+    month: str
+    year: int
+    vehicle_count: int
+    bicycle_count: int
+    bicycle_fatalities: int
+    ped_count: int
+    ped_fatalities: int
+    vehicle_occupants: int
+    collision_type: str 
+    
+
+class severityResponse(BaseModel):
+    fatal: int
+    major: int
+    moderate: int
+    minor: int
+    unknown_severity: int = Field(..., alias="unknown severity")
+    uninjured: int
+    unknown_if_injured: int = Field(..., alias="unknown if injured")
+
+
+class modeResponse(BaseModel):
+    bike: int
+    ped: int
+    vehicle_occupants: int = Field(..., alias="vehicle occupants")
+
+
+class yearResponse(BaseModel):
+    total_crashes: int = Field(..., alias="total crashes")
+    severity: severityResponse
+    mode: modeResponse
+    type: dict
+
+
+class summaryResponse(BaseModel):
+    str: yearResponse
+
+
+app = FastAPI(docs_url="/api/crash-data/v1/docs", redoc_url=None)
 
 
 def get_db_cursor():
@@ -23,21 +62,9 @@ def get_db_cursor():
     return connection.cursor()
 
 
-@app.route('/api/crash-data/v1/documentation')
-def docs():
-    '''Documentation for the API'''
-    with open("openapi.yaml", 'r') as stream:
-        spec = yaml.safe_load(stream)
-
-    return render_template('documentation.html', spec=spec)
-
-
-@app.route('/api/crash-data/v1/crashes/<id>', methods=['GET'])
-def get_crash(id):
-    '''Return select fields about an individual crash.'''
-    if not id:
-        return jsonify({'message': 'Required path parameter *id* not provided'}), 400
-    
+@app.get('/api/crash-data/v1/crashes/{id}', response_model=crashResponse)
+def get_crash(id: str):
+    '''Get information about an individual crash.'''
     cursor = get_db_cursor()
     query = """
         SELECT
@@ -57,12 +84,12 @@ def get_crash(id):
     try:    
         cursor.execute(query, [id])
     except psycopg2.Error as e:
-        return jsonify({'message': 'Database error: ' + str(e)}), 400
+        raise HTTPException(status_code=400, detail='Database error: ' + str(e))
         
     result = cursor.fetchone()
     
     if not result:
-        return jsonify({'message': 'Crash not found'}), 404
+        raise HTTPException(status_code=404, detail='Crash not found')
     
     crash = {
         'month': calendar.month_name[result[0]],
@@ -75,29 +102,40 @@ def get_crash(id):
         'vehicle_occupants': result[7] - result[3] - result[5],
         'collision_type': result[8],
     }
-    return jsonify(crash) 
+    return crash 
 
 
-@app.route('/api/crash-data/v1/summary', methods=['GET'])
-def get_summary():
+@app.get('/api/crash-data/v1/summary', response_model=Dict[str, yearResponse])
+def get_summary(
+    state: str = Query(
+        None,
+        description='Select crashes by state'
+    ),
+    county: str = Query(
+        None,
+        description='Select crashes by county'
+    ),
+    municipality: str = Query(
+        None,
+        description='Select crashes by municipality'
+    ),
+    geoid: str = Query(
+        None,
+        description='Select crashes by geoid'
+    ),
+    geojson: str = Query(
+        None,
+        description='Select crashes by jeoson'
+    ),
+    ksi_only: bool = Query(
+        False,
+        description='Limit results to crashes with fatalities or major injuries only'
+    ),
+):
     '''
-    Return summary of various attributes by year.
-    If provided, *type* and *value* query parameters will limit result by geographic area.
-    If *ksi_only* == yes, return only fatal and major crashes.
-    '''    
-
-    keys = list(request.args)
-
-    for key in keys:
-        if key not in ['state', 'county', 'municipality', 'geoid', 'geojson', 'ksi_only']:
-            return jsonify({'message': f'Query parameter *{key}* not recognized'}), 400
-
-    state = request.args.get('state')
-    county = request.args.get('county')
-    municipality = request.args.get('municipality')
-    geoid = request.args.get('geoid')
-    geojson = request.args.get('geojson')
-    ksi_only = request.args.get('ksi_only')
+    Get a summary of crashes by year. Limit by geographic area and/or by crashes with fatalities or
+    major injuries only.
+    '''
 
     # build query incrementally, to add possible WHERE clauses before GROUP BY and 
     # to easily pass value parameter to execute in order to prevent SQL injection 
@@ -149,7 +187,10 @@ def get_summary():
         cursor.execute("SELECT area_type, name from geoid where geoid = %s", [geoid])
         result = cursor.fetchone()
         if not result:
-            return jsonify({"message": "No location found with the provide geoid"}), 404
+            raise HTTPException(
+                status_code=404, 
+                detail='No information found for given geoid.'
+            )
         # now set up where clause
         sub_clauses.append(f"{result[0]} = %s")
         values.append(result[1])
@@ -157,7 +198,7 @@ def get_summary():
         sub_clauses.append("ST_WITHIN(geom,ST_GeomFromGeoJSON(%s))")
         values.append(geojson)
             
-    if ksi_only == 'yes':
+    if ksi_only:
         sub_clauses.append("(fatalities > 0 OR maj_inj > 0)")
 
     # put the where clauses together
@@ -174,12 +215,17 @@ def get_summary():
     try:
         cursor.execute(severity_and_mode_query, values)
     except psycopg2.Error as e:
-        return jsonify({'message': 'Database error: ' + str(e)}), 400
+        raise HTTPException(
+            status_code=400, 
+            detail='Database error: ' + str(e)
+        )
     
     result = cursor.fetchall()
-    
     if not result:
-        return jsonify({'message': 'No information found for given type/value.'}), 404
+        raise HTTPException(
+            status_code=404, 
+            detail='No information found for given type/value.'
+        )
 
     summary = {}
 
@@ -219,20 +265,14 @@ def get_summary():
 
     for k in summary.keys():
         summary[k]['type'] = collisions_by_year[k]
+    return summary
 
-    return jsonify(summary)
 
-
-@app.route('/api/crash-data/v1/crash-ids', methods=['GET'])
-def get_crash_ids():
-    '''Return list of crash_ids based on provided parameters.'''
+@app.get('/api/crash-data/v1/crash-ids')
+def get_crash_ids(geojson: str):
+    '''Get a list of crash ids based on given criteria.'''
 
     # @TODO: more ways to get this info in addition to by geojson
-
-    geojson = request.args.get('geojson')
-    
-    if not geojson:
-        return jsonify({'Message': 'Required parameter *geojson* not provided.'}), 400
 
     cursor = get_db_cursor()
     query = """
@@ -244,15 +284,18 @@ def get_crash_ids():
     try:
         cursor.execute(query, [geojson])
     except psycopg2.Error as e:
-        return jsonify({'message': 'Database error: ' + str(e)}), 400
+        raise HTTPException(
+            status_code=400, 
+            detail='Database error: ' + str(e)
+        )
 
     result = cursor.fetchall()
     
     if not result:
-        return jsonify({'message': 'No crashes found for provided geojson'}), 404
+        return {'message': 'No crashes found for provided geojson'}
     
     ids = []
 
     for row in result:
         ids.append(row[0])
-    return jsonify(ids)
+    return ids

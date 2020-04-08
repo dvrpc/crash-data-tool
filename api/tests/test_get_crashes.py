@@ -20,7 +20,7 @@ def test_id_success1(client):
 
 def test_id_data_correct1(client):
     response = client.get(endpoint + '201808052018-34718')
-    data = response.get_json()
+    data = response.json()
     assert len(data) == 9
     assert data['month'] == 'December'
     assert data['year'] == 2018
