@@ -45,8 +45,6 @@ class Search extends Component {
         const boundaryObj = { type: output.type, name: output.name }
         const filterObj = {filterType: ksiCheck, tileType, id: output.geoID, range, boundary: true}
         
-        console.log('filterObj is : ', filterObj)
-
         // // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
         this.props.setSidebarHeaderContext(sidebarName)
         this.props.getData(dataObj)

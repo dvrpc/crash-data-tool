@@ -219,6 +219,8 @@ class Map extends Component {
             this.setBoundary(boundingObj)
             this.showBoundaryOverlay()
 
+            console.log('boundingObj is: ', boundingObj)
+
             // update map filter & circle toggle state when coming from search
             if(boundingObj.filter) {
                 const toggleFilter = boundingObj.filter
@@ -291,6 +293,7 @@ class Map extends Component {
     showBoundaryOverlay = () => this.boundaryOverlay.classList.remove('hidden')
 
     // apply boundary filters and map styles
+    // @UPDATE: The only way to handle duplicate MUNIS is to use geoID but counties don't have geoID so they will fail if we switch to geoID. The tiles should be updated. 
     setBoundary = boundaryObj => {
         
         // testing polygon
@@ -468,10 +471,6 @@ class Map extends Component {
         this.props.setMapBounding(boundaryObj)
         this.props.getBoundingBox(geoID)
         this.props.setMapFilter(filterObj)
-
-        // set bounding filters
-        this.setBoundary(boundaryObj)
-        this.showBoundaryOverlay()
 
         // use featureID to remove the muni fill that hovering created
         this.removeGeographyFill(featureID)
