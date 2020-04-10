@@ -201,7 +201,7 @@ class Map extends Component {
                 filterObj.id = boundary.id
                 filterObj.tileType = boundary.tileType
                 filterObj.boundary = true
-            }
+            }   
             this.props.setMapFilter(filterObj)
         }
 
@@ -222,8 +222,6 @@ class Map extends Component {
             // update map filter & circle toggle state when coming from search
             if(boundingObj.filter) {
                 const toggleFilter = boundingObj.filter
-                toggleFilter.filterType = this.props.crashType || 'ksi'
-                toggleFilter.range = prevRange
 
                 this.props.setMapFilter(toggleFilter)
                 this.setState({boundary: toggleFilter})
@@ -291,27 +289,25 @@ class Map extends Component {
     showBoundaryOverlay = () => this.boundaryOverlay.classList.remove('hidden')
 
     // apply boundary filters and map styles
+    // @UPDATE: The only way to handle duplicate MUNIS is to use geoID but counties don't have geoID so they will fail if we switch to geoID. The tiles should be updated. 
     setBoundary = boundaryObj => {
         
         // testing polygon
         // @TODO: remove?
         if(this.state.polygon){
-            console.log('boundary object is ', boundaryObj)
+            console.log('called setBoundary with a POLYGON ', boundaryObj)
             return
         }
         
         // derive layer styles from boundaryObj
-        const { baseFilter, resetFilter} = createBoundaryFilter(boundaryObj)
+        const filter = createBoundaryFilter(boundaryObj)
 
         // set the appropriate filters
-        this.map.setFilter(baseFilter.layer, baseFilter.filter)
-        this.map.setFilter(resetFilter.layer, resetFilter.filter)
+        this.map.setFilter(filter.layer, filter.filter)
         
         // make the appropraite paint changes
-        this.map.setPaintProperty(baseFilter.layer, 'line-width', 4)
-        this.map.setPaintProperty(baseFilter.layer, 'line-color', '#f4a22d')
-        this.map.setPaintProperty(resetFilter.layer, 'line-width', resetFilter.width)
-        this.map.setPaintProperty(resetFilter.layer, 'line-color', resetFilter.color)
+        this.map.setPaintProperty(filter.layer, 'line-width', 4)
+        this.map.setPaintProperty(filter.layer, 'line-color', '#f4a22d')
     }
 
     // hide the boundary overlay and reset map filters, styles and sidebar info to default
@@ -328,7 +324,7 @@ class Map extends Component {
         // update sidebar information
         let newFilterType = this.props.crashType || 'ksi'
         let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
-        const regionalStats = {type: '', name: '', isKSI}
+        const regionalStats = {geoID: '', isKSI}
         
         this.props.setDefaultState(regionalStats)
         this.props.setSidebarHeaderContext('the DVRPC region')
@@ -337,7 +333,6 @@ class Map extends Component {
         const { county, muni } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
-        
         let range = this.props.range || {}
         const filterObj = {filterType: newFilterType, range}
 
@@ -442,7 +437,12 @@ class Map extends Component {
         const props = features.properties
         const name = props.name
         const featureID = features.id
-        
+
+        // get KSI and range state from store
+        const range = this.props.range || {}
+        const newFilterType = this.props.crashType || 'ksi'
+        let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
+
         // set layer-dependent variables
         let geoID;
         let tileType;
@@ -455,27 +455,18 @@ class Map extends Component {
             geoID = munis[name]
             tileType = 'm'
         }
-        const encodedName = encodeURIComponent(name)
-
-        // create boundary object
-        let newFilterType = this.props.crashType || 'ksi'
-        let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
-        const boundaryObj = {type: sourceLayer, name: encodedName, isKSI}
-
-        // update filter object
-        let range = this.props.range || {}
+        
+        // create data, filter and boundary objects
+        const dataObj = { geoID, isKSI }
+        const boundaryObj = { type: sourceLayer, name }
         const filterObj = {filterType: newFilterType, tileType, id: geoID, range, boundary: true}
 
-        // do all the things that search does
+        // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
         this.props.setSidebarHeaderContext(countyName || name)
-        this.props.getData(boundaryObj)
+        this.props.getData(dataObj)
         this.props.setMapBounding(boundaryObj)
         this.props.getBoundingBox(geoID)
         this.props.setMapFilter(filterObj)
-
-        // set bounding filters
-        this.setBoundary(boundaryObj)
-        this.showBoundaryOverlay()
 
         // use featureID to remove the muni fill that hovering created
         this.removeGeographyFill(featureID)
@@ -505,16 +496,15 @@ class Map extends Component {
         let typeCheck = this.props.crashType || 'ksi'
         let isKSI = typeCheck === 'ksi' ? 'yes' : 'no'
 
-        // create boundary object for the getData endpoint
-        const boundaryObj = {
-            type: 'geojson',
-            name: bboxFormatted,
+        // create data object for API call
+        const dataObj = {
+            geojson: bboxFormatted,
             isKSI
         }
 
         // update store w/bbox info
         this.props.getPolygonCrashes(bboxFormatted)
-        this.props.getData(boundaryObj)
+        this.props.getData(dataObj)
         this.props.setPolygonBbox(bboxFormatted)
     }
 
@@ -611,7 +601,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        getData: boundaryObj => dispatch(getDataFromKeyword(boundaryObj)),
+        getData: dataObj => dispatch(getDataFromKeyword(dataObj)),
         setMapBounding: boundingObj => dispatch(setMapBounding(boundingObj)),
         setSidebarHeaderContext: area => dispatch(setSidebarHeaderContext(area)),
         getBoundingBox: id => dispatch(getBoundingBox(id)),

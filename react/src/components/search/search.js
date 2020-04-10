@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { getDataFromKeyword, setMapCenter, setMapBounding, setSidebarHeaderContext, getBoundingBox, setMapFilter } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setMapCenter, setMapBounding, setSidebarHeaderContext, getBoundingBox } from '../../redux/reducers/mapReducer.js'
 import * as form from './handleForm.js'
 
 import './search.css'
@@ -22,45 +22,35 @@ class Search extends Component {
     }
 
     submitSearch = e => {
-        const output = form.submitSearch(e)
+        const output = form.parseSearch(e)
 
-        // add KSI state to getData call
-        const ksiCheck = this.props.crashType || 'ksi'
-        output.boundary.isKSI = ksiCheck === 'ksi' ? 'yes' : 'no'
-
-        // @TODO: short out for state searches for now since they aren't real yet (API response isn't set up for these yet)
-        if(output.state) {
-            alert('search by state isnt set up yet, please try again with municipalities, counties or address')
-            return
-        }
-
-        // push the new map center when applicable
+        // zoom to area for address searches & exit
         if(output.coords) {
             output.coords.then(result => {
                 const center = result.features[0].center
                 this.props.setMapCenter(center)
             })
+            return
         }
 
-        // hit the api's to get sidebar info (if applicable)
-        if(output.boundary.name){
-            const boundary = output.boundary
+        // get KSI and range state from store
+        const range = this.props.range || {}
+        const ksiCheck = this.props.crashType || 'ksi'
+        output.isKSI = ksiCheck === 'ksi' ? 'yes' : 'no'
 
-            let decodedName = boundary.type === 'county' ? decodeURI(boundary.name) + ' County' : decodeURI(boundary.name)
-            let tileType = boundary.type[0]
+        const tileType = output.type[0]
+        let sidebarName = tileType === 'c' ? `${output.name} County` : output.name
 
-            // let map local state fill in the correct filterType
-            const filterObj = {filterType: '', tileType, id: boundary.id, boundary: true}
-            
-            // add filter obj to boundary obj
-            boundary.filter = filterObj
-                        
-            // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
-            this.props.setSidebarHeaderContext(decodedName)
-            this.props.getData(boundary)
-            this.props.setMapBounding(boundary)
-            this.props.getBoundingBox(boundary.id)
-        }
+        // create data, filter and boundary objects
+        const dataObj = { geoID: output.geoID, isKSI: output.isKSI }
+        const filterObj = {filterType: ksiCheck, tileType, id: output.geoID, range, boundary: true}
+        const boundaryObj = { type: output.type, name: output.name, filter: filterObj }
+        
+        // // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
+        this.props.setSidebarHeaderContext(sidebarName)
+        this.props.getData(dataObj)
+        this.props.setMapBounding(boundaryObj)
+        this.props.getBoundingBox(output.geoID)
     }
 
     render() {
@@ -98,6 +88,7 @@ class Search extends Component {
 const mapStateToProps = state => {
     return {
         crashType: state.crashType,
+        range: state.range
     }
 }
 
@@ -107,8 +98,7 @@ const mapDispatchToProps = dispatch => {
         setMapCenter: coords => dispatch(setMapCenter(coords)),
         setMapBounding: boundingObj => dispatch(setMapBounding(boundingObj)),
         setSidebarHeaderContext: area => dispatch(setSidebarHeaderContext(area)),
-        getBoundingBox: id => dispatch(getBoundingBox(id)),
-        setMapFilter: filter => dispatch(setMapFilter(filter))
+        getBoundingBox: id => dispatch(getBoundingBox(id))
     }
 }
 

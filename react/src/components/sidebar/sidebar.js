@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
+
+import {counties, munis } from '../search/dropdowns'
 import { getDataFromKeyword, sidebarCrashType, sidebarRange } from '../../redux/reducers/mapReducer.js'
 
 import * as charts from './charts.js'
@@ -13,7 +15,7 @@ class Sidebar extends Component {
         super(props)
 
         this.state = {
-            data: this.props.getCrashData({type: '', name: '', isKSI: 'yes'}),
+            data: this.props.getCrashData({geoID: '', isKSI: 'yes'}),
             context: 'the DVRPC region',
             crashType: 'KSI',
             from: 2014,
@@ -75,38 +77,27 @@ class Sidebar extends Component {
 
             // return special case for regional states
             if(context === 'the DVRPC region') {
-                this.props.getCrashData({type:'', name:'', isKSI})
+                this.props.getCrashData({geoID: '', isKSI})
                 this.setState({crashType: selected})
                 return
             }
 
-            let nameTest = context.split(' ')
-            const countyCheck = nameTest.pop()
+            let nameArr = context.split(' ')
+            const countyCheck = nameArr.pop()
             let isCounty = countyCheck === 'County' ? true : false
-
-            let name;
-            let type;
+            
+            let geoID;
+            let geojson;
             const bbox = this.props.polygonBbox
 
-            // assign values to name, type and isKSI
-            if (isCounty) {
-                name = encodeURIComponent(nameTest[0])
-                type = 'county'
-            } else if (bbox) {
-                name = bbox
-                type = 'geojson'
-            }
-            else {
-                name = encodeURIComponent(context)
-                type = 'municipality'
-            }
+            // assign values to geoId and geojson
+            geoID = isCounty ? counties[nameArr[0]] : munis[context]
+            geojson = bbox
             
             // update data and local state
-            this.props.getCrashData({type, name, isKSI})
+            this.props.getCrashData({geoID, geojson, isKSI})
             this.setState({crashType: selected})
         }
-
-
     }
 
     render() {

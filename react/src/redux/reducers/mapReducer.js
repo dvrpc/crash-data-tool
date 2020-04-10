@@ -100,9 +100,12 @@ export default function mapReducer(state = [], action) {
 /****** DISPATCHERS ******/
 /// MAP Dispatchers
 export const getDataFromKeyword = boundaryObj => async dispatch => {
-    const { type, name, isKSI } = boundaryObj
-        
-    const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?type=${type}&value=${name}&ksi_only=${isKSI}`
+    const { geoID, geojson, isKSI } = boundaryObj
+    
+    // handle geography & polygon queries    
+    const query = geojson === undefined ? `geoid=${geoID}&ksi_only=${isKSI}` : `geojson=${geojson}&ksi_only=${isKSI}`
+    const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?${query}`
+    
     const stream = await fetch(api, getOptions)
 
     //error handling - pass the failure message + the boundary object to give context to the displayed error response
@@ -117,10 +120,7 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
 
 export const setMapCenter = center => dispatch => dispatch(set_map_center(center))
 
-export const setMapBounding = bounding => dispatch => {
-    bounding.name = decodeURIComponent(bounding.name)
-    dispatch(set_map_bounding(bounding))
-}
+export const setMapBounding = bounding => dispatch => dispatch(set_map_bounding(bounding))
 
 export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
 
