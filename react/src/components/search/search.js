@@ -24,18 +24,19 @@ class Search extends Component {
     submitSearch = e => {
         const output = form.parseSearch(e)
 
-        // get KSI and range state from store
-        const range = this.props.range || {}
-        const ksiCheck = this.props.crashType || 'ksi'
-        output.isKSI = ksiCheck === 'ksi' ? 'yes' : 'no'
-
-        // zoom to address for address searches
+        // zoom to area for address searches & exit
         if(output.coords) {
             output.coords.then(result => {
                 const center = result.features[0].center
                 this.props.setMapCenter(center)
             })
+            return
         }
+
+        // get KSI and range state from store
+        const range = this.props.range || {}
+        const ksiCheck = this.props.crashType || 'ksi'
+        output.isKSI = ksiCheck === 'ksi' ? 'yes' : 'no'
 
         const tileType = output.type[0]
         let sidebarName = tileType === 'c' ? `${output.name} County` : output.name
