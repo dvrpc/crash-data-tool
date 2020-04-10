@@ -219,13 +219,9 @@ class Map extends Component {
             this.setBoundary(boundingObj)
             this.showBoundaryOverlay()
 
-            console.log('boundingObj is: ', boundingObj)
-
             // update map filter & circle toggle state when coming from search
             if(boundingObj.filter) {
                 const toggleFilter = boundingObj.filter
-                toggleFilter.filterType = this.props.crashType || 'ksi'
-                toggleFilter.range = prevRange
 
                 this.props.setMapFilter(toggleFilter)
                 this.setState({boundary: toggleFilter})
