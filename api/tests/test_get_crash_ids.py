@@ -4,4 +4,4 @@ import pytest
 Testing getting crashId
 """
 
-endpoint = "/crash-ids"
+endpoint = "/api/crash-data/v1/crash-ids"

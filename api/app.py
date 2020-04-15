@@ -14,6 +14,7 @@ from config import PSQL_CREDS
 class CrashResponse(BaseModel):
     month: str
     year: int
+    max_severity: str
     vehicle_count: int
     bicycle_count: int
     bicycle_fatalities: int
@@ -117,7 +118,12 @@ def get_crash(id: str):
             pedestrians,
             ped_fatalities,
             persons,
-            collision_type
+            collision_type,
+            fatalities,
+            maj_inj,
+            mod_inj,
+            min_inj,
+            unk_inj
         FROM crash
         WHERE id = %s 
         """
@@ -134,9 +140,24 @@ def get_crash(id: str):
     if not result:
         return JSONResponse(status_code=404, content={"message": "Crash not found"})
 
+    if result[9]:
+        print(result[9])
+        max_severity = 'fatality'
+    elif result[10]:
+        max_severity = 'major injury'
+    elif result[11]:
+        max_severity = 'moderate injury'
+    elif result[12]:
+        max_severity = 'minor injury'
+    elif result[13]:
+        max_severity = 'unknown injury'
+    else:
+        max_severity = 'no fatality or injury'
+
     crash = {
         "month": calendar.month_name[result[0]],
         "year": result[1],
+        "max_severity": max_severity,
         "vehicle_count": result[2],
         "bicycle_count": result[3],
         "bicycle_fatalities": result[4],

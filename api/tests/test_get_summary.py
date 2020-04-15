@@ -4,7 +4,7 @@ import pytest
 Testing get_summary()
 """
 
-endpoint = "/summary"
+endpoint = "/api/crash-data/v1/summary"
 
 
 @pytest.mark.parametrize(
