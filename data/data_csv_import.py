@@ -6,7 +6,7 @@ import psycopg2
 
 from config import PSQL_CREDS
 
-'''
+"""
 Import data from csv files pulled from the MS Access DB into Postgresql for the Crash Data API.
 
 Note that the code skips the first row of CSV files, as it expects that row to be header.
@@ -16,65 +16,65 @@ the later is just a subset of CRASH that doesn't contain all necessary columns.
 
 For NJ, ...
 
-'''
+"""
 
 
 def parse_dms(dms):
-    '''Parse lat/lon in formt DD MM:SS.SSS to individual components'''
-    parts = re.split('[^\d\w.]+', dms)
+    """Parse lat/lon in formt DD MM:SS.SSS to individual components"""
+    parts = re.split("[^\d\w.]+", dms)
     return parts[0], parts[1], parts[2]
 
 
 def dms2dd(degrees, minutes, seconds, direction):
-    '''Convert lat/lon from degrees, minutes, seconds to decimal degrees'''
+    """Convert lat/lon from degrees, minutes, seconds to decimal degrees"""
     dd = float(degrees) + float(minutes) / 60 + float(seconds) / (60 * 60)
-    if direction == 'S' or direction == 'W':
+    if direction == "S" or direction == "W":
         dd *= -1
     return dd
 
 
 lookup_pa = {
-    'county': {
-        '09': 'Bucks',
-        '67': 'Philadelphia',
-        '15': 'Chester',
-        '23': 'Delaware',
-        '46': 'Montgomery'
+    "county": {
+        "09": "Bucks",
+        "67": "Philadelphia",
+        "15": "Chester",
+        "23": "Delaware",
+        "46": "Montgomery",
     },
-    'muni': {},
-    'collision': {
-        '0': 'Non-collision',
-        '1': 'Rear-end',
-        '2': 'Head-on',
-        '3': 'Rear-to-rear (backing)',
-        '4': 'Angle',
-        '5': 'Sideswipe (same direction)',
-        '6': 'Sideswipe (opposite direction)',
-        '7': 'Hit fixed object',
-        '8': 'Hit pedestrian',
-        '9': 'Other or unknown'
+    "muni": {},
+    "collision": {
+        "0": "Non-collision",
+        "1": "Rear-end",
+        "2": "Head-on",
+        "3": "Rear-to-rear (backing)",
+        "4": "Angle",
+        "5": "Sideswipe (same direction)",
+        "6": "Sideswipe (opposite direction)",
+        "7": "Hit fixed object",
+        "8": "Hit pedestrian",
+        "9": "Other or unknown",
     },
 }
 
 lookup_nj_collision = {
-    '10': 'Non-collision',
-    '01': 'Rear-end',
-    '07': 'Head-on',
-    '04': 'Head-on',
-    '08': 'Rear-to-rear (backing)',
-    '03': 'Angle',
-    '02': 'Sideswipe (same direction)',
-    '05': 'Sideswipe (opposite direction)',
-    '11': 'Hit fixed object',
-    '06': 'Hit fixed object',
-    '14': 'Hit pedestrian',
-    '13': 'Hit pedestrian',
-    '12': 'Other or unknown',
-    '99': 'Other or unknown',
-    '00': 'Other or unknown',
-    '15': 'Other or unknown',
-    '16': 'Other or unknown',
-    '09': 'Other or unknown'
+    "10": "Non-collision",
+    "01": "Rear-end",
+    "07": "Head-on",
+    "04": "Head-on",
+    "08": "Rear-to-rear (backing)",
+    "03": "Angle",
+    "02": "Sideswipe (same direction)",
+    "05": "Sideswipe (opposite direction)",
+    "11": "Hit fixed object",
+    "06": "Hit fixed object",
+    "14": "Hit pedestrian",
+    "13": "Hit pedestrian",
+    "12": "Other or unknown",
+    "99": "Other or unknown",
+    "00": "Other or unknown",
+    "15": "Other or unknown",
+    "16": "Other or unknown",
+    "09": "Other or unknown",
 }
 
 # connect to postgres database
@@ -87,17 +87,17 @@ cur.execute("DELETE FROM crash")
 start = time.time()
 
 # enter MCD values into lookup_pa (unnecessary for NJ)
-with open('PA_MCDlist.txt', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',')
+with open("PA_MCDlist.txt", newline="") as csvfile:
+    reader = csv.reader(csvfile, delimiter=",")
     next(reader)  # skip header
     for row in reader:
         # Birmingham Township in Delaware County was renamed to Chadds Ford Township in 1996, but
-        # PennDot still calls it b-ham. Change this in the lookup so the new name gets added 
+        # PennDot still calls it b-ham. Change this in the lookup so the new name gets added
         # to the data table below
-        if row[0] == '23202':
-            lookup_pa['muni'][row[0]] = 'Chadds Ford Township'
+        if row[0] == "23202":
+            lookup_pa["muni"][row[0]] = "Chadds Ford Township"
         else:
-            lookup_pa['muni'][row[0]] = row[1]
+            lookup_pa["muni"][row[0]] = row[1]
 
 """
 0 CRN
@@ -189,11 +189,11 @@ with open('PA_MCDlist.txt', newline='') as csvfile:
 86 WZ_SHLDER_MDN
 """
 # insert PA crash data into db
-with open('PA_CRASH.txt', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',')
+with open("PA_CRASH.txt", newline="") as csvfile:
+    reader = csv.reader(csvfile, delimiter=",")
     next(reader)  # skip header
     for row in reader:
-        
+
         # deal with possible null values for lat and log and convert from DMS to DD
         # doing this because Access only exports floats to 2 decimal points, which is insufficient
         # so use the DMS fields in the database instead of the DD fields
@@ -201,15 +201,16 @@ with open('PA_CRASH.txt', newline='') as csvfile:
             lat = None
         else:
             d, m, s = parse_dms(row[61])
-            lat = dms2dd(d, m, s, 'N')
+            lat = dms2dd(d, m, s, "N")
 
         if not row[62].strip():
             lon = None
         else:
             d, m, s = parse_dms(row[62])
-            lon = dms2dd(d, m, s, 'W')
+            lon = dms2dd(d, m, s, "W")
 
-        cur.execute("""
+        cur.execute(
+            """
             INSERT INTO crash (
                 id, state, county, municipality,
                 latitude, longitude, year, month, collision_type,
@@ -224,16 +225,32 @@ with open('PA_CRASH.txt', newline='') as csvfile:
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                 %s, %s
             )
-            """, [
-                row[0], 'pa', lookup_pa['county'][row[2]], lookup_pa['muni'][row[3]], 
-                lat, lon, row[5], row[6], lookup_pa['collision'][row[13]],
-                int(row[23]), int(row[22]), int(row[31]), int(row[48]),
-                int(row[32]), int(row[33]), 
+            """,
+            [
+                row[0],
+                "pa",
+                lookup_pa["county"][row[2]],
+                lookup_pa["muni"][row[3]],
+                lat,
+                lon,
+                row[5],
+                row[6],
+                lookup_pa["collision"][row[13]],
+                int(row[23]),
+                int(row[22]),
+                int(row[31]),
+                int(row[48]),
+                int(row[32]),
+                int(row[33]),
                 int(row[22]) - int(row[32]) - int(row[33]) - int(row[38]),
                 int(row[38]),
-                int(row[34]), int(row[35]), int(row[36]), int(row[37]),
-                int(row[46]), int(row[49])
-            ]
+                int(row[34]),
+                int(row[35]),
+                int(row[36]),
+                int(row[37]),
+                int(row[46]),
+                int(row[49]),
+            ],
         )
 
 # insert NJ crash data into db
@@ -300,15 +317,15 @@ Column index/name from 1_accidents
 58 SRI
 """
 
-with open('NJ_1_Accidents.csv', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',')
+with open("NJ_1_Accidents.csv", newline="") as csvfile:
+    reader = csv.reader(csvfile, delimiter=",")
     next(reader)  # skip header
     for row in reader:
         # change some abbreviations
-        if 'TWP' in row[2]:
-            municipality = row[2].replace('TWP', 'Township')
-        elif 'BORO' in row[2]:
-            municipality = row[2].replace('BORO', 'Borough')
+        if "TWP" in row[2]:
+            municipality = row[2].replace("TWP", "Township")
+        elif "BORO" in row[2]:
+            municipality = row[2].replace("BORO", "Borough")
         else:
             municipality = row[2]
 
@@ -317,12 +334,12 @@ with open('NJ_1_Accidents.csv', newline='') as csvfile:
             lat = None
         else:
             lat = float(row[45])
-        
+
         if not row[46].strip():
             lon = None
         else:
             lon = -(abs(float(row[46])))
-        
+
         unknown = 0 if not row[57] else int(row[57])
 
         # some missing values for TotalPersons
@@ -337,7 +354,8 @@ with open('NJ_1_Accidents.csv', newline='') as csvfile:
         mod_inj = 0 if not row[55] else int(row[55])
         min_inj = 0 if not row[56] else int(row[56])
 
-        cur.execute("""
+        cur.execute(
+            """
             INSERT INTO crash (
                 id, state, county, municipality,
                 latitude, longitude, year, month,
@@ -351,19 +369,36 @@ with open('NJ_1_Accidents.csv', newline='') as csvfile:
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                 %s, %s
             )
-            """, [
-                row[0], 'nj', row[1].title(), municipality.title(), 
-                lat, lon, row[3].split('/')[2], row[3].split('/')[0], 
+            """,
+            [
+                row[0],
+                "nj",
+                row[1].title(),
+                municipality.title(),
+                lat,
+                lon,
+                row[3].split("/")[2],
+                row[3].split("/")[0],
                 lookup_nj_collision[row[17]],
-                int(row[18]), person_count,
-                int(row[9]), int(row[10]), uninjured, unknown,
-                maj_inj, mod_inj, min_inj, 0,
-                0, 0, 0, 0,
-            ]
+                int(row[18]),
+                person_count,
+                int(row[9]),
+                int(row[10]),
+                uninjured,
+                unknown,
+                maj_inj,
+                mod_inj,
+                min_inj,
+                0,
+                0,
+                0,
+                0,
+                0,
+            ],
         )
 
 # now update number/fatalities of bicyclists and pedestrians (they are combined in 1_accidents)
-'''
+"""
 0 "CaseNumber"
 1 "PedestrianNumber"
 2 "PhysicalCondition"
@@ -399,14 +434,14 @@ with open('NJ_1_Accidents.csv', newline='') as csvfile:
 32 "PhysicalStatus2"
 33 "IsBycyclist"
 34 "IsOther"
-'''
+"""
 
-with open('NJ_4_Pedestrians.txt', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',')
+with open("NJ_4_Pedestrians.txt", newline="") as csvfile:
+    reader = csv.reader(csvfile, delimiter=",")
     next(reader)  # skip header
     for row in reader:
-        if row[2] == '01':  # pedestrian killed
-            if row[33].strip() == 'Y':
+        if row[2] == "01":  # pedestrian killed
+            if row[33].strip() == "Y":
                 bicycle_fatality = 1
                 ped_fatality = 0
             else:
@@ -415,15 +450,16 @@ with open('NJ_4_Pedestrians.txt', newline='') as csvfile:
         else:
             bicycle_fatality = 0
             ped_fatality = 0
-            
-        if row[33].strip() == 'Y':  # IsBicyclist
+
+        if row[33].strip() == "Y":  # IsBicyclist
             bicyclist = 1
             pedestrian = 0
         else:
             bicyclist = 0
             pedestrian = 1
 
-        cur.execute("""
+        cur.execute(
+            """
             UPDATE crash
             SET 
                 bicyclists = bicyclists + %s,
@@ -431,21 +467,18 @@ with open('NJ_4_Pedestrians.txt', newline='') as csvfile:
                 bike_fatalities = bike_fatalities + %s,
                 ped_fatalities = ped_fatalities + %s
             WHERE id = %s
-            """, [
-                bicyclist,
-                pedestrian,
-                bicycle_fatality,
-                ped_fatality,
-                row[0]
-            ]
+            """,
+            [bicyclist, pedestrian, bicycle_fatality, ped_fatality, row[0]],
         )
 
 # add the geom field
 
-cur.execute("UPDATE crash SET geom = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326);")
+cur.execute(
+    "UPDATE crash SET geom = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326);"
+)
 
 con.commit()
 cur.close()
 con.close()
 
-print('Postgres insertion took', time.time() - start, 'seconds to run.')
+print("Postgres insertion took", time.time() - start, "seconds to run.")
