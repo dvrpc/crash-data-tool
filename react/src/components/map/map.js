@@ -560,7 +560,7 @@ class Map extends Component {
         let crashType = this.props.crashType || 'ksi'
         
         return (
-            <main id="crashMap" ref={el => this.crashMap = el}>
+            <main id="crashMap" className="no-print" ref={el => this.crashMap = el}>
                 <div id="legend" className="shadow overlays">
                     <h3 className="legend-header centered-text" ref={el => this.legendTitle = el}>Number of Crashes ({crashType})</h3>
                     <span id="legend-gradient" ref={el => this.legendGradient = el}></span>

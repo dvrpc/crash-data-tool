@@ -8,7 +8,7 @@ import './navbar.css';
 class Navbar extends Component {
   render() {
     return (
-        <nav id="navbar">
+        <nav id="navbar" className="no-print">
           <div id="navbar-start-content">
             <Link id="crash-map-nav-home" to="/">HOME</Link>
             <Modal />

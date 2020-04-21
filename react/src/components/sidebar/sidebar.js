@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
 
+import PrintPage from '../printPage/printPage.js'
 import {counties, munis } from '../search/dropdowns'
 import { getDataFromKeyword, sidebarCrashType, sidebarRange } from '../../redux/reducers/mapReducer.js'
 
@@ -121,8 +122,9 @@ class Sidebar extends Component {
         const trendOptions = charts.chartOptions('', 'Number of Crashes')
 
         return (
-            <section id="sidebar">
+            <section id="sidebar" className="no-print">
                 <h1 id="crash-map-sidebar-header" className="centered-text">Crash Statistics for {area}</h1>
+                <span id="crash-map-print-sidebar" onClick={window.print}>print statistics</span>
                 <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2018. This dataset is also used by our state and local partners.</p>
                 <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong>. You can adjust the range and severity type using the forms below.</p>
                 
