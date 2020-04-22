@@ -4,7 +4,6 @@ import Footer from '../footer/footer.js';
 import './homepage.css';
 
 class Homepage extends Component {
-    // @TODO: replace this, obviously
     clickJawn = e => {
         e.preventDefault()
         this.props.history.push('/crash-web-map')

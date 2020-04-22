@@ -1,5 +1,6 @@
 #print-section table{
     text-align: center;
+    width: 100%;
 }
 #print-map{
     display: block;
@@ -7,3 +8,6 @@
     margin: 3% auto;
     border: 2px solid #437b82;
 }
+.print-header{
+    color: #437b82;
+}   

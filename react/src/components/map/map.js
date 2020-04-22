@@ -43,7 +43,7 @@ class Map extends Component {
             style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
             center: [-75.2273, 40.071],
             zoom: 8.2,
-            //@UPDATES: this is a performance hit but necessary to download images...
+            //@UPDATES: this is a performance hit but necessary to export the map canvas
             preserveDrawingBuffer: true
         })
 
