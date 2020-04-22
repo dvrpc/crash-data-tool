@@ -43,9 +43,10 @@ select {
 
 /* Print Queries */
 @media print {
-  /* hide everything other than the print component */
-  /* @TODO: add no-print class to components */
   .no-print{
     display: none;
+    visibility: hidden;
+    height: 0;
+    width: 0;
   }
 }

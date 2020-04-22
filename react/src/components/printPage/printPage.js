@@ -2,17 +2,23 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import PrintTemplate from 'react-print';
 
-import * as charts from '../sidebar/charts.js'
+import { setSrc } from '../../redux/reducers/mapReducer.js'
+import * as charts from '../sidebar/charts.js';
 import './printPage.css';
 
 class PrintPage extends Component {
-    componentDidMount() {
-
+    componentDidUpdate() {
+        if(this.props.src) {
+            // print and then clear src from store
+            this.mapImg.setAttribute('src', this.props.src)
+            window.print()
+            this.props.setSrc(null)
+        }
     }
-    render() {
 
+    render() {
         // set dynamic text
-        let area = this.props.context
+        let area = this.props.area || 'the DVRPC Region'
         let crashType = this.props.crashType
         const range = this.props.range || {from: 2014, to: 2018}
         const from = range.from
@@ -37,15 +43,15 @@ class PrintPage extends Component {
         const collisionType = data.collisionTypeChart
         const collisionTypeData = collisionType.datasets[0].data
         const collissionTypeLabels = collisionType.labels
-
         return(
             <PrintTemplate>
-                <section id="print-sidebar">
+                <section id="print-section">
+                    <img id="print-map" alt="map of extent" ref={el => this.mapImg = el} />
                     <h1 className="centered-text">Crash Statistics for {area}</h1>
                     <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2018. This dataset is also used by our state and local partners.</p>
                     <p className="sidebar-paragraphs">The following tables and map are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong>.</p>
             
-                    <hr id="sidebar-hr" />
+                    <hr />
 
                     <h2 className="centered-text crash-map-sidebar-subheader">Crashes over Time</h2>
                         <table>
@@ -138,10 +144,17 @@ class PrintPage extends Component {
 const mapStateToProps = state => {
     return {
         data: state.data,
-        context: state.area,
+        area: state.area,
         range: state.range,
-        crashType: state.crashType
+        crashType: state.crashType,
+        src: state.src
     }   
 }
 
-export default connect(mapStateToProps, null)(PrintPage);
+const mapDispatchToProps = dispatch => {
+    return {
+        setSrc: src => dispatch(setSrc(src))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PrintPage);

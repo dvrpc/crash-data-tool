@@ -12,7 +12,7 @@ class Homepage extends Component {
 
     render() {
         return (
-            <div id="homepage">
+            <div id="homepage" className="no-print">
                 <header>
                     <img id="header-logo" src="https://www.dvrpc.org/PhotosAndLogos/img/dvrpc_logo_white.png" alt="logo" />
                 </header>

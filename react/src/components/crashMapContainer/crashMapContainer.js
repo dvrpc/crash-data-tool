@@ -13,11 +13,12 @@ class CrashMapContainer extends Component {
         <div id="crash-map-container">
             <Navbar />
 
-            <div id="crash-map-content-wrapper">
+            <div id="crash-map-content-wrapper" className="no-print">
                 <Sidebar />
-                <PrintPage />
                 <Map />
             </div>
+            
+            <PrintPage />
         </div>
     );
   }

@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
 
 import {counties, munis } from '../search/dropdowns'
-import { getDataFromKeyword, sidebarCrashType, sidebarRange } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, sidebarCrashType, sidebarRange, setSrc } from '../../redux/reducers/mapReducer.js'
 
 import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
@@ -100,6 +100,12 @@ class Sidebar extends Component {
         }
     }
 
+    setSrc = () => {
+        const mapCanvas = document.querySelector('.mapboxgl-canvas')
+        const src = mapCanvas.toDataURL()
+        this.props.setSrc(src)
+    }
+
     render() {
         // set dynamic text
         let area = this.props.context || this.state.context
@@ -117,15 +123,13 @@ class Sidebar extends Component {
             data = charts.makeCharts(null, chartsRange)
         }
 
-        console.log('data at sidebar ', data)
-
         const severityOptions = charts.chartOptions('Injury type', 'Number of persons')
         const trendOptions = charts.chartOptions('', 'Number of Crashes')
 
         return (
             <section id="sidebar" className="no-print">
                 <h1 id="crash-map-sidebar-header" className="centered-text">Crash Statistics for {area}</h1>
-                <span id="crash-map-print-sidebar" onClick={window.print}>print statistics</span>
+                <span id="crash-map-print-sidebar" onClick={this.setSrc}>print statistics</span>
                 <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2018. This dataset is also used by our state and local partners.</p>
                 <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong>. You can adjust the range and severity type using the forms below.</p>
                 
@@ -205,7 +209,8 @@ const mapDispatchToProps = dispatch => {
     return {
         getCrashData: region => dispatch(getDataFromKeyword(region)),
         setCrashTypeFilter: filter => dispatch(sidebarCrashType(filter)),
-        setCrashRange: range => dispatch(sidebarRange(range))
+        setCrashRange: range => dispatch(sidebarRange(range)),
+        setSrc: src => dispatch(setSrc(src))
     }
 }
 

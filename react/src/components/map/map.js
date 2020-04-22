@@ -42,7 +42,9 @@ class Map extends Component {
             container: this.crashMap,
             style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
             center: [-75.2273, 40.071],
-            zoom: 8.2
+            zoom: 8.2,
+            // @PRINT jawn: need this to print ugh gross ew
+            preserveDrawingBuffer: true
         })
 
         // add navigation, draw tool, extent and filter buttons
@@ -73,64 +75,64 @@ class Map extends Component {
             // add crash data layers
             this.map.addLayer(layers.crashHeat)
             this.map.addLayer(layers.crashCircles)
+        })
 
-            // status of the hovered municipality
-            let hoveredGeom = null
-            
-            // add hover effect to geographies
-            this.map.on('mousemove', 'municipality-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
-            this.map.on('mouseleave', 'municipality-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
-            this.map.on('mousemove', 'county-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
-            this.map.on('mouseleave', 'county-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
+        // status of the hovered municipality
+        let hoveredGeom = null
+        
+        // add hover effect to geographies
+        this.map.on('mousemove', 'municipality-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
+        this.map.on('mouseleave', 'municipality-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
+        this.map.on('mousemove', 'county-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
+        this.map.on('mouseleave', 'county-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
 
-            // clicking a GEOGRAPHY triggers the same set of actions as searching by muni
-            this.map.on('click', 'municipality-fill', e => this.clickGeography(e))
-            this.map.on('click', 'county-fill', e => this.clickGeography(e))
-            
-            // update legend depending on zoom level (heatmap vs crash circles)
-            this.map.on('zoomend', () => {
-                const zoom = this.map.getZoom()
-                const legendTitle = this.legendTitle.textContent
+        // clicking a GEOGRAPHY triggers the same set of actions as searching by muni
+        this.map.on('click', 'municipality-fill', e => this.clickGeography(e))
+        this.map.on('click', 'county-fill', e => this.clickGeography(e))
+        
+        // update legend depending on zoom level (heatmap vs crash circles)
+        this.map.on('zoomend', () => {
+            const zoom = this.map.getZoom()
+            const legendTitle = this.legendTitle.textContent
 
-                if(zoom >= 11 && legendTitle[0] !== 'C') {
-                    this.legendTitle.textContent = 'Crash Severity'
-                    this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #d62839)'
-                    this.legendLabel.innerHTML = '<span>No Injury</span><span>Fatal</span>'
-                }
+            if(zoom >= 11 && legendTitle[0] !== 'C') {
+                this.legendTitle.textContent = 'Crash Severity'
+                this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #d62839)'
+                this.legendLabel.innerHTML = '<span>No Injury</span><span>Fatal</span>'
+            }
 
-                if(zoom < 11 && legendTitle[0] !== 'N'){
-                    let crashType = this.props.crashType || 'ksi'
-                    this.legendTitle.textContent = `Number of Crashes (${crashType})`
-                    this.legendGradient.style.background = 'linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248)'
-                    this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
-                }
-            })
+            if(zoom < 11 && legendTitle[0] !== 'N'){
+                let crashType = this.props.crashType || 'ksi'
+                this.legendTitle.textContent = `Number of Crashes (${crashType})`
+                this.legendGradient.style.background = 'linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248)'
+                this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
+            }
+        })
 
-            // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
-            this.map.on('mousemove', 'crash-circles', () => {
-                this.map.getCanvas().style.cursor = 'pointer'
-            })
-            this.map.on('mouseleave', 'crash-circles', () => {
-                this.map.getCanvas().style = ''
-            })
+        // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
+        this.map.on('mousemove', 'crash-circles', () => {
+            this.map.getCanvas().style.cursor = 'pointer'
+        })
+        this.map.on('mouseleave', 'crash-circles', () => {
+            this.map.getCanvas().style = ''
+        })
 
-            // clicking a circle creates a popup w/basic information
-            this.map.on('click', 'crash-circles', e => {
-                const features = e.features
+        // clicking a circle creates a popup w/basic information
+        this.map.on('click', 'crash-circles', e => {
+            const features = e.features
 
-                // extract array of crn and severity for all crashes at that clicked point
-                const crnArray = features.map(crash => { return {crn: crash.properties.id, severity: crash.properties.max_sever} })
-                let index = 0
+            // extract array of crn and severity for all crashes at that clicked point
+            const crnArray = features.map(crash => { return {crn: crash.properties.id, severity: crash.properties.max_sever} })
+            let index = 0
 
-                // initialize the mapbox popup object
-                const popup = new mapboxgl.Popup({
-                    closebutton: true,
-                    closeOnClick: true
-                }).setLngLat(e.lngLat)
+            // initialize the mapbox popup object
+            const popup = new mapboxgl.Popup({
+                closebutton: true,
+                closeOnClick: true
+            }).setLngLat(e.lngLat)
 
-                // create popup and handle pagination if necessary
-                this.handlePopup(crnArray, index, popup)
-            })
+            // create popup and handle pagination if necessary
+            this.handlePopup(crnArray, index, popup)
         })
 
         // Drawing Events

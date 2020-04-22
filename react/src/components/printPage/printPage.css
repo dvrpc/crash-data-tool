@@ -1,0 +1,9 @@
+#print-section table{
+    text-align: center;
+}
+#print-map{
+    display: block;
+    width: 400px;
+    margin: 3% auto;
+    border: 2px solid #437b82;
+}

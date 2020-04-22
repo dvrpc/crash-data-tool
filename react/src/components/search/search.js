@@ -57,7 +57,7 @@ class Search extends Component {
         const selectedSearch = this.state.selectedSearch
 
         return (
-            <form id="search-form" onSubmit={ this.submitSearch }>
+            <form id="search-form" className="no-print" onSubmit={ this.submitSearch }>
                 <fieldset className="search-form-fieldset" name="type" form="search-form">
                     <label id="seearch-by-label" htmlFor="select-search-type">Search By: </label>
                     <select name="type" id="select-search-type" onChange={ this.selectSearch }>

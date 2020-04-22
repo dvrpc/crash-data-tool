@@ -40,6 +40,7 @@ const GET_POLYGON_CRNS = 'GET_POLYGON_CRNS'
 const SET_POLYGON_BBOX = 'SET_POLYGON_BBOX'
 const SIDEBAR_CRASH_TYPE = 'SIDEBAR_CRASH_TYPE'
 const SIDEBAR_RANGE = 'SIDEBAR_RANGE'
+const SET_SRC = 'SET_SRC'
 
 
 /*****************************/
@@ -54,6 +55,7 @@ const get_polygon_crns = polyCRNS => ({ type: GET_POLYGON_CRNS, polyCRNS })
 const set_polygon_bbox = polygonBbox => ({type: SET_POLYGON_BBOX, polygonBbox })
 const sidebar_crash_type = crashType => ({type: SIDEBAR_CRASH_TYPE, crashType})
 const sidebar_range = range => ({type: SIDEBAR_RANGE, range})
+const set_src = src => ({type: SET_SRC, src})
 
 
 /***********************/
@@ -90,6 +92,9 @@ export default function mapReducer(state = [], action) {
         case SIDEBAR_RANGE:
             const range = action.range
             return Object.assign({}, state, { range })
+        case SET_SRC:
+            const src = action.src
+            return Object.assign({}, state, { src })
         default:
             return state
     }
@@ -219,3 +224,4 @@ export const setMapFilter = filter => dispatch => {
 // SIDEBAR Dispatchers
 export const sidebarCrashType = type => dispatch => dispatch(sidebar_crash_type(type))
 export const sidebarRange = range => dispatch => dispatch(sidebar_range(range))
+export const setSrc = src => dispatch => dispatch(set_src(src))

@@ -4,7 +4,7 @@ import "./footer.css";
 class Footer extends Component {
   render() {
     return (
-      <footer className="footer">
+      <footer className="footer no-print">
         <div>
           <p>
             190 N. Independence Mall West, 8th Floor,
