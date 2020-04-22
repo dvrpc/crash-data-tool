@@ -43,7 +43,7 @@ class Map extends Component {
             style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
             center: [-75.2273, 40.071],
             zoom: 8.2,
-            // @PRINT jawn: need this to print ugh gross ew
+            //@UPDATES: this is a performance hit but necessary to download images...
             preserveDrawingBuffer: true
         })
 
@@ -135,7 +135,6 @@ class Map extends Component {
             this.handlePopup(crnArray, index, popup)
         })
 
-        // Drawing Events
         // mutes other map other event listeners when the polygon draw tool is selected (shorts out when user finishes drawing b/c that also calls this function)
         this.map.on('draw.modechange', e => e.mode !== 'draw_polygon' ? null : this.setState({polygon: true}))
 

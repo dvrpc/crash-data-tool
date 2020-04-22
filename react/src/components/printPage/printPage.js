@@ -19,7 +19,7 @@ class PrintPage extends Component {
     render() {
         // set dynamic text
         let area = this.props.area || 'the DVRPC Region'
-        let crashType = this.props.crashType
+        let crashType = this.props.crashType || 'ksi'
         const range = this.props.range || {from: 2014, to: 2018}
         const from = range.from
         const to = range.to
@@ -83,7 +83,8 @@ class PrintPage extends Component {
                                     <th>Moderate</th>
                                     <th>Minor</th>
                                     <th>Uninjured</th>
-                                    <th>Unknown</th>
+                                    <th>Unknown Injury</th>
+                                    <th>Unknown Severity</th>
                                 </tr>
                             </thead>
                             <tbody>

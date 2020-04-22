@@ -31,10 +31,10 @@ const chartOptions = (xlabel, ylabel) =>{
 // Severity chart data
 const severity = data => {
     return {
-        labels: ['Fatal', 'Major', 'Moderate', 'Minor', 'Uninjured', 'Unknown'],
+        labels: ['Fatal', 'Major', 'Moderate', 'Minor', 'Uninjured', 'Unknown Injury', 'Unknown Severity'],
         datasets: [{
             data,
-            backgroundColor: ['#d62839','#e67e88','#e6887e','#93c7db','#4ba3c3','#e3e3e3']
+            backgroundColor: ['#d62839','#e67e88','#e6887e','#93c7db','#4ba3c3','#e3e3e3', '#e3e3e3']
         }]
     }
 }
