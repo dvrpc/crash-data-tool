@@ -121,7 +121,7 @@ class PrintPage extends Component {
                                     <th>​​Hit fixed object</th>
                                     <th>​​Hit pedestrian</th>
                                     <th>​​Non-collision</th>
-                                    <th>​​Other/Unknown</th>
+                                    <th>​​Other / Unknown</th>
                                     <th>​​Rear-end</th>
                                     <th>​​Rear-to-rear (backing)</th>
                                     <th>​​Sideswipe (Opposite dir.)</th>

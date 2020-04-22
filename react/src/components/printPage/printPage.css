@@ -1,6 +1,9 @@
 #print-section table{
-    text-align: center;
+    display: table;
+    table-layout: fixed;
+    border-collapse: collapse;
     width: 100%;
+    text-align: center;
 }
 #print-map{
     display: block;
