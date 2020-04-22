@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
 
-import PrintPage from '../printPage/printPage.js'
 import {counties, munis } from '../search/dropdowns'
 import { getDataFromKeyword, sidebarCrashType, sidebarRange } from '../../redux/reducers/mapReducer.js'
 
@@ -117,6 +116,8 @@ class Sidebar extends Component {
             // placeholder state while waiting for default fetch response
             data = charts.makeCharts(null, chartsRange)
         }
+
+        console.log('data at sidebar ', data)
 
         const severityOptions = charts.chartOptions('Injury type', 'Number of persons')
         const trendOptions = charts.chartOptions('', 'Number of Crashes')
