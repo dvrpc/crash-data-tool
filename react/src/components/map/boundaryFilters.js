@@ -1,9 +1,12 @@
 const createBoundaryFilter = boundingObj => {
-    const { type, name } = {...boundingObj}
+    let { type, id } = {...boundingObj}
+    id = id.toString()
+
     const filter = {
         layer: `${type}-outline`,
-        filter: ['==', 'name', name],
-        }
+        filter: ['==', 'geoid', id],
+    }
+
     return filter
 }
 

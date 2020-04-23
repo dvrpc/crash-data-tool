@@ -8,7 +8,6 @@ import * as layers from './layers.js'
 import * as popups from './popups.js';
 import { createBoundaryFilter, removeBoundaryFilter } from './boundaryFilters.js';
 import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter, getPolygonCrashes, setPolygonBbox, removePolyCRNS  } from '../../redux/reducers/mapReducer.js'
-import { munis, counties } from '../search/dropdowns.js'
 import './map.css';
 
 class Map extends Component {
@@ -438,6 +437,7 @@ class Map extends Component {
         const props = features.properties
         const name = props.name
         const featureID = features.id
+        const geoID = features.properties.geoid
 
         // get KSI and range state from store
         const range = this.props.range || {}
@@ -445,21 +445,18 @@ class Map extends Component {
         let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
 
         // set layer-dependent variables
-        let geoID;
         let tileType;
         let countyName;
         if(sourceLayer === 'county'){
-            geoID = counties[name]
             tileType = 'c'
             countyName = `${name} County`
         }else {
-            geoID = munis[name]
             tileType = 'm'
         }
         
         // create data, filter and boundary objects
         const dataObj = { geoID, isKSI }
-        const boundaryObj = { type: sourceLayer, name }
+        const boundaryObj = { type: sourceLayer, id: geoID }
         const filterObj = {filterType: newFilterType, tileType, id: geoID, range, boundary: true}
 
         // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area

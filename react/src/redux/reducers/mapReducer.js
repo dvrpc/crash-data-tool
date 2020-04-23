@@ -109,8 +109,8 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
     
     // handle geography & polygon queries    
     const query = geojson === undefined ? `geoid=${geoID}&ksi_only=${isKSI}` : `geojson=${geojson}&ksi_only=${isKSI}`
-    const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?${query}`
-    
+    const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?${query}`  
+      
     const stream = await fetch(api, getOptions)
 
     //error handling - pass the failure message + the boundary object to give context to the displayed error response
@@ -141,19 +141,11 @@ export const getBoundingBox = id => async dispatch => {
     // counties and munis have different code types
     featureServer ? codeType = `FIPS=${id}` : codeType = `GEOID_10=${id}` 
 
-    // boundary query string w/appropriate featureServer & id
-    // @TODO: plug this back in when ESRI gets their stuff together
-    //const api = `https://services1.arcgis.com/LWtWv6q6BJyKidj8/ArcGIS/rest/services/DVRPC_Boundaries/FeatureServer/${featureServer}/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=pgeojson`
-    
+    // boundary query string w/appropriate featureServer & id    
     const backupAPI = `https://services1.arcgis.com/LWtWv6q6BJyKidj8/ArcGIS/rest/services/DVRPC_Boundaries/FeatureServer/${featureServer}/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
     const stream = await fetch(backupAPI, postOptions)
     
     if(stream.ok) {
-        // @BUG: ArcGIS is returning an invalid JSON object. It does not have a closing bracket. Awesome cool great job. 
-        // @TODO: add this two liner back in when we got back to the regular api call
-        // const response = await stream.json()
-        // const bbox = response.bbox
-
         const response = await stream.json()
         const extent = response.extent
         const bbox = [extent.xmax, extent.ymax, extent.xmin, extent.ymin]
@@ -192,7 +184,7 @@ export const setMapFilter = filter => dispatch => {
     // check for boundary
     if(boundary) {
         const tileType = filter.tileType
-        const id = filter.id
+        const id = parseInt(filter.id)
         mapFilter = ['all', ['==', tileType, id]]
     }else{
         mapFilter = ['all']

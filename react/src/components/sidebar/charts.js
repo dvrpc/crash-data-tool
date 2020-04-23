@@ -97,9 +97,6 @@ const makePlaceholders = () => {
     return { collisionTypeChart, severityChart, modeChart, trendChart }
 }
 
-// helper function to sum severity into trend
-const sum = obj => Object.keys(obj).reduce((acca, cur) => acca + obj[cur], 0)
-
 // transform db response into a format the charting functions can consume
 const formatData = (yearData, output) => {
     Object.keys(yearData).forEach(key => {
