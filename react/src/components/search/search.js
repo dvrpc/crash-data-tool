@@ -10,7 +10,7 @@ class Search extends Component {
     constructor(props){
         super(props)
         this.state = {
-            selectedSearch: ['Pennsylvania', 'New Jersey']
+            selectedSearch: ['Bucks','Chester','Delaware','Montgomery','Philadelphia','Gloucester','Camden','Burlington','Mercer']
         }
     }
     
@@ -61,7 +61,6 @@ class Search extends Component {
                 <fieldset className="search-form-fieldset" name="type" form="search-form">
                     <label id="seearch-by-label" htmlFor="select-search-type">Search By: </label>
                     <select name="type" id="select-search-type" onChange={ this.selectSearch }>
-                        <option value="state">State</option>
                         <option value="county">County</option>
                         <option value="municipality">Municipality</option>
                         <option value="address">Address</option>
