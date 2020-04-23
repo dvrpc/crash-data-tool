@@ -105,17 +105,20 @@ const formatData = (yearData, output) => {
     Object.keys(yearData).forEach(key => {
     
         const innerObj = yearData[key]
+        const innerKeys = Object.keys(innerObj)
 
-        // quick hack to handle trend b/c no db response for it
-        if(key === 'severity') output.trend.push(sum(innerObj))
-    
-        Object.keys(innerObj).forEach((innerKey, index) => {
-            if(output[key][index] > -1){
-                output[key][index] += innerObj[innerKey]
-            }else{
-                output[key].push(innerObj[innerKey])
-            }
-        })
+        // handle trend being a different response format - the others are objects but it's an integar
+        if(innerKeys.length){
+            Object.keys(innerObj).forEach((innerKey, index) => {
+                if(output[key][index] > -1){
+                    output[key][index] += innerObj[innerKey]
+                }else{
+                    output[key].push(innerObj[innerKey])
+                }
+            })
+        }else {
+            output.trend.push(innerObj)
+        }
     })
 }
 
