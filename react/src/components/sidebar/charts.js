@@ -28,6 +28,17 @@ const chartOptions = (xlabel, ylabel) =>{
         }
     }
 }
+
+// Trend chart data
+const trend = (data, years) => {
+    years = formatYears(years)
+    return {
+        labels: years,
+        datasets: [{
+            data
+        }]
+    }
+}
 // Severity chart data
 const severity = data => {
     return {
@@ -74,15 +85,6 @@ const formatYears = years => {
 
     return yearsFormatted
 }
-const trend = (data, years) => {
-    years = formatYears(years)
-    return {
-        labels: years,
-        datasets: [{
-            data
-        }]
-    }
-}
 
 
 ////
@@ -91,7 +93,7 @@ const trend = (data, years) => {
 // initialize empty charts
 const makePlaceholders = () => {
     const collisionTypeChart = collisionType([0,0,0,0,0,0,0,0,0,0])
-    const severityChart = severity([0,0,0,0,0])
+    const severityChart = severity([0,0,0,0,0,0,0])
     const modeChart = mode([0,0,0])
     const trendChart = trend([0,0,0,0,0,0],null)
     return { collisionTypeChart, severityChart, modeChart, trendChart }
@@ -100,18 +102,13 @@ const makePlaceholders = () => {
 // transform db response into a format the charting functions can consume
 const formatData = (yearData, output) => {
     Object.keys(yearData).forEach(key => {
-    
         const innerObj = yearData[key]
         const innerKeys = Object.keys(innerObj)
 
         // handle trend being a different response format - the others are objects but it's an integar
         if(innerKeys.length){
             Object.keys(innerObj).forEach((innerKey, index) => {
-                if(output[key][index] > -1){
-                    output[key][index] += innerObj[innerKey]
-                }else{
-                    output[key].push(innerObj[innerKey])
-                }
+                output[key][index] = innerObj[innerKey] + output[key][index]
             })
         }else {
             output.trend.push(innerObj)
@@ -148,9 +145,9 @@ const makeCharts = (data, range) => {
     let severityChart, modeChart, collisionTypeChart, trendChart;
 
     let output = {
-        mode: [],
-        severity: [],
-        type: [],
+        mode: [0,0,0],
+        severity: [0,0,0,0,0,0,0],
+        type: [0,0,0,0,0,0,0,0,0,0],
         trend: []
     }
 

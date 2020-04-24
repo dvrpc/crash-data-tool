@@ -114,10 +114,12 @@ class Sidebar extends Component {
         let to = this.state.to
         let chartsRange = {from, to}
 
+        
         // draw charts
         let data;
         if(this.props.data){
             data = charts.makeCharts(this.props.data, chartsRange)
+
         }else{
             // placeholder state while waiting for default fetch response
             data = charts.makeCharts(null, chartsRange)
