@@ -114,7 +114,6 @@ class Sidebar extends Component {
         let to = this.state.to
         let chartsRange = {from, to}
 
-        
         // draw charts
         let data;
         if(this.props.data){

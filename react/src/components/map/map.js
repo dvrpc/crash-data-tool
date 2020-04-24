@@ -42,7 +42,7 @@ class Map extends Component {
             style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
             center: [-75.2273, 40.071],
             zoom: 8.2,
-            //@UPDATES: this is a performance hit but necessary to export the map canvas
+            //@Note: this is a performance hit but necessary to export the map canvas
             preserveDrawingBuffer: true
         })
 
@@ -76,8 +76,9 @@ class Map extends Component {
             this.map.addLayer(layers.crashCircles)
         })
 
-        // status of the hovered municipality
+        // variables for hover state
         let hoveredGeom = null
+        let hoveredCircle = null
         
         // add hover effect to geographies
         this.map.on('mousemove', 'municipality-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
@@ -109,11 +110,50 @@ class Map extends Component {
         })
 
         // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
-        this.map.on('mousemove', 'crash-circles', () => {
+        this.map.on('mousemove', 'crash-circles', e => {
             this.map.getCanvas().style.cursor = 'pointer'
+
+            if(hoveredCircle){
+                this.map.removeFeatureState({
+                    source: 'Crashes',
+                    sourceLayer: 'crash-circles',
+                    id: hoveredCircle
+                })
+            }
+
+            // @TODO: e.features[0].id does not exist. add this back in when circles lack of feature id is solved
+            // if(e.features.length > 0) {
+            //     hoveredCircle = e.features[0].id
+                
+            //     this.map.setFeatureState(
+            //         {
+            //             source: 'Crashes',
+            //             sourceLayer: 'crash-circles',
+            //             id: hoveredCircle
+            //         },
+            //         {
+            //             hover: true
+            //         }
+            //     )
+            // }
         })
+
         this.map.on('mouseleave', 'crash-circles', () => {
-            this.map.getCanvas().style = ''
+            if (hoveredCircle) {
+                this.map.setFeatureState(
+                    {
+                        source: 'Crashes',
+                        sourceLayer: 'crash-circles',
+                        id: hoveredCircle
+                    },
+                    {
+                        hover: false
+                    }
+            )}
+            
+            hoveredCircle = null;
+
+            this.map.getCanvas().style.cursor = ''
         })
 
         // clicking a circle creates a popup w/basic information
@@ -289,7 +329,6 @@ class Map extends Component {
     showBoundaryOverlay = () => this.boundaryOverlay.classList.remove('hidden')
 
     // apply boundary filters and map styles
-    // @UPDATE: The only way to handle duplicate MUNIS is to use geoID but counties don't have geoID so they will fail if we switch to geoID. The tiles should be updated. 
     setBoundary = boundaryObj => {
         
         // testing polygon

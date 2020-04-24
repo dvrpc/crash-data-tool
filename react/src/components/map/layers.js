@@ -131,9 +131,6 @@ const crashCircles = {
         ['==', ['get', 'max_sever'], 2],
     ],
     paint: {
-        /*
-            0: Not injured, 1: killed, 2: major, 3: moderate, 4: minor, 8: injury/unknown severity, 9: unknown
-        */
         'circle-color': [
             'match',
             ['get', 'max_sever'],
@@ -147,11 +144,12 @@ const crashCircles = {
             'rgba(255,255,255,0)'
         ],
         'circle-radius': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            11, 5,
-            22, 20
+            'case',
+            ['boolean',
+                ['feature-state', 'hover'], false
+            ],
+            5,
+            7
         ],
         'circle-opacity': [
             'interpolate',
