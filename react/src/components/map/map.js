@@ -35,13 +35,14 @@ class Map extends Component {
 
     componentDidMount() {
         mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
+        let zoom = window.innerWidth <= 420 ? 7.3 : 8.2
         
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
             style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
             center: [-75.2273, 40.071],
-            zoom: 8.2,
+            zoom,
             //@Note: this is a performance hit but necessary to export the map canvas
             preserveDrawingBuffer: true
         })

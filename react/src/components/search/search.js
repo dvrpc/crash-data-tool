@@ -78,7 +78,7 @@ class Search extends Component {
                     </fieldset>
                     )
                 }
-                <input type="submit" value="search" />
+                <input type="submit" value="Search" />
             </form>
         )
     }

@@ -1,4 +1,7 @@
 /* General Element Selectors */
+* {
+  margin: 0;
+}
 body {
   margin: 0;
   padding: 0;
@@ -31,7 +34,6 @@ select {
 .hidden{
   display: none;
 }
-
 
 
 /* Media Queries */
