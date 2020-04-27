@@ -179,7 +179,7 @@ def get_summary(
     county: str = Query(None, description="Select crashes by county"),
     municipality: str = Query(None, description="Select crashes by municipality"),
     geoid: str = Query(None, description="Select crashes by geoid"),
-    geojson: str = Query(None, description="Select crashes by jeoson"),
+    geojson: str = Query(None, description="Select crashes by geoson"),
     ksi_only: bool = Query(
         False,
         description="Limit results to crashes with fatalities or major injuries only",
@@ -242,7 +242,7 @@ def get_summary(
         if not result:
             return JSONResponse(
                 status_code=404,
-                content={"message": "No information found for given parameters"},
+                content={"message": "Given geoid not found."},
             )
         # now set up where clause
         sub_clauses.append(f"{result[0]} = %s")
