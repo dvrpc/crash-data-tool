@@ -141,7 +141,6 @@ def get_crash(id: str):
         return JSONResponse(status_code=404, content={"message": "Crash not found"})
 
     if result[9]:
-        print(result[9])
         max_severity = 'fatality'
     elif result[10]:
         max_severity = 'major injury'
@@ -253,8 +252,6 @@ def get_summary(
         if result[2] != None:
             sub_clauses.append("municipality = %s")
             values.append(result[2])
-        print(sub_clauses)
-        print(values)
     elif geojson:
         sub_clauses.append("ST_WITHIN(geom,ST_GeomFromGeoJSON(%s))")
         values.append(geojson)
