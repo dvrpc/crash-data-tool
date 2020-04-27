@@ -31,9 +31,11 @@ const getPopupInfo = async crash => {
 const setPopup = (popupInfo, index, length) => {
     popupInfo.severity = severityLookup[popupInfo.severity]
 
+    // @TODO: update pedestrian and bicycle fields
+
     return `
         <h3 class="crash-popup-header">Crash Record Number: ${popupInfo.crn}</h3>
-        <hr />
+        <hr id="crash-popup-hr" />
         <ul id="crash-popup-ul">
             <li>Collision Type: ${popupInfo.collision_type}</li>
             <li>Max Severity: ${popupInfo.severity}</li>

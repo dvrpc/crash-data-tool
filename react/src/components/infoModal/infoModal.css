@@ -23,6 +23,13 @@
     background: #437b82;
     padding: 15px 0 15px 7.5%;
 }
+#crash-map-modal ul{
+    list-style-type: none;
+    padding: 0;
+}
+#crash-map-modal li{
+    margin-bottom: 1%;
+}
 #crash-map-modal-tabs{
     display: flex;
     justify-content: space-between;

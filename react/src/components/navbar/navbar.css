@@ -7,13 +7,17 @@
     justify-content: space-between;
     align-items: center;
 }
-#crash-map-nav-home{
-    color: #f6efee;
-    text-decoration: none;
-    margin-right: 20px;
+#crash-nav-logo{
+    width: 85px;
+}
+.nav-vr {
+    border: 1px dotted white;
+    margin: 0 15px;
+    padding: 2.5vh 0;
 }
 #navbar-start-content{
     display: flex;
+    align-items: center;
 }
 
 /* Information Modal Button */
@@ -36,21 +40,22 @@
 /* Media Queries */
 @media all and (max-width: 800px) {
     #navbar {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        align-items: center;
         margin-bottom: 0;
         padding: 5px 10px;
+        height: 6vh;
     }
-    #crash-map-nav-home{
-        margin-right: 10px;
+    #crash-nav-logo{
+        width: 50px
+    }
+    .nav-vr{
+        margin: 0 10px;
+        padding: 1.8vh 0;
     }
     #crash-map-nav-info-btn{
         font-size: 0.7rem;
         padding: 2px 6px;
     }
-    #seearch-by-label, #search-form select, #search-form input{
+    #search-by-label, #search-form select, #search-form input{
         font-size: 10px;
     }
 }

@@ -57,7 +57,8 @@
 
 /* Remove Boundary Overlay */
 #remove-boundary-btn{
-    bottom: 10px;
+    font-weight: 500;
+    top: 10px;
     left: calc(50% - 33px);
     right: auto;
     padding: 6px 10px;
@@ -65,12 +66,9 @@
     cursor: pointer;
 }
 #remove-boundary-x{
-    background: #424b54;
-    color: #f6efee;
-    font-weight: 700;
-    border-radius: 50%;
-    padding: 0 5px 3px 5px;
-    font-size: 0.9em;
+    font-weight: 800;
+    color: #f4a22d;
+    padding: 0 5px;
     margin-left: 3px;
 }
 
@@ -80,13 +78,23 @@
 }
 .mapboxgl-popup-content{
     padding: 20px 15px;
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.4);
+}
+.mapboxgl-popup-close-button{
+    font-weight: 800;
 }
 .crash-popup-header{
     text-align: center;
 }
+#crash-popup-hr{
+    background-color: #414770;
+    /* background-color: #437b82; */
+    padding: 1px 0;
+    margin: 5px 0;
+}
 #crash-popup-ul{
     list-style-type: none;
-    padding: 8px 0;
+    padding: 0 0 4px 0;
 }
 #crash-popup-ul li{
     margin-bottom: 3px;
@@ -94,6 +102,7 @@
 #crash-popup-pagination{
     display: flex;
     justify-content: space-around;
+    color: #414770;
     text-align: center;
     background: #ececec;
     margin-bottom: -5px;
@@ -101,6 +110,7 @@
 #crash-popup-pagination button{
     border: none;
     background: inherit;
+    font-size: 1.05rem;
 }
 
 /* Media Queries */

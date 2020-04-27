@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom'
+
+import logo from './logo-white.png'
 
 import Search from '../search/search.js';
 import Modal from '../infoModal/infoModal.js';
@@ -10,7 +11,8 @@ class Navbar extends Component {
     return (
         <nav id="navbar" className="no-print">
           <div id="navbar-start-content" className="no-print">
-            <Link id="crash-map-nav-home" to="/">HOME</Link>
+            <a href="https://www.dvrpc.org" rel="noopener noreferrer" target="_blank"><img src={logo} alt="DVRPC logo" id="crash-nav-logo"/></a>
+            <span className="nav-vr"></span>
             <Modal />
           </div>
           <Search />

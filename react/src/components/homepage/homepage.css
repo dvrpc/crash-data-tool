@@ -1,8 +1,6 @@
 /* General */
-* {
-    margin: 0;
-}
-#homepage{
+
+/* #homepage{
     background: rgb(0, 19, 38);
     overflow-x: hidden;
 }
@@ -19,22 +17,21 @@
     height: 1px;
     margin: 0 1rem;
     flex: 1;
-}
+} */
 
 
 /* Header */
-header{
+/* header{
     background: rgb(0, 19, 38);
     padding: 1% 2%;
 }
-/* @TODO: replace with smaller img */
 #header-logo{
     width: 95px;
-}
+} */
 
 
 /* Banner */
-#banner{
+/* #banner{
     height: 420px;
     width: 100%;
     filter: blur(3px);
@@ -44,24 +41,22 @@ header{
     position: absolute;
     width: 100%;
     text-align: center;
-    /* set top to half of banner height + header padding */
     top: calc(2% + 210px);
     z-index: 5;
     color: #ecebe4;
     font-size: 3.5rem;
     text-shadow: 1px 2px 3px rgb(0,19,38);
-}
+} */
 
 
 /* Content */
-#crash-toolkit-main{
-    padding: 2% 2% 5% 2%;
+/* #crash-toolkit-main{
+    padding: 2% 5% 5% 5%;
     background: #f7f7f7;
 }
 #crash-apps-container{
     display: flex;
     justify-content: space-between;
-    /* compensate for the absolutely positioned circles & add 20px */
     margin-top: 90px;
     padding-bottom: 3%;
 }
@@ -108,19 +103,19 @@ header{
 }
 .crash-app:hover .crash-app-img{
     box-shadow: 1px 2px 10px rgba(0,19,38,0.8);
-}
+} */
 
 /* Safe Streets / TEXT */
-#safe-streets-container p{
+/* #safe-streets-container p{
     width: 700px;
     margin: 0 auto;
     padding-top: 10px;
     line-height: 1.8rem;
-}
+} */
 
 
 /* Media Queries */
-@media all and (max-width: 800px) {
+/* @media all and (max-width: 800px) {
     header{
         padding: 2%;
     }
@@ -132,7 +127,6 @@ header{
         top: calc(2% + 170px);
     }
 
-    /* Content */
     #crash-toolkit-main{
         padding: 5% 2%;
     }
@@ -157,4 +151,4 @@ header{
     #safe-streets-container p{
         width: 90%;
     }
-}
+} */
