@@ -7,13 +7,19 @@ Testing get_summary()
 endpoint = "/api/crash-data/v1/summary"
 
 
+def test_unknown_geoid_return_404(client):
+    response = client.get(endpoint + f"?geoid={5454554}")
+    data = response.json()
+    assert response.status_code == 404
+    assert data["message"] == "Given geoid not found."
+
+
 @pytest.mark.parametrize(
     "area,value",
     [
         ("state", "CA"),
         ("county", "Allegheny"),
         ("municipality", "Erie City"),
-        ("geoid", 5454554),
     ],
 )
 def test_unknown_values_return_404(client, area, value):
