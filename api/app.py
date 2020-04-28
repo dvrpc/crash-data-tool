@@ -232,8 +232,30 @@ def get_summary(
             sub_clauses.append("county = %s")
             values.append(county)
         if municipality:
-            sub_clauses.append("municipality = %s")
-            values.append(municipality)
+            if (not county and municipality in 
+                [
+                    'Elk Township',
+                    'Franklin Township',
+                    'Middletown Township',
+                    'New Hanover Township',
+                    'Newtown Township',
+                    'Springfield Township',
+                    'Telford Borough',
+                    'Thornbury Township',
+                    'Tinicum Township',
+                    'Upper Providence Township',
+                    'Warwick Township',
+                    'Washington Township',
+                ]
+            ):
+                return JSONResponse(
+                    status_code=400,
+                    content={"message": "The name of the municipality provided exists in more "
+                                        "than one county. Please also provide the county name."}
+                )
+            else:
+                sub_clauses.append("municipality = %s")
+                values.append(municipality)
     elif geoid:
         # get the name and area type for this geoid
         cursor.execute("SELECT state, county, municipality from geoid where geoid = %s", [geoid])

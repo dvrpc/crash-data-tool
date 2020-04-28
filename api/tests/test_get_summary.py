@@ -76,6 +76,61 @@ def test_minimal_success_by_type_and_ksi(client, area, value, ksi_only):
     assert response.status_code == 200
 
 
+@pytest.mark.parametrize(
+    "value",
+    [
+        ("Elk Township"),
+        ("Franklin Township"),
+        ("Middletown Township"),
+        ("New Hanover Township"),
+        ("Newtown Township"),
+        ("Telford Borough"),
+        ("Thornbury Township"),
+        ("Tinicum Township"),
+        ("Upper Providence Township"),
+        ("Warwick Township"),
+        ("Washington Township"),
+    ],
+)
+def test_duplicate_named_munis_require_county_name(client, value):
+    response = client.get(endpoint + f"?municipality={value}")
+    data = response.json()
+    assert response.status_code == 400
+    assert "provide the county" in data['message']
+
+
+@pytest.mark.parametrize(
+    "county, municipality",
+    [
+        ("Chester", "Elk Township"),
+        ("Gloucester", "Elk Township"),
+        ("Chester", "Franklin Township"),
+        ("Gloucester", "Franklin Township"),
+        ("Bucks", "Middletown Township"),
+        ("Delaware", "Middletown Township"),
+        ("Burlington", "New Hanover Township"),
+        ("Montgomery", "New Hanover Township"),
+        ("Bucks", "Newtown Township"),
+        #("Delaware", "Newtown Township"),
+        ("Bucks", "Telford Borough"),
+        ("Montgomery", "Telford Borough"),
+        ("Chester", "Thornbury Township"),
+        ("Delaware", "Thornbury Township"),
+        ("Bucks", "Tinicum Township"),
+        ("Delaware", "Tinicum Township"),
+        ("Delaware", "Upper Providence Township"),
+        ("Montgomery", "Upper Providence Township"),
+        ("Bucks", "Warwick Township"),
+        ("Chester", "Warwick Township"),
+        ("Burlington", "Washington Township"),
+        ("Gloucester", "Washington Township"),
+    ],
+)
+def test_duplicate_named_munis_require_county_name(client, county, municipality):
+    response = client.get(endpoint + f"?county={county}&municipality={municipality}")
+    assert response.status_code == 200
+
+
 @pytest.mark.parametrize("ksi_only", ["yes", "no"])
 def test_region_ksi_and_not_ksi_success(client, ksi_only):
     response = client.get(endpoint + f"?ksi_only={ksi_only}")
