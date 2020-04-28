@@ -31,8 +31,6 @@ const getPopupInfo = async crash => {
 const setPopup = (popupInfo, index, length) => {
     popupInfo.severity = severityLookup[popupInfo.severity]
 
-    // @TODO: update pedestrian and bicycle fields
-
     return `
         <h3 class="crash-popup-header">Crash Record Number: ${popupInfo.crn}</h3>
         <hr id="crash-popup-hr" />
@@ -42,8 +40,8 @@ const setPopup = (popupInfo, index, length) => {
             <li>Crash Date: ${popupInfo.month}, ${popupInfo.year}</li>
             <li>Vehicles involved: ${popupInfo.vehicle_count}</li>
             <li>Vehicle Occupants involved: ${popupInfo.vehicle_occupants}</li>
-            <li>Pedestrians involved: ${popupInfo.ped}</li>
-            <li>Bicyclists involved: ${popupInfo.bike}</li>
+            <li>Pedestrians involved: ${popupInfo.ped_count}</li>
+            <li>Bicyclists involved: ${popupInfo.bicycle_count}</li>
         </ul>
         <div id="crash-popup-pagination">
             <button id="crash-previous-popup"><</button>
