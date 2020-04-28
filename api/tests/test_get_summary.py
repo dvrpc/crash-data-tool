@@ -111,7 +111,7 @@ def test_duplicate_named_munis_require_county_name(client, value):
         ("Burlington", "New Hanover Township"),
         ("Montgomery", "New Hanover Township"),
         ("Bucks", "Newtown Township"),
-        #("Delaware", "Newtown Township"),
+        ("Delaware", "Newtown Township"),
         ("Bucks", "Telford Borough"),
         ("Montgomery", "Telford Borough"),
         ("Chester", "Thornbury Township"),
