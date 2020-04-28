@@ -96,6 +96,9 @@ with open("PA_MCDlist.txt", newline="") as csvfile:
         # to the data table below
         if row[0] == "23202":
             lookup_pa["muni"][row[0]] = "Chadds Ford Township"
+        # Fix misspelling of Newtown Township in Delaware County
+        elif row[0] == "23208":
+            lookup_pa["muni"][row[0]] = "Newtown Township"
         else:
             lookup_pa["muni"][row[0]] = row[1]
 

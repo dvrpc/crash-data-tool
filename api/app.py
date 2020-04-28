@@ -141,7 +141,6 @@ def get_crash(id: str):
         return JSONResponse(status_code=404, content={"message": "Crash not found"})
 
     if result[9]:
-        print(result[9])
         max_severity = 'fatality'
     elif result[10]:
         max_severity = 'major injury'
@@ -233,11 +232,33 @@ def get_summary(
             sub_clauses.append("county = %s")
             values.append(county)
         if municipality:
-            sub_clauses.append("municipality = %s")
-            values.append(municipality)
+            if (not county and municipality in 
+                [
+                    'Elk Township',
+                    'Franklin Township',
+                    'Middletown Township',
+                    'New Hanover Township',
+                    'Newtown Township',
+                    'Springfield Township',
+                    'Telford Borough',
+                    'Thornbury Township',
+                    'Tinicum Township',
+                    'Upper Providence Township',
+                    'Warwick Township',
+                    'Washington Township',
+                ]
+            ):
+                return JSONResponse(
+                    status_code=400,
+                    content={"message": "The name of the municipality provided exists in more "
+                                        "than one county. Please also provide the county name."}
+                )
+            else:
+                sub_clauses.append("municipality = %s")
+                values.append(municipality)
     elif geoid:
         # get the name and area type for this geoid
-        cursor.execute("SELECT area_type, name from geoid where geoid = %s", [geoid])
+        cursor.execute("SELECT state, county, municipality from geoid where geoid = %s", [geoid])
         result = cursor.fetchone()
         if not result:
             return JSONResponse(
@@ -245,8 +266,14 @@ def get_summary(
                 content={"message": "Given geoid not found."},
             )
         # now set up where clause
-        sub_clauses.append(f"{result[0]} = %s")
-        values.append(result[1])
+        sub_clauses.append("state = %s")
+        values.append(result[0])
+        if result[1] != None:
+            sub_clauses.append("county = %s")
+            values.append(result[1])
+        if result[2] != None:
+            sub_clauses.append("municipality = %s")
+            values.append(result[2])
     elif geojson:
         sub_clauses.append("ST_WITHIN(geom,ST_GeomFromGeoJSON(%s))")
         values.append(geojson)

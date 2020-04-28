@@ -7,13 +7,19 @@ Testing get_summary()
 endpoint = "/api/crash-data/v1/summary"
 
 
+def test_unknown_geoid_return_404(client):
+    response = client.get(endpoint + f"?geoid={5454554}")
+    data = response.json()
+    assert response.status_code == 404
+    assert data["message"] == "Given geoid not found."
+
+
 @pytest.mark.parametrize(
     "area,value",
     [
         ("state", "CA"),
         ("county", "Allegheny"),
         ("municipality", "Erie City"),
-        ("geoid", 5454554),
     ],
 )
 def test_unknown_values_return_404(client, area, value):
@@ -67,6 +73,61 @@ def test_unknown_values_return_404(client, area, value):
 )
 def test_minimal_success_by_type_and_ksi(client, area, value, ksi_only):
     response = client.get(endpoint + f"?{area}={value}&ksi_only={ksi_only}")
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        ("Elk Township"),
+        ("Franklin Township"),
+        ("Middletown Township"),
+        ("New Hanover Township"),
+        ("Newtown Township"),
+        ("Telford Borough"),
+        ("Thornbury Township"),
+        ("Tinicum Township"),
+        ("Upper Providence Township"),
+        ("Warwick Township"),
+        ("Washington Township"),
+    ],
+)
+def test_duplicate_named_munis_require_county_name(client, value):
+    response = client.get(endpoint + f"?municipality={value}")
+    data = response.json()
+    assert response.status_code == 400
+    assert "provide the county" in data['message']
+
+
+@pytest.mark.parametrize(
+    "county, municipality",
+    [
+        ("Chester", "Elk Township"),
+        ("Gloucester", "Elk Township"),
+        ("Chester", "Franklin Township"),
+        ("Gloucester", "Franklin Township"),
+        ("Bucks", "Middletown Township"),
+        ("Delaware", "Middletown Township"),
+        ("Burlington", "New Hanover Township"),
+        ("Montgomery", "New Hanover Township"),
+        ("Bucks", "Newtown Township"),
+        #("Delaware", "Newtown Township"),
+        ("Bucks", "Telford Borough"),
+        ("Montgomery", "Telford Borough"),
+        ("Chester", "Thornbury Township"),
+        ("Delaware", "Thornbury Township"),
+        ("Bucks", "Tinicum Township"),
+        ("Delaware", "Tinicum Township"),
+        ("Delaware", "Upper Providence Township"),
+        ("Montgomery", "Upper Providence Township"),
+        ("Bucks", "Warwick Township"),
+        ("Chester", "Warwick Township"),
+        ("Burlington", "Washington Township"),
+        ("Gloucester", "Washington Township"),
+    ],
+)
+def test_duplicate_named_munis_require_county_name(client, county, municipality):
+    response = client.get(endpoint + f"?county={county}&municipality={municipality}")
     assert response.status_code == 200
 
 
