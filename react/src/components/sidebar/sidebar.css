@@ -80,7 +80,7 @@
 @media all and (max-width: 800px) {
     #sidebar{
         width: calc(100% - 20px);
-        height: 50%;
+        height: 40vh;
         padding: 15px 10px;
     }
     #crash-map-sidebar-header{

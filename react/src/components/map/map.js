@@ -24,7 +24,8 @@ class Map extends Component {
                     // disable trash because we want the polygons and muni/county boundaries to follow the same flow (i.e. use the 'remove boundary' overlay for both)
                     trash: false
                 }
-            })
+            }),
+            zoom: window.innerWidth <= 420 ? 7.3 : 8.2
         }
     }
     
@@ -35,14 +36,13 @@ class Map extends Component {
 
     componentDidMount() {
         mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
-        let zoom = window.innerWidth <= 420 ? 7.3 : 8.2
         
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
             style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
             center: [-75.2273, 40.071],
-            zoom,
+            zoom: this.state.zoom,
             //@Note: this is a performance hit but necessary to export the map canvas
             preserveDrawingBuffer: true
         })
@@ -324,7 +324,7 @@ class Map extends Component {
     /*****************/
 
     // reset map to default view
-    resetControl = () => this.map.flyTo({center: [-75.2273, 40.071], zoom: 8.2})
+    resetControl = () => this.map.flyTo({center: [-75.2273, 40.071], zoom: this.state.zoom})
 
     // reveal the boundary overlay when a boundary is established
     showBoundaryOverlay = () => this.boundaryOverlay.classList.remove('hidden')

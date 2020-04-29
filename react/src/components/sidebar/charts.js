@@ -151,8 +151,6 @@ const makeCharts = (data, range) => {
         trend: []
     }
 
-    console.log('data ', data)
-
     // determine whether to build chart data for all years or a specified range of years
     range ? output = hasSetRange(data, range, output) : output = hasAllYears(data, output)
     
