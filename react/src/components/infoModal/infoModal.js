@@ -4,8 +4,8 @@ import { modalContent } from './modalContent.js'
 import './infoModal.css';
 
 class Modal extends Component {
-    showModal = () => this.modal.setAttribute('open', true)
-    hideModal = () => this.modal.removeAttribute('open')
+    showModal = () => this.modal.style.display = 'block'
+    hideModal = () => this.modal.style.display = 'none'
 
     handleTabs = e => {
         const target = e.target
@@ -30,7 +30,7 @@ class Modal extends Component {
         return (
             <div className="no-print">
                 <button id="crash-map-nav-info-btn" type="button" onClick={this.showModal}>?</button>
-                <dialog id="crash-map-modal" ref={el => this.modal = el}>
+                <div role="dialog" id="crash-map-modal" aria-modal="true" aria-labelledby="crash-map-nav-info-btn" ref={el => this.modal = el}>
                     <button type="button" className="crash-map-close-modal" id="crash-map-modal-x" onClick={this.hideModal}>X</button>
                     <h2>DVRPC Crash Data Viewer</h2>
                     <div id="crash-map-modal-tabs" onClick={this.handleTabs}>
@@ -58,7 +58,7 @@ class Modal extends Component {
                         <hr id="crash-map-modal-hr"/>
                         <p><strong>Contact:</strong> Kevin Murphy <a href="mailto:kmurphy@dvrpc.org">kmurphy@dvrpc.org</a></p>
                     </div>
-                </dialog>
+                </div>
             </div>
         )
     }
