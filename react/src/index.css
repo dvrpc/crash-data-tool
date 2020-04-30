@@ -11,9 +11,6 @@ body {
   line-height: 1.5;
   text-rendering: optimizeLegibility;
 }
-strong{
-  color: #f4a22d;
-}
 select, input {
   border-radius: 3px;
   border: none;

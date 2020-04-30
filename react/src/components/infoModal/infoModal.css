@@ -13,6 +13,9 @@
     border-radius: 3px;
     display: none;
 }
+#crash-map-modal strong{
+    color: #414770;
+}
 #crash-map-modal-x{
     font-size: 1.2rem;
     float: right;
@@ -80,5 +83,8 @@
         top: 0;
         right: 0;
         left: auto;
+    }
+    #crash-map-modal-content, #crash-map-modal-tabs{
+        width: 88%;
     }
 }

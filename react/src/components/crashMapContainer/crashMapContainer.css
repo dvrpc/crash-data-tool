@@ -6,7 +6,7 @@
 /* Media queries */
 @media all and (max-width: 800px) {
     #crash-map-content-wrapper {
-        height: 90vh;
+        height: calc(94vh - 10px);
         flex-direction: column-reverse;
     }
 }
