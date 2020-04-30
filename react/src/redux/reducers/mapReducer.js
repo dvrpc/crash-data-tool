@@ -148,12 +148,15 @@ export const getBoundingBox = id => async dispatch => {
     if(stream.ok) {
         const response = await stream.json()
         const extent = response.extent
+        if (!extent) {
+            console.log('bbox call returned null extent')
+            return
+        }
         const bbox = [extent.xmax, extent.ymax, extent.xmin, extent.ymin]
 
         dispatch(get_bounding_box(bbox))
     }else {
-        // error handling @TODO this, but better (remove alert)
-        alert('esri bbox call failed ', stream)
+        console('esri bbox call failed ', stream)
     }
 }
 

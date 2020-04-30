@@ -256,6 +256,23 @@ class Map extends Component {
 
         // add boundaries and their corresponding filters/styles/sidebar stats
         if(this.props.bounding !== prevProps.bounding) {
+
+            // first remove any existing boundary filter and polygon
+            // if(this.state.polygon){
+            //     this.state.draw.deleteAll()
+            //     this.props.removePolyCRNS()
+            // }
+
+            const { county, muni } = removeBoundaryFilter()
+
+            this.map.setFilter(county.layer, county.filter)
+            this.map.setFilter(muni.layer, muni.filter)
+            this.map.setPaintProperty(county.layer, 'line-width', county.paint.width)
+            this.map.setPaintProperty(county.layer, 'line-color', county.paint.color)
+            this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
+            this.map.setPaintProperty(muni.layer, 'line-color', muni.paint.color)
+
+            // create new filter
             const boundingObj = this.props.bounding
             this.setBoundary(boundingObj)
             this.showBoundaryOverlay()
@@ -332,13 +349,6 @@ class Map extends Component {
     // apply boundary filters and map styles
     setBoundary = boundaryObj => {
         
-        // testing polygon
-        // @TODO: remove?
-        if(this.state.polygon){
-            console.log('called setBoundary with a POLYGON ', boundaryObj)
-            return
-        }
-        
         // derive layer styles from boundaryObj
         const filter = createBoundaryFilter(boundaryObj)
 
@@ -348,6 +358,13 @@ class Map extends Component {
         // make the appropraite paint changes
         this.map.setPaintProperty(filter.layer, 'line-width', 4)
         this.map.setPaintProperty(filter.layer, 'line-color', '#f4a22d')
+
+        // remove any existing polygons
+        if(this.state.polygon){
+            this.state.draw.deleteAll()
+            this.props.removePolyCRNS()
+            this.setState( { polygon: false })
+        }
     }
 
     // hide the boundary overlay and reset map filters, styles and sidebar info to default
@@ -364,8 +381,8 @@ class Map extends Component {
         // update sidebar information
         let newFilterType = this.props.crashType || 'ksi'
         let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
+
         const regionalStats = {geoID: '', isKSI}
-        
         this.props.setDefaultState(regionalStats)
         this.props.setSidebarHeaderContext('the DVRPC region')
 
