@@ -148,6 +148,7 @@ export const getBoundingBox = id => async dispatch => {
     if(stream.ok) {
         const response = await stream.json()
         const extent = response.extent
+        
         if (!extent) {
             console.log('bbox call returned null extent')
             return

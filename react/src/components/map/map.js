@@ -494,7 +494,7 @@ class Map extends Component {
         const props = features.properties
         const name = props.name
         const featureID = features.id
-        const geoID = features.properties.geoid
+        let geoID = features.properties.geoid
 
         // get KSI and range state from store
         const range = this.props.range || {}
@@ -509,6 +509,14 @@ class Map extends Component {
             countyName = `${name} County`
         }else {
             tileType = 'm'
+        }
+
+        // handle philly edge case
+        const phillyTest = name.substring(0, 5)
+        if(phillyTest === 'Phila') {
+            geoID = 42101
+            tileType = 'c'
+            sourceLayer = 'county'
         }
         
         // create data, filter and boundary objects
