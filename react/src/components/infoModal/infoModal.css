@@ -1,11 +1,20 @@
 #crash-map-modal{
+    position: absolute;
     width: 800px;
+    top: 15px;
+    left: 50%;
+    right: auto;
+    margin-left: -400px;
     padding: 0;
     z-index: 5;
-    margin: 5px auto 0 auto;
+    background-color: #f7f7f7;
     box-shadow: 0 0 100vh 100vh rgba(0,0,0,0.6);
-    border-color: #437b82;
+    border: 3px solid #437b82;
     border-radius: 3px;
+    display: none;
+}
+#crash-map-modal strong{
+    color: #414770;
 }
 #crash-map-modal-x{
     font-size: 1.2rem;
@@ -70,6 +79,12 @@
 /* Media Queries */
 @media all and (max-width: 900px) {
     #crash-map-modal{
-        width: 90%;
+        width: 100%;
+        top: 0;
+        right: 0;
+        left: auto;
+    }
+    #crash-map-modal-content, #crash-map-modal-tabs{
+        width: 88%;
     }
 }

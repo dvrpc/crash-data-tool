@@ -42,7 +42,7 @@ const trend = (data, years) => {
 // Severity chart data
 const severity = data => {
     return {
-        labels: ['Fatal', 'Major', 'Moderate', 'Minor', 'Uninjured', 'Unknown Injury', 'Unknown Severity'],
+        labels: ['Fatal', 'Major', 'Moderate', 'Minor', 'Uninjured', 'Unknown Severity', 'Unknown Injury'],
         datasets: [{
             data,
             backgroundColor: ['#d62839','#e67e88','#e6887e','#93c7db','#4ba3c3','#e3e3e3', '#e3e3e3']
@@ -52,10 +52,11 @@ const severity = data => {
 // Mode Chart data
 const mode = data => {
     return {
-        labels: ['Bicyclists', 'Vehicle Occupants', 'Pedestrians'],
+        labels: ['Bicyclists', 'Pedestrians', 'Vehicle Occupants'],
         datasets: [{
             data,
-            backgroundColor: ['#6457a6', '#dd403a','#c6e0ff']
+            backgroundColor: ['#6457a6', '#DB7C26','#c6e0ff']
+            // ped colors: orange DB7C26  green 003049
         }]
     }
 }
@@ -65,7 +66,7 @@ const collisionType = data => {
         labels: ['Angle', 'Head on', 'Hit fixed object', 'Hit pedestrian', 'Non-collision', 'Other/Unknown', 'Rear-end',  'Rear-to-rear (backing)', 'Sideswipe (Opposite dir.)', 'Sideswipe (same dir.)'],
         datasets: [{
             data,
-            backgroundColor: ['#b7b6c1','#c6e0ff','#dd403a', '#bad1cd', '#f2d1c9', '#e086d3', '#8332ac', '#a99985', '#89043d', '#aec3b0']
+            backgroundColor: ['#b7b6c1','#dd403a','#c6e0ff', '#89043d', '#f2d1c9', '#e086d3', '#8332ac', '#a99985', '#bad1cd', '#aec3b0']
         }]
     }
 }

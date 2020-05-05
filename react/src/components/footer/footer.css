@@ -7,7 +7,7 @@
     width: 103%;
     margin-left: -3%;
     margin-top: 3%;
-    padding: 3%;
+    padding: 5% 3%;
 }
 .footer a {
     color: unset;
@@ -19,6 +19,6 @@
         font-size: 0.8rem;
         width: 97%;
         margin-left: -3%;
-        padding: 6% 4%;
+        padding: 7% 4%;
     }
 }

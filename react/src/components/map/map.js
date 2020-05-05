@@ -24,7 +24,8 @@ class Map extends Component {
                     // disable trash because we want the polygons and muni/county boundaries to follow the same flow (i.e. use the 'remove boundary' overlay for both)
                     trash: false
                 }
-            })
+            }),
+            zoom: window.innerWidth <= 420 ? 7.3 : 8.2
         }
     }
     
@@ -35,14 +36,13 @@ class Map extends Component {
 
     componentDidMount() {
         mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
-        let zoom = window.innerWidth <= 420 ? 7.3 : 8.2
         
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
             style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
             center: [-75.2273, 40.071],
-            zoom,
+            zoom: this.state.zoom,
             //@Note: this is a performance hit but necessary to export the map canvas
             preserveDrawingBuffer: true
         })
@@ -256,6 +256,23 @@ class Map extends Component {
 
         // add boundaries and their corresponding filters/styles/sidebar stats
         if(this.props.bounding !== prevProps.bounding) {
+
+            // first remove any existing boundary filter and polygon
+            // if(this.state.polygon){
+            //     this.state.draw.deleteAll()
+            //     this.props.removePolyCRNS()
+            // }
+
+            const { county, muni } = removeBoundaryFilter()
+
+            this.map.setFilter(county.layer, county.filter)
+            this.map.setFilter(muni.layer, muni.filter)
+            this.map.setPaintProperty(county.layer, 'line-width', county.paint.width)
+            this.map.setPaintProperty(county.layer, 'line-color', county.paint.color)
+            this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
+            this.map.setPaintProperty(muni.layer, 'line-color', muni.paint.color)
+
+            // create new filter
             const boundingObj = this.props.bounding
             this.setBoundary(boundingObj)
             this.showBoundaryOverlay()
@@ -324,20 +341,13 @@ class Map extends Component {
     /*****************/
 
     // reset map to default view
-    resetControl = () => this.map.flyTo({center: [-75.2273, 40.071], zoom: 8.2})
+    resetControl = () => this.map.flyTo({center: [-75.2273, 40.071], zoom: this.state.zoom})
 
     // reveal the boundary overlay when a boundary is established
     showBoundaryOverlay = () => this.boundaryOverlay.classList.remove('hidden')
 
     // apply boundary filters and map styles
     setBoundary = boundaryObj => {
-        
-        // testing polygon
-        // @TODO: remove?
-        if(this.state.polygon){
-            console.log('called setBoundary with a POLYGON ', boundaryObj)
-            return
-        }
         
         // derive layer styles from boundaryObj
         const filter = createBoundaryFilter(boundaryObj)
@@ -348,6 +358,13 @@ class Map extends Component {
         // make the appropraite paint changes
         this.map.setPaintProperty(filter.layer, 'line-width', 4)
         this.map.setPaintProperty(filter.layer, 'line-color', '#f4a22d')
+
+        // remove any existing polygons
+        if(this.state.polygon){
+            this.state.draw.deleteAll()
+            this.props.removePolyCRNS()
+            this.setState( { polygon: false })
+        }
     }
 
     // hide the boundary overlay and reset map filters, styles and sidebar info to default
@@ -364,8 +381,8 @@ class Map extends Component {
         // update sidebar information
         let newFilterType = this.props.crashType || 'ksi'
         let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
+
         const regionalStats = {geoID: '', isKSI}
-        
         this.props.setDefaultState(regionalStats)
         this.props.setSidebarHeaderContext('the DVRPC region')
 
@@ -477,7 +494,7 @@ class Map extends Component {
         const props = features.properties
         const name = props.name
         const featureID = features.id
-        const geoID = features.properties.geoid
+        let geoID = features.properties.geoid
 
         // get KSI and range state from store
         const range = this.props.range || {}
@@ -492,6 +509,14 @@ class Map extends Component {
             countyName = `${name} County`
         }else {
             tileType = 'm'
+        }
+
+        // handle philly edge case
+        const phillyTest = name.substring(0, 5)
+        if(phillyTest === 'Phila') {
+            geoID = 42101
+            tileType = 'c'
+            sourceLayer = 'county'
         }
         
         // create data, filter and boundary objects
