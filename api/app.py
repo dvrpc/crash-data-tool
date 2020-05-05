@@ -1,5 +1,5 @@
 import calendar
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,7 +20,21 @@ class CrashResponse(BaseModel):
     bicycle_fatalities: int
     ped_count: int
     ped_fatalities: int
-    vehicle_occupants: int
+    vehicle_occupants: Union[int, 'Unknown']
+    collision_type: str
+
+
+class CrashResponseWithId(BaseModel):
+    id: str    
+    month: str
+    year: int
+    max_severity: str
+    vehicle_count: int
+    bicycle_count: int
+    bicycle_fatalities: int
+    ped_count: int
+    ped_fatalities: int
+    vehicle_occupants: Union[int, 'Unknown']
     collision_type: str
 
 
@@ -102,7 +116,7 @@ app.add_middleware(
 
 @app.get(
     "/api/crash-data/v1/crashes",
-    response_model=List[CrashResponse],
+    response_model=List[CrashResponseWithId],
     responses=responses,
 )
 def get_crashes():
@@ -123,7 +137,8 @@ def get_crashes():
             maj_inj,
             mod_inj,
             min_inj,
-            unk_inj
+            unk_inj,
+            id
         FROM crash
     """
 
@@ -135,14 +150,12 @@ def get_crashes():
         )
 
     result = cursor.fetchall()
-    print(len(result))
 
     if not result:
         return JSONResponse(status_code=404, content={"message": "Error: no crashes found."})
     
     crashes = []
     for row in result:
-
         if row[9]:
             max_severity = 'fatality'
         elif row[10]:
@@ -155,8 +168,15 @@ def get_crashes():
             max_severity = 'unknown injury'
         else:
             max_severity = 'no fatality or injury'
+        
+        # persons is a nullable field, because there were some null values in NJ
+        if row[7] is None:
+            vehicle_occupants = "Unknown"
+        else:
+            vehicle_occupants = row[7] - row[3] - row[5]
 
         crash = {
+            "id": row[14],
             "month": calendar.month_name[row[0]],
             "year": row[1],
             "max_severity": max_severity,
@@ -165,12 +185,11 @@ def get_crashes():
             "bicycle_fatalities": row[4],
             "ped_count": row[5],
             "ped_fatalities": row[6],
-            "vehicle_occupants": row[7] - row[3] - row[5],
+            "vehicle_occupants": vehicle_occupants, 
             "collision_type": row[8],
         }
         crashes.append(crash)
     return crashes
-
 
 
 @app.get(
@@ -226,6 +245,12 @@ def get_crash(id: str):
     else:
         max_severity = 'no fatality or injury'
 
+    # persons is a nullable field, because there were some null values in NJ
+    if result[7] is None:
+        vehicle_occupants = "Unknown"
+    else:
+        vehicle_occupants = result[7] - result[3] - result[5]
+
     crash = {
         "month": calendar.month_name[result[0]],
         "year": result[1],
@@ -235,7 +260,7 @@ def get_crash(id: str):
         "bicycle_fatalities": result[4],
         "ped_count": result[5],
         "ped_fatalities": result[6],
-        "vehicle_occupants": result[7] - result[3] - result[5],
+        "vehicle_occupants": vehicle_occupants,
         "collision_type": result[8],
     }
     return crash
