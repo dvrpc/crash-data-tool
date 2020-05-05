@@ -20,7 +20,7 @@ class CrashResponse(BaseModel):
     bicycle_fatalities: int
     ped_count: int
     ped_fatalities: int
-    vehicle_occupants: Union[int, 'Unknown']
+    vehicle_occupants: Union[int, str]
     collision_type: str
 
 
@@ -34,7 +34,7 @@ class CrashResponseWithId(BaseModel):
     bicycle_fatalities: int
     ped_count: int
     ped_fatalities: int
-    vehicle_occupants: Union[int, 'Unknown']
+    vehicle_occupants: Union[int, str]
     collision_type: str
 
 
