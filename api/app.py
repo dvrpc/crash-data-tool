@@ -1,5 +1,5 @@
 import calendar
-from typing import Dict
+from typing import Dict, List
 
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -98,6 +98,79 @@ app.add_middleware(
     allow_methods=["GET"],
     allow_headers=["*"],
 )
+
+
+@app.get(
+    "/api/crash-data/v1/crashes",
+    response_model=List[CrashResponse],
+    responses=responses,
+)
+def get_crashes():
+    """Get information about all crashes."""
+    cursor = get_db_cursor()
+    query = """
+        SELECT
+            month,
+            year,
+            vehicles,
+            bicyclists,
+            bike_fatalities,
+            pedestrians,
+            ped_fatalities,
+            persons,
+            collision_type,
+            fatalities,
+            maj_inj,
+            mod_inj,
+            min_inj,
+            unk_inj
+        FROM crash
+    """
+
+    try:
+        cursor.execute(query)
+    except psycopg2.Error as e:
+        return JSONResponse(
+            status_code=400, content={"message": "Database error: " + str(e)}
+        )
+
+    result = cursor.fetchall()
+    print(len(result))
+
+    if not result:
+        return JSONResponse(status_code=404, content={"message": "Error: no crashes found."})
+    
+    crashes = []
+    for row in result:
+
+        if row[9]:
+            max_severity = 'fatality'
+        elif row[10]:
+            max_severity = 'major injury'
+        elif row[11]:
+            max_severity = 'moderate injury'
+        elif row[12]:
+            max_severity = 'minor injury'
+        elif row[13]:
+            max_severity = 'unknown injury'
+        else:
+            max_severity = 'no fatality or injury'
+
+        crash = {
+            "month": calendar.month_name[row[0]],
+            "year": row[1],
+            "max_severity": max_severity,
+            "vehicle_count": row[2],
+            "bicycle_count": row[3],
+            "bicycle_fatalities": row[4],
+            "ped_count": row[5],
+            "ped_fatalities": row[6],
+            "vehicle_occupants": row[7] - row[3] - row[5],
+            "collision_type": row[8],
+        }
+        crashes.append(crash)
+    return crashes
+
 
 
 @app.get(
