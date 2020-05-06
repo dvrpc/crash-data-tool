@@ -1,6 +1,6 @@
 import pytest
 
-endpoint = "/api/crash-data/v1/crashes" 
+endpoint = "/api/crash-data/v1/crashes"
 
 
 def test_success(client):

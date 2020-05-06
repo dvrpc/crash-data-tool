@@ -29,7 +29,7 @@ def test_id_data_correct1(client):
 
 
 @pytest.mark.parametrize(
-    "id,expected_max_severity", 
+    "id,expected_max_severity",
     [
         ("2014075953", "no fatality or injury"),
         ("2015077824", "minor injury"),
@@ -42,4 +42,4 @@ def test_id_data_correct1(client):
 def test_max_severity(client, id, expected_max_severity):
     response = client.get(endpoint + id)
     data = response.json()
-    assert data['max_severity'] == expected_max_severity
+    assert data["max_severity"] == expected_max_severity

@@ -15,12 +15,7 @@ def test_unknown_geoid_return_404(client):
 
 
 @pytest.mark.parametrize(
-    "area,value",
-    [
-        ("state", "CA"),
-        ("county", "Allegheny"),
-        ("municipality", "Erie City"),
-    ],
+    "area,value", [("state", "CA"), ("county", "Allegheny"), ("municipality", "Erie City"),],
 )
 def test_unknown_values_return_404(client, area, value):
     response = client.get(endpoint + f"?{area}={value}")
@@ -96,7 +91,7 @@ def test_duplicate_named_munis_require_county_name(client, value):
     response = client.get(endpoint + f"?municipality={value}")
     data = response.json()
     assert response.status_code == 400
-    assert "provide the county" in data['message']
+    assert "provide the county" in data["message"]
 
 
 @pytest.mark.parametrize(
