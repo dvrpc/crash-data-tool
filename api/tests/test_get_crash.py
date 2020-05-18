@@ -13,7 +13,7 @@ def test_id_success1(client):
     assert response.status_code == 200
 
 
-def test_id_data_correct1(client):
+def test_data_correct1(client):
     response = client.get(endpoint + "NJ201808052018-34718")
     data = response.json()
     assert len(data) == 10
@@ -26,6 +26,21 @@ def test_id_data_correct1(client):
     assert data["ped_fatalities"] == 0
     assert data["vehicle_occupants"] == 1
     assert data["collision_type"] == "Hit pedestrian"
+
+
+def test_data_correct2(client):
+    response = client.get(endpoint + "NJ201403042014-489")
+    data = response.json()
+    assert len(data) == 10
+    assert data["month"] == "January"
+    assert data["year"] == 2014
+    assert data["vehicle_count"] == 2
+    assert data["bicycle_count"] == 0
+    assert data["bicycle_fatalities"] == 0
+    assert data["ped_count"] == 0
+    assert data["ped_fatalities"] == 0
+    assert data["vehicle_occupants"] == 2
+    assert data["collision_type"] == "Angle"
 
 
 @pytest.mark.parametrize(

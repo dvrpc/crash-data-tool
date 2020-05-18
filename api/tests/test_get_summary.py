@@ -121,7 +121,7 @@ def test_duplicate_named_munis_require_county_name(client, value):
         ("Gloucester", "Washington Township"),
     ],
 )
-def test_duplicate_named_munis_require_county_name(client, county, municipality):
+def test_duplicate_named_munis_return_data_if_county_provided(client, county, municipality):
     response = client.get(endpoint + f"?county={county}&municipality={municipality}")
     assert response.status_code == 200
 
@@ -160,8 +160,8 @@ def test_double_spacing(client, value):
 )
 def test_KSI_only1(client, area, value):
     """
-    If requesting KSI crashes only, every year/severity should always have either a fatal or 
-    major value. 
+    If requesting KSI crashes only, every year/severity should always have either a fatal or
+    major value.
     """
     response = client.get(endpoint + f"?{area}={value}&ksi_only=yes")
     data = response.json()
