@@ -209,7 +209,7 @@ def get_crash(id: str):
             min_inj,
             unk_inj
         FROM crash
-        WHERE id = %s 
+        WHERE id = %s
         """
 
     try:
@@ -277,7 +277,7 @@ def get_summary(
     # build query incrementally, to add possible WHERE clauses before GROUP BY and
     # to easily pass value parameter to execute in order to prevent SQL injection
     severity_and_mode_query = """
-        SELECT 
+        SELECT
             year,
             SUM(fatalities),
             SUM(maj_inj),
@@ -294,10 +294,10 @@ def get_summary(
     """
 
     collision_type_query = """
-        SELECT 
+        SELECT
             year,
             collision_type,
-            count(collision_type) 
+            count(collision_type)
         FROM crash
     """
 
@@ -338,9 +338,8 @@ def get_summary(
                         "than one county. Please also provide the county name."
                     },
                 )
-            else:
-                sub_clauses.append("municipality = %s")
-                values.append(municipality)
+            sub_clauses.append("municipality = %s")
+            values.append(municipality)
     elif geoid:
         # get the name and area type for this geoid
         cursor.execute("SELECT state, county, municipality from geoid where geoid = %s", [geoid])
@@ -350,10 +349,10 @@ def get_summary(
         # now set up where clause
         sub_clauses.append("state = %s")
         values.append(result[0])
-        if result[1] != None:
+        if result[1] is not None:
             sub_clauses.append("county = %s")
             values.append(result[1])
-        if result[2] != None:
+        if result[2] is not None:
             sub_clauses.append("municipality = %s")
             values.append(result[2])
     elif geojson:

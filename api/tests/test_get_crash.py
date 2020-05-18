@@ -9,12 +9,12 @@ def test_404_when_bad_id_param_provided(client):
 
 
 def test_id_success1(client):
-    response = client.get(endpoint + "2016000784")
+    response = client.get(endpoint + "PA2016000784")
     assert response.status_code == 200
 
 
 def test_id_data_correct1(client):
-    response = client.get(endpoint + "201808052018-34718")
+    response = client.get(endpoint + "NJ201808052018-34718")
     data = response.json()
     assert len(data) == 10
     assert data["month"] == "December"
@@ -31,12 +31,12 @@ def test_id_data_correct1(client):
 @pytest.mark.parametrize(
     "id,expected_max_severity",
     [
-        ("2014075953", "no fatality or injury"),
-        ("2015077824", "minor injury"),
-        ("2015107449", "moderate injury"),
-        ("2016004173", "major injury"),
-        ("2016004153", "fatality"),
-        ("2016004167", "unknown injury"),
+        ("PA2014075953", "no fatality or injury"),
+        ("PA2015077824", "minor injury"),
+        ("PA2015107449", "moderate injury"),
+        ("PA2016004173", "major injury"),
+        ("PA2016004153", "fatality"),
+        ("PA2016004167", "unknown injury"),
     ],
 )
 def test_max_severity(client, id, expected_max_severity):

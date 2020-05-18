@@ -1,6 +1,6 @@
 import csv
 import re
-import time  # just for testing speed of various postgres inserts
+import time
 
 import psycopg2
 
@@ -10,12 +10,6 @@ from config import PSQL_CREDS
 Import data from csv files pulled from the MS Access DB into Postgresql for the Crash Data API.
 
 Note that the code skips the first row of CSV files, as it expects that row to be header.
-
-For PA, this imports the crash data from the CRASH table, rather than the WebAppTable, as
-the later is just a subset of CRASH that doesn't contain all necessary columns.
-
-For NJ, ...
-
 """
 
 
@@ -88,128 +82,37 @@ start = time.time()
 
 # enter MCD values into lookup_pa (unnecessary for NJ)
 with open("PA_MCDlist.txt", newline="") as csvfile:
-    reader = csv.reader(csvfile, delimiter=",")
-    next(reader)  # skip header
+    reader = csv.DictReader(csvfile, delimiter=",")
     for row in reader:
         # Birmingham Township in Delaware County was renamed to Chadds Ford Township in 1996, but
         # PennDot still calls it b-ham. Change this in the lookup so the new name gets added
         # to the data table below
-        if row[0] == "23202":
-            lookup_pa["muni"][row[0]] = "Chadds Ford Township"
+        if row["MCDcode"] == "23202":
+            lookup_pa["muni"][row["MCDcode"]] = "Chadds Ford Township"
         # Fix misspelling of Newtown Township in Delaware County
-        elif row[0] == "23208":
-            lookup_pa["muni"][row[0]] = "Newtown Township"
+        elif row["MCDcode"] == "23208":
+            lookup_pa["muni"][row["MCDcode"]] = "Newtown Township"
         else:
-            lookup_pa["muni"][row[0]] = row[1]
+            lookup_pa["muni"][row["MCDcode"]] = row["MCDname"]
 
-"""
-0 CRN
-1 DISTRICT
-2 COUNTY
-3 MUNICIPALITY
-4 POLICE_AGCY
-5 CRASH_YEAR
-6 CRASH_MONTH
-7 DAY_OF_WEEK
-8 TIME_OF_DAY
-9 HOUR_OF_DAY
-10 ILLUMINATION
-11 WEATHER
-12 ROAD_CONDITION
-13 COLLISION_TYPE
-14 RELATION_TO_ROAD
-15 INTERSECT_TYPE
-16 TCD_TYPE
-17 URBAN_RURAL
-18 LOCATION_TYPE
-19 SCH_BUS_IND
-20 SCH_ZONE_IND
-21 TOTAL_UNITS
-22 PERSON_COUNT
-23 VEHICLE_COUNT
-24 AUTOMOBILE_COUNT
-25 MOTORCYCLE_COUNT
-26 BUS_COUNT
-27 SMALL_TRUCK_COUNT
-28 HEAVY_TRUCK_COUNT
-29 SUV_COUNT
-30 VAN_COUNT
-31 BICYCLE_COUNT
-32 FATAL_COUNT
-33 TOT_INJ_COUNT
-34 MAJ_INJ_COUNT
-35 MOD_INJ_COUNT
-36 MIN_INJ_COUNT
-37 UNK_INJ_DEG_COUNT
-38 UNK_INJ_PER_COUNT
-39 UNBELTED_OCC_COUNT
-40 UNB_DEATH_COUNT
-41 UNB_MAJ_INJ_COUNT
-42 BELTED_DEATH_COUNT
-43 BELTED_MAJ_INJ_COUNT
-44 MCYCLE_DEATH_COUNT
-45 MCYCLE_MAJ_INJ_COUNT
-46 BICYCLE_DEATH_COUNT
-47 BICYCLE_MAJ_INJ_COUNT
-48 PED_COUNT
-49 PED_DEATH_COUNT
-50 PED_MAJ_INJ_COUNT
-51 COMM_VEH_COUNT
-52 MAX_SEVERITY_LEVEL
-53 DRIVER_COUNT_16YR
-54 DRIVER_COUNT_17YR
-55 DRIVER_COUNT_18YR
-56 DRIVER_COUNT_19YR
-57 DRIVER_COUNT_20YR
-58 DRIVER_COUNT_50_64YR
-59 DRIVER_COUNT_65_74YR
-60 DRIVER_COUNT_75PLUS
-61 LATITUDE
-62 LONGITUDE
-63 DEC_LAT
-64 DEC_LONG
-65 ARRIVAL_TM
-66 DISPATCH_TM
-67 EST_HRS_CLOSED
-68 LANE_CLOSED
-69 LN_CLOSE_DIR
-70 NTFY_HIWY_MAINT
-71 RDWY_SURF_TYPE_CD
-72 SPEC_JURIS_CD
-73 TCD_FUNC_CD
-74 TFC_DETOUR_IND
-75 WORK_ZONE_IND
-76 WORK_ZONE_TYPE
-77 WORK_ZONE_LOC
-78 CONS_ZONE_SPD_LIM
-79 WORKERS_PRES
-80 WZ_CLOSE_DETOUR
-81 WZ_FLAGGER
-82 WZ_LAW_OFFCR_IND
-83 WZ_LN_CLOSURE
-84 WZ_MOVING
-85 WZ_OTHER
-86 WZ_SHLDER_MDN
-"""
 # insert PA crash data into db
 with open("PA_CRASH.txt", newline="") as csvfile:
-    reader = csv.reader(csvfile, delimiter=",")
-    next(reader)  # skip header
+    reader = csv.DictReader(csvfile, delimiter=",")
     for row in reader:
 
         # deal with possible null values for lat and log and convert from DMS to DD
         # doing this because Access only exports floats to 2 decimal points, which is insufficient
         # so use the DMS fields in the database instead of the DD fields
-        if not row[61].strip():
+        if not row["LATITUDE"].strip():
             lat = None
         else:
-            d, m, s = parse_dms(row[61])
+            d, m, s = parse_dms(row["LATITUDE"])
             lat = dms2dd(d, m, s, "N")
 
-        if not row[62].strip():
+        if not row["LONGITUDE"].strip():
             lon = None
         else:
-            d, m, s = parse_dms(row[62])
+            d, m, s = parse_dms(row["LONGITUDE"])
             lon = dms2dd(d, m, s, "W")
 
         cur.execute(
@@ -218,9 +121,9 @@ with open("PA_CRASH.txt", newline="") as csvfile:
                 id, state, county, municipality,
                 latitude, longitude, year, month, collision_type,
                 vehicles, persons, bicyclists, pedestrians,
-                fatalities, injuries, 
+                fatalities, injuries,
                 uninjured,
-                unknown, 
+                unknown,
                 maj_inj, mod_inj, min_inj, unk_inj,
                 bike_fatalities, ped_fatalities
             )
@@ -230,255 +133,165 @@ with open("PA_CRASH.txt", newline="") as csvfile:
             )
             """,
             [
-                row[0],
+                "PA" + row["CRN"],
                 "pa",
-                lookup_pa["county"][row[2]],
-                lookup_pa["muni"][row[3]],
+                lookup_pa["county"][row["COUNTY"]],
+                lookup_pa["muni"][row["MUNICIPALITY"]],
                 lat,
                 lon,
-                row[5],
-                row[6],
-                lookup_pa["collision"][row[13]],
-                int(row[23]),
-                int(row[22]),
-                int(row[31]),
-                int(row[48]),
-                int(row[32]),
-                int(row[33]),
-                int(row[22]) - int(row[32]) - int(row[33]) - int(row[38]),
-                int(row[38]),
-                int(row[34]),
-                int(row[35]),
-                int(row[36]),
-                int(row[37]),
-                int(row[46]),
-                int(row[49]),
+                row["CRASH_YEAR"],
+                row["CRASH_MONTH"],
+                lookup_pa["collision"][row["COLLISION_TYPE"]],
+                int(row["VEHICLE_COUNT"]),
+                int(row["PERSON_COUNT"]),
+                int(row["BICYCLE_COUNT"]),
+                int(row["PED_COUNT"]),
+                int(row["FATAL_COUNT"]),
+                int(row["TOT_INJ_COUNT"]),
+                int(row["PERSON_COUNT"])
+                - int(row["FATAL_COUNT"])
+                - int(row["TOT_INJ_COUNT"])
+                - int(row["UNK_INJ_PER_COUNT"]),
+                int(row["UNK_INJ_PER_COUNT"]),
+                int(row["MAJ_INJ_COUNT"]),
+                int(row["MOD_INJ_COUNT"]),
+                int(row["MIN_INJ_COUNT"]),
+                int(row["UNK_INJ_DEG_COUNT"]),
+                int(row["BICYCLE_DEATH_COUNT"]),
+                int(row["PED_DEATH_COUNT"]),
             ],
         )
 
-# insert NJ crash data into db
-"""
-Column index/name from 1_accidents
-0 CaseNumber
-1 CountyName
-2 MunicipalityName
-3 CrashDate
-4 CrashDayOfWeek
-5 CrashTime
-6 PoliceDeptCode
-7 PoliceDepartment
-8 PoliceStation
-9 TotalKilled
-10 TotalInjured
-11 PedestriansKilled
-12 PedestriansInjured
-13 Severity
-14 Intersection
-15 AlcoholInvolved
-16 HazMatInvolved
-17 CrashTypeCode
-18 TotalVehiclesInvolved
-19 CrashLocation
-20 LocationDirection
-21 Route
-22 RouteSuffix
-23 SRI (Std Rte Identifier)
-24 MilePost
-25 RoadSystem
-26 RoadCharacter
-27 RoadCharacter-HorizontalAlign
-28 RoadCharacter-Grade
-29 RoadSurfaceType
-30 SurfaceCondition
-31 LightCondition
-32 EnvironmentalCondition
-33 RoadDividedBy
-34 TemporaryTrafficControlZone
-35 DistanceToCrossStreet
-36 UnitOfMeasurement
-37 DirectnFromCrossStreet
-38 CrossStreetName
-39 IsRamp
-40 RampToFromRouteName
-41 RampToFromRouteDirection
-42 PostedSpeed
-43 PostedSpeedCrossStreet
-44 First Harmful Event
-45 Latitude
-46 Longitude
-47 CellPhoneInUseFlag
-48 OtherPropertyDamage
-49 ReportingBadgeNo
-50 newMP
-51 InjuryLevel
-52 DVRPCFC
-53 TotalPerson
-54 Major_Injury
-55 Moderate_Injury
-56 Minor_Injury
-57 Unknow_Injury,
-58 SRI
-"""
 
-with open("NJ_1_Accidents.csv", newline="") as csvfile:
-    reader = csv.reader(csvfile, delimiter=",")
-    next(reader)  # skip header
-    for row in reader:
-        # change some abbreviations
-        if "TWP" in row[2]:
-            municipality = row[2].replace("TWP", "Township")
-        elif "BORO" in row[2]:
-            municipality = row[2].replace("BORO", "Borough")
-        else:
-            municipality = row[2]
+def insert_nj_accidents(filename):
+    """Insert data from the NJ 1_accidents tables into db."""
+    with open(filename, newline="") as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=",")
+        for row in reader:
+            # skip any crashes from before the year 2014
+            if int(row["CrashDate"].split("/")[2]) < 2014:
+                continue
+            # change some abbreviations
+            if "TWP" in row["MunicipalityName"]:
+                municipality = row["MunicipalityName"].replace("TWP", "Township")
+            elif "BORO" in row["MunicipalityName"]:
+                municipality = row["MunicipalityName"].replace("BORO", "Borough")
+            else:
+                municipality = row["MunicipalityName"]
 
-        # deal with possible null values for lat/lon, put negative on long
-        if not row[45].strip():
-            lat = None
-        else:
-            lat = float(row[45])
+            # deal with possible null values for various fields
+            # also put negative on long
+            lat = None if not row["Latitude"].strip() else float(row["Latitude"])
+            lon = None if not row["Longitude"].strip() else -(abs(float(row["Longitude"])))
+            if not row["CrashTypeCode"]:
+                collision_type = "Other or unknown"
+            else:
+                collision_type = lookup_nj_collision[row["CrashTypeCode"]]
+            unknown = 0 if not row["Unknow_Injury"] else int(row["Unknow_Injury"])
 
-        if not row[46].strip():
-            lon = None
-        else:
-            lon = -(abs(float(row[46])))
+            # there are some missing values for TotalPerson
+            if not row["TotalPerson"].strip():
+                person_count = None
+                uninjured = None
+            else:
+                person_count = int(row["TotalPerson"])
+                uninjured = (
+                    person_count - int(row["TotalKilled"]) - int(row["TotalInjured"]) - unknown
+                )
 
-        unknown = 0 if not row[57] else int(row[57])
+            maj_inj = 0 if not row["Major_Injury"] else int(row["Major_Injury"])
+            mod_inj = 0 if not row["Moderate_Injury"] else int(row["Moderate_Injury"])
+            min_inj = 0 if not row["Minor_Injury"] else int(row["Minor_Injury"])
 
-        # some missing values for TotalPersons
-        if not row[53].strip():
-            person_count = None
-            uninjured = None
-        else:
-            person_count = int(row[53])
-            uninjured = person_count - int(row[9]) - int(row[10]) - unknown
-
-        maj_inj = 0 if not row[54] else int(row[54])
-        mod_inj = 0 if not row[55] else int(row[55])
-        min_inj = 0 if not row[56] else int(row[56])
-
-        cur.execute(
-            """
-            INSERT INTO crash (
-                id, state, county, municipality,
-                latitude, longitude, year, month,
-                collision_type,
-                vehicles, persons,
-                fatalities, injuries, uninjured, unknown, 
-                maj_inj, mod_inj, min_inj, unk_inj,
-                bicyclists, bike_fatalities, pedestrians, ped_fatalities
+            cur.execute(
+                """
+                INSERT INTO crash (
+                    id, state, county, municipality,
+                    latitude, longitude, year, month,
+                    collision_type,
+                    vehicles, persons,
+                    fatalities, injuries, uninjured, unknown,
+                    maj_inj, mod_inj, min_inj, unk_inj,
+                    bicyclists, bike_fatalities, pedestrians, ped_fatalities
+                )
+                VALUES (
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                    %s, %s
+                )
+                """,
+                [
+                    "NJ" + row["CaseNumber"],
+                    "nj",
+                    row["CountyName"].title(),
+                    municipality.title(),
+                    lat,
+                    lon,
+                    row["CrashDate"].split("/")[2],
+                    row["CrashDate"].split("/")[0],
+                    collision_type,
+                    int(row["TotalVehiclesInvolved"]),
+                    person_count,
+                    int(row["TotalKilled"]),
+                    int(row["TotalInjured"]),
+                    uninjured,
+                    unknown,
+                    maj_inj,
+                    mod_inj,
+                    min_inj,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                ],
             )
-            VALUES (
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                %s, %s
-            )
-            """,
-            [
-                row[0],
-                "nj",
-                row[1].title(),
-                municipality.title(),
-                lat,
-                lon,
-                row[3].split("/")[2],
-                row[3].split("/")[0],
-                lookup_nj_collision[row[17]],
-                int(row[18]),
-                person_count,
-                int(row[9]),
-                int(row[10]),
-                uninjured,
-                unknown,
-                maj_inj,
-                mod_inj,
-                min_inj,
-                0,
-                0,
-                0,
-                0,
-                0,
-            ],
-        )
 
-# now update number/fatalities of bicyclists and pedestrians (they are combined in 1_accidents)
-"""
-0 "CaseNumber"
-1 "PedestrianNumber"
-2 "PhysicalCondition"
-3 "AddressCity"
-4 "AddressState"
-5 "AddressZip"
-6 "DateofBirth"
-7 "Age"
-8 "Sex"
-9 "AlcoholTestGiven"
-10 "AlcoholTestType"
-11 "AlcoholTestResults"
-12 "Charge1"
-13 "Summons1"
-14 "Charge2"
-15 "Summons2"
-16 "Charge3"
-17 "Summons3"
-18 "Charge4"
-19 "Summons4"
-20 "MultiChargeFlag"
-21 "TrafficControls"
-22 "ContributingCircumstances1"
-23 "ContributingCircumstances2"
-24 "DirectionofTravel"
-25 "Pre-CrashAction"
-26 "LocationofMostSevereInjury"
-27 "TypeofMostSeverePhysInjury"
-28 "RefusedMedicalAttention"
-29 "SafetyEquipmentUsed"
-30 "HospitalCode"
-31 "PhysicalStatus1"
-32 "PhysicalStatus2"
-33 "IsBycyclist"
-34 "IsOther"
-"""
 
-with open("NJ_4_Pedestrians.txt", newline="") as csvfile:
-    reader = csv.reader(csvfile, delimiter=",")
-    next(reader)  # skip header
-    for row in reader:
-        if row[2] == "01":  # pedestrian killed
-            if row[33].strip() == "Y":
-                bicycle_fatality = 1
-                ped_fatality = 0
+def insert_nj_pedestrians(filename):
+    """Insert data from the NJ 4_pedestrians tables into db."""
+    with open(filename, newline="") as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=",")
+        for row in reader:
+            if row["PhysicalCondition"] == "01":  # "Killed"
+                if row["IsBycyclist"].strip() == "Y":
+                    bicycle_fatality = 1
+                    ped_fatality = 0
+                else:
+                    bicycle_fatality = 0
+                    ped_fatality = 1
             else:
                 bicycle_fatality = 0
-                ped_fatality = 1
-        else:
-            bicycle_fatality = 0
-            ped_fatality = 0
+                ped_fatality = 0
 
-        if row[33].strip() == "Y":  # IsBicyclist
-            bicyclist = 1
-            pedestrian = 0
-        else:
-            bicyclist = 0
-            pedestrian = 1
+            if row["IsBycyclist"].strip() == "Y":
+                bicyclist = 1
+                pedestrian = 0
+            else:
+                bicyclist = 0
+                pedestrian = 1
 
-        cur.execute(
-            """
-            UPDATE crash
-            SET 
-                bicyclists = bicyclists + %s,
-                pedestrians = pedestrians + %s,
-                bike_fatalities = bike_fatalities + %s,
-                ped_fatalities = ped_fatalities + %s
-            WHERE id = %s
-            """,
-            [bicyclist, pedestrian, bicycle_fatality, ped_fatality, row[0]],
-        )
+            cur.execute(
+                """
+                UPDATE crash
+                SET
+                    bicyclists = bicyclists + %s,
+                    pedestrians = pedestrians + %s,
+                    bike_fatalities = bike_fatalities + %s,
+                    ped_fatalities = ped_fatalities + %s
+                WHERE id = %s
+                """,
+                [bicyclist, pedestrian, bicycle_fatality, ped_fatality, "NJ" + row["CaseNumber"]],
+            )
+
+
+insert_nj_accidents("NJ_2010_16_1_Accidents.csv")
+insert_nj_accidents("NJ_2017_18_1_Accidents.csv")
+insert_nj_pedestrians("NJ_2010_16_4_Pedestrians.txt")
+insert_nj_pedestrians("NJ_2017_18_4_Pedestrians.txt")
 
 # add the geom field
 
-cur.execute(
-    "UPDATE crash SET geom = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326);"
-)
+cur.execute("UPDATE crash SET geom = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326);")
 
 con.commit()
 cur.close()
