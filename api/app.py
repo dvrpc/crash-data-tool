@@ -1,5 +1,5 @@
 import calendar
-from typing import Dict
+from typing import Dict, List, Union
 
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,7 +20,21 @@ class CrashResponse(BaseModel):
     bicycle_fatalities: int
     ped_count: int
     ped_fatalities: int
-    vehicle_occupants: int
+    vehicle_occupants: Union[int, str]
+    collision_type: str
+
+
+class CrashResponseWithId(BaseModel):
+    id: str
+    month: str
+    year: int
+    max_severity: str
+    vehicle_count: int
+    bicycle_count: int
+    bicycle_fatalities: int
+    ped_count: int
+    ped_fatalities: int
+    vehicle_occupants: Union[int, str]
     collision_type: str
 
 
@@ -83,9 +97,7 @@ def get_db_cursor():
     return connection.cursor()
 
 
-app = FastAPI(
-    openapi_url="/api/crash-data/v1/openapi.json", docs_url="/api/crash-data/v1/docs"
-)
+app = FastAPI(openapi_url="/api/crash-data/v1/openapi.json", docs_url="/api/crash-data/v1/docs")
 app.openapi = custom_openapi
 responses = {
     400: {"model": Message, "description": "Bad Request"},
@@ -101,9 +113,81 @@ app.add_middleware(
 
 
 @app.get(
-    "/api/crash-data/v1/crashes/{id}",
-    response_model=CrashResponse,
-    responses=responses,
+    "/api/crash-data/v1/crashes", response_model=List[CrashResponseWithId], responses=responses,
+)
+def get_crashes():
+    """Get information about all crashes."""
+    cursor = get_db_cursor()
+    query = """
+        SELECT
+            month,
+            year,
+            vehicles,
+            bicyclists,
+            bike_fatalities,
+            pedestrians,
+            ped_fatalities,
+            persons,
+            collision_type,
+            fatalities,
+            maj_inj,
+            mod_inj,
+            min_inj,
+            unk_inj,
+            id
+        FROM crash
+    """
+
+    try:
+        cursor.execute(query)
+    except psycopg2.Error as e:
+        return JSONResponse(status_code=400, content={"message": "Database error: " + str(e)})
+
+    result = cursor.fetchall()
+
+    if not result:
+        return JSONResponse(status_code=404, content={"message": "Error: no crashes found."})
+
+    crashes = []
+    for row in result:
+        if row[9]:
+            max_severity = "fatality"
+        elif row[10]:
+            max_severity = "major injury"
+        elif row[11]:
+            max_severity = "moderate injury"
+        elif row[12]:
+            max_severity = "minor injury"
+        elif row[13]:
+            max_severity = "unknown injury"
+        else:
+            max_severity = "no fatality or injury"
+
+        # persons is a nullable field, because there were some null values in NJ
+        if row[7] is None:
+            vehicle_occupants = "Unknown"
+        else:
+            vehicle_occupants = row[7] - row[3] - row[5]
+
+        crash = {
+            "id": row[14],
+            "month": calendar.month_name[row[0]],
+            "year": row[1],
+            "max_severity": max_severity,
+            "vehicle_count": row[2],
+            "bicycle_count": row[3],
+            "bicycle_fatalities": row[4],
+            "ped_count": row[5],
+            "ped_fatalities": row[6],
+            "vehicle_occupants": vehicle_occupants,
+            "collision_type": row[8],
+        }
+        crashes.append(crash)
+    return crashes
+
+
+@app.get(
+    "/api/crash-data/v1/crashes/{id}", response_model=CrashResponse, responses=responses,
 )
 def get_crash(id: str):
     """Get information about an individual crash."""
@@ -125,15 +209,13 @@ def get_crash(id: str):
             min_inj,
             unk_inj
         FROM crash
-        WHERE id = %s 
+        WHERE id = %s
         """
 
     try:
         cursor.execute(query, [id])
     except psycopg2.Error as e:
-        return JSONResponse(
-            status_code=400, content={"message": "Database error: " + str(e)}
-        )
+        return JSONResponse(status_code=400, content={"message": "Database error: " + str(e)})
 
     result = cursor.fetchone()
 
@@ -141,17 +223,23 @@ def get_crash(id: str):
         return JSONResponse(status_code=404, content={"message": "Crash not found"})
 
     if result[9]:
-        max_severity = 'fatality'
+        max_severity = "fatality"
     elif result[10]:
-        max_severity = 'major injury'
+        max_severity = "major injury"
     elif result[11]:
-        max_severity = 'moderate injury'
+        max_severity = "moderate injury"
     elif result[12]:
-        max_severity = 'minor injury'
+        max_severity = "minor injury"
     elif result[13]:
-        max_severity = 'unknown injury'
+        max_severity = "unknown injury"
     else:
-        max_severity = 'no fatality or injury'
+        max_severity = "no fatality or injury"
+
+    # persons is a nullable field, because there were some null values in NJ
+    if result[7] is None:
+        vehicle_occupants = "Unknown"
+    else:
+        vehicle_occupants = result[7] - result[3] - result[5]
 
     crash = {
         "month": calendar.month_name[result[0]],
@@ -162,16 +250,14 @@ def get_crash(id: str):
         "bicycle_fatalities": result[4],
         "ped_count": result[5],
         "ped_fatalities": result[6],
-        "vehicle_occupants": result[7] - result[3] - result[5],
+        "vehicle_occupants": vehicle_occupants,
         "collision_type": result[8],
     }
     return crash
 
 
 @app.get(
-    "/api/crash-data/v1/summary",
-    response_model=Dict[str, YearResponse],
-    responses=responses,
+    "/api/crash-data/v1/summary", response_model=Dict[str, YearResponse], responses=responses,
 )
 def get_summary(
     state: str = Query(None, description="Select crashes by state"),
@@ -180,8 +266,7 @@ def get_summary(
     geoid: str = Query(None, description="Select crashes by geoid"),
     geojson: str = Query(None, description="Select crashes by geoson"),
     ksi_only: bool = Query(
-        False,
-        description="Limit results to crashes with fatalities or major injuries only",
+        False, description="Limit results to crashes with fatalities or major injuries only",
     ),
 ):
     """
@@ -192,7 +277,7 @@ def get_summary(
     # build query incrementally, to add possible WHERE clauses before GROUP BY and
     # to easily pass value parameter to execute in order to prevent SQL injection
     severity_and_mode_query = """
-        SELECT 
+        SELECT
             year,
             SUM(fatalities),
             SUM(maj_inj),
@@ -209,10 +294,10 @@ def get_summary(
     """
 
     collision_type_query = """
-        SELECT 
+        SELECT
             year,
             collision_type,
-            count(collision_type) 
+            count(collision_type)
         FROM crash
     """
 
@@ -232,46 +317,42 @@ def get_summary(
             sub_clauses.append("county = %s")
             values.append(county)
         if municipality:
-            if (not county and municipality in 
-                [
-                    'Elk Township',
-                    'Franklin Township',
-                    'Middletown Township',
-                    'New Hanover Township',
-                    'Newtown Township',
-                    'Springfield Township',
-                    'Telford Borough',
-                    'Thornbury Township',
-                    'Tinicum Township',
-                    'Upper Providence Township',
-                    'Warwick Township',
-                    'Washington Township',
-                ]
-            ):
+            if not county and municipality in [
+                "Elk Township",
+                "Franklin Township",
+                "Middletown Township",
+                "New Hanover Township",
+                "Newtown Township",
+                "Springfield Township",
+                "Telford Borough",
+                "Thornbury Township",
+                "Tinicum Township",
+                "Upper Providence Township",
+                "Warwick Township",
+                "Washington Township",
+            ]:
                 return JSONResponse(
                     status_code=400,
-                    content={"message": "The name of the municipality provided exists in more "
-                                        "than one county. Please also provide the county name."}
+                    content={
+                        "message": "The name of the municipality provided exists in more "
+                        "than one county. Please also provide the county name."
+                    },
                 )
-            else:
-                sub_clauses.append("municipality = %s")
-                values.append(municipality)
+            sub_clauses.append("municipality = %s")
+            values.append(municipality)
     elif geoid:
         # get the name and area type for this geoid
         cursor.execute("SELECT state, county, municipality from geoid where geoid = %s", [geoid])
         result = cursor.fetchone()
         if not result:
-            return JSONResponse(
-                status_code=404,
-                content={"message": "Given geoid not found."},
-            )
+            return JSONResponse(status_code=404, content={"message": "Given geoid not found."},)
         # now set up where clause
         sub_clauses.append("state = %s")
         values.append(result[0])
-        if result[1] != None:
+        if result[1] is not None:
             sub_clauses.append("county = %s")
             values.append(result[1])
-        if result[2] != None:
+        if result[2] is not None:
             sub_clauses.append("municipality = %s")
             values.append(result[2])
     elif geojson:
@@ -295,15 +376,12 @@ def get_summary(
     try:
         cursor.execute(severity_and_mode_query, values)
     except psycopg2.Error as e:
-        return JSONResponse(
-            status_code=400, content={"message": "Database error: " + str(e)}
-        )
+        return JSONResponse(status_code=400, content={"message": "Database error: " + str(e)})
 
     result = cursor.fetchall()
     if not result:
         return JSONResponse(
-            status_code=404,
-            content={"message": "No information found for given parameters"},
+            status_code=404, content={"message": "No information found for given parameters"},
         )
 
     summary = {}
@@ -363,16 +441,13 @@ def get_crash_ids(geojson: str):
     try:
         cursor.execute(query, [geojson])
     except psycopg2.Error as e:
-        return JSONResponse(
-            status_code=400, content={"message": "Database error: " + str(e)}
-        )
+        return JSONResponse(status_code=400, content={"message": "Database error: " + str(e)})
 
     result = cursor.fetchall()
 
     if not result:
         return JSONResponse(
-            status_code=404,
-            content={"message": "No crash ids found for given parameters."},
+            status_code=404, content={"message": "No crash ids found for given parameters."},
         )
 
     ids = []

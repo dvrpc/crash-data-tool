@@ -15,17 +15,11 @@ def test_unknown_geoid_return_404(client):
 
 
 @pytest.mark.parametrize(
-    "area,value",
-    [
-        ("state", "CA"),
-        ("county", "Allegheny"),
-        ("municipality", "Erie City"),
-    ],
+    "area,value", [("state", "CA"), ("county", "Allegheny"), ("municipality", "Erie City")],
 )
 def test_unknown_values_return_404(client, area, value):
     response = client.get(endpoint + f"?{area}={value}")
     data = response.json()
-    print(data)
     assert response.status_code == 404
     assert data["message"] == "No information found for given parameters"
 
@@ -96,7 +90,7 @@ def test_duplicate_named_munis_require_county_name(client, value):
     response = client.get(endpoint + f"?municipality={value}")
     data = response.json()
     assert response.status_code == 400
-    assert "provide the county" in data['message']
+    assert "provide the county" in data["message"]
 
 
 @pytest.mark.parametrize(
@@ -126,7 +120,7 @@ def test_duplicate_named_munis_require_county_name(client, value):
         ("Gloucester", "Washington Township"),
     ],
 )
-def test_duplicate_named_munis_require_county_name(client, county, municipality):
+def test_duplicate_named_munis_return_data_if_county_provided(client, county, municipality):
     response = client.get(endpoint + f"?county={county}&municipality={municipality}")
     assert response.status_code == 200
 
@@ -165,8 +159,8 @@ def test_double_spacing(client, value):
 )
 def test_KSI_only1(client, area, value):
     """
-    If requesting KSI crashes only, every year/severity should always have either a fatal or 
-    major value. 
+    If requesting KSI crashes only, every year/severity should always have either a fatal or
+    major value.
     """
     response = client.get(endpoint + f"?{area}={value}&ksi_only=yes")
     data = response.json()
@@ -226,9 +220,9 @@ def test_summed_collision_types_equals_total_crashes(client, area, value, ksi_on
     assert yr_18_sum_collisions == data["2018"]["total crashes"]
 
 
-###################
-# COMPARING TO DB #
-###################
+############################
+# COMPARING TO SOURCE DATA #
+############################
 
 
 def test_data_Chadds_Ford(client):
@@ -447,3 +441,57 @@ def test_data_PA(client):
     assert y_18["mode"]["ped"] == 2272
     assert y_18["mode"]["vehicle occupants"] == 88096 - 489 - 2272
     assert total_injured_18 == 26125  # db has 26129, but sum of components is 29125
+
+
+@pytest.mark.parametrize(
+    "county,crashes14,crashes15,crashes16",
+    [
+        ("Burlington", 13391, 12566, 12258),
+        ("Camden", 14723, 12772, 12672),
+        ("Gloucester", 6643, 7172, 7294),
+        ("Mercer", 12907, 12406, 12214),
+    ],
+)
+def test_total_crashes_by_NJ_county(client, county, crashes14, crashes15, crashes16):
+    response = client.get(endpoint + f"?county={county}")
+    data = response.json()
+
+    assert data["2014"]["total crashes"] == crashes14
+    assert data["2015"]["total crashes"] == crashes15
+    assert data["2016"]["total crashes"] == crashes16
+
+
+@pytest.mark.parametrize(
+    "county,injured14,injured15,injured16",
+    [
+        ("Burlington", 4099, 3936, 4055),
+        ("Camden", 4930, 4819, 4735),  # db- 4816 (2015) and 4734 (2016); nums here sums
+        ("Gloucester", 2257, 2527, 2546),
+        ("Mercer", 3351, 3486, 3629),  # db has 3350 (2014), 3482 (2015); nums here sums
+    ],
+)
+def test_total_injured_by_NJ_county(client, county, injured14, injured15, injured16):
+    response = client.get(endpoint + f"?county={county}")
+    data = response.json()
+
+    total_injured_14 = (
+        data["2014"]["severity"]["major"]
+        + data["2014"]["severity"]["moderate"]
+        + data["2014"]["severity"]["minor"]
+        + data["2014"]["severity"]["unknown severity"]
+    )
+    total_injured_15 = (
+        data["2015"]["severity"]["major"]
+        + data["2015"]["severity"]["moderate"]
+        + data["2015"]["severity"]["minor"]
+        + data["2015"]["severity"]["unknown severity"]
+    )
+    total_injured_16 = (
+        data["2016"]["severity"]["major"]
+        + data["2016"]["severity"]["moderate"]
+        + data["2016"]["severity"]["minor"]
+        + data["2016"]["severity"]["unknown severity"]
+    )
+    assert total_injured_14 == injured14
+    assert total_injured_15 == injured15
+    assert total_injured_16 == injured16
