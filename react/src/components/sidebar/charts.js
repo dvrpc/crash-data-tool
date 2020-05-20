@@ -40,9 +40,17 @@ const trend = (data, years) => {
     }
 }
 // Severity chart data
-const severity = data => {
+const severity = rawData => {
+    let labels = []
+    let data = []
+
+    for(const prop in rawData) {
+        labels.push(prop)
+        data.push(rawData[prop])
+    }
+
     return {
-        labels: ['Fatal', 'Major', 'Moderate', 'Minor', 'Uninjured', 'Unknown Severity', 'Unknown Injury'],
+        labels,
         datasets: [{
             data,
             backgroundColor: ['#d62839','#e67e88','#e6887e','#93c7db','#4ba3c3','#e3e3e3', '#e3e3e3']
@@ -50,23 +58,38 @@ const severity = data => {
     }
 }
 // Mode Chart data
-const mode = data => {
+const mode = rawData => {
+    let labels = []
+    let data = []
+
+    for(const prop in rawData) {
+        labels.push(prop)
+        data.push(rawData[prop])
+    }
+
     return {
-        labels: ['Bicyclists', 'Pedestrians', 'Vehicle Occupants'],
+        labels,
         datasets: [{
             data,
             backgroundColor: ['#6457a6', '#DB7C26','#c6e0ff']
-            // ped colors: orange DB7C26  green 003049
         }]
     }
 }
 // Collision Type chart data
-const collisionType = data => {
+const collisionType = rawData => {
+    let labels = []
+    let data = []
+
+    for(const prop in rawData) {
+        labels.push(prop)
+        data.push(rawData[prop])
+    }
+
     return {
-        labels: ['Angle', 'Head on', 'Hit fixed object', 'Hit pedestrian', 'Non-collision', 'Other/Unknown', 'Rear-end',  'Rear-to-rear (backing)', 'Sideswipe (Opposite dir.)', 'Sideswipe (same dir.)'],
+        labels,
         datasets: [{
             data,
-            backgroundColor: ['#b7b6c1','#dd403a','#c6e0ff', '#89043d', '#f2d1c9', '#e086d3', '#8332ac', '#a99985', '#bad1cd', '#aec3b0']
+            backgroundColor: ['#b7b6c1','#c6e0ff','#dd403a','#89043d', '#f2d1c9', '#e086d3', '#8332ac', '#a99985', '#bad1cd', '#aec3b0']
         }]
     }
 }
@@ -93,9 +116,10 @@ const formatYears = years => {
 ////
 // initialize empty charts
 const makePlaceholders = () => {
-    const collisionTypeChart = collisionType([0,0,0,0,0,0,0,0,0,0])
-    const severityChart = severity([0,0,0,0,0,0,0])
-    const modeChart = mode([0,0,0])
+    
+    const collisionTypeChart = collisionType({'Non-collision':0, 'Rear-end':0, 'Head-on':0, 'Rear-to-rear (backing)':0, 'Angle':0, 'Sideswipe (same direction)':0, 'Sideswipe (opposite direction)':0, 'Hit fixed object':0, 'Hit pedestrian':0, 'Other or unknown':0})
+    const severityChart = severity({Fatal:0,Major:0,Moderate:0,Minor:0,Uninjured:0,'Unknown Severity':0,'Unknown Injury':0})
+    const modeChart = mode({Bicyclists: 0,Pedestrians: 0,'Vehicle Occupants':0})
     const trendChart = trend([0,0,0,0,0,0],null)
     return { collisionTypeChart, severityChart, modeChart, trendChart }
 }
@@ -106,14 +130,14 @@ const formatData = (yearData, output) => {
         const innerObj = yearData[key]
         const innerKeys = Object.keys(innerObj)
 
-        // handle trend being a different response format - the others are objects but it's an integar
+        // extract data from years into correct locations
         if(innerKeys.length){
-            Object.keys(innerObj).forEach((innerKey, index) => {
-                output[key][index] = innerObj[innerKey] + output[key][index]
+            Object.keys(innerObj).forEach(innerKey => {
+                output[key][innerKey] = output[key][innerKey] ? innerObj[innerKey] + output[key][innerKey] : innerObj[innerKey]
             })
         }else {
             output.trend.push(innerObj)
-        }
+        }        
     })
 }
 
@@ -146,9 +170,9 @@ const makeCharts = (data, range) => {
     let severityChart, modeChart, collisionTypeChart, trendChart;
 
     let output = {
-        mode: [0,0,0],
-        severity: [0,0,0,0,0,0,0],
-        type: [0,0,0,0,0,0,0,0,0,0],
+        mode: {},
+        severity: {},
+        type: {},
         trend: []
     }
 

@@ -43,6 +43,7 @@ class PrintPage extends Component {
         const collisionType = data.collisionTypeChart
         const collisionTypeData = collisionType.datasets[0].data
         const collissionTypeLabels = collisionType.labels
+
         return(
             <PrintTemplate>
                 <section id="print-section">
@@ -78,13 +79,7 @@ class PrintPage extends Component {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Fatal</th>
-                                    <th>Major</th>
-                                    <th>Moderate</th>
-                                    <th>Minor</th>
-                                    <th>Uninjured</th>
-                                    <th>Unknown Injury</th>
-                                    <th>Unknown Severity</th>
+                                    {severityLabels.map((data => <th key={data}>{data}</th>))}
                                 </tr>
                             </thead>
                             <tbody>
@@ -99,9 +94,7 @@ class PrintPage extends Component {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Bicyclists</th>
-                                    <th>Vehicle Occupants</th>
-                                    <th>Pedestrians</th>
+                                    {modeLabels.map((data => <th key={data}>{data}</th>))}
                                 </tr>
                             </thead>
                             <tbody>
@@ -116,16 +109,7 @@ class PrintPage extends Component {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Angle</th>
-                                    <th>Head on</th>
-                                    <th>​​Hit fixed object</th>
-                                    <th>​​Hit pedestrian</th>
-                                    <th>​​Non-collision</th>
-                                    <th>​​Other / Unknown</th>
-                                    <th>​​Rear-end</th>
-                                    <th>​​Rear-to-rear (backing)</th>
-                                    <th>​​Sideswipe (Opposite dir.)</th>
-                                    <th>​​Sideswipe (same dir.)</th>
+                                    {collissionTypeLabels.map((data => <th key={data}>{data}</th>))}
                                 </tr>
                             </thead>
                             <tbody>

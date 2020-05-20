@@ -142,6 +142,8 @@ export const getBoundingBox = id => async dispatch => {
     featureServer ? codeType = `FIPS=${id}` : codeType = `GEOID_10=${id}` 
 
     // boundary query string w/appropriate featureServer & id    
+    // https://services.arcgis.com/rkitYk91zieQFZov/ArcGIS/rest/services/Philadelphia_Neighborhoods/FeatureServer/0
+    // ^ Philly neighborhoods API should we decide to add that
     const backupAPI = `https://services1.arcgis.com/LWtWv6q6BJyKidj8/ArcGIS/rest/services/DVRPC_Boundaries/FeatureServer/${featureServer}/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
     const stream = await fetch(backupAPI, postOptions)
     
