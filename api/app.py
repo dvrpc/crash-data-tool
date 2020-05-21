@@ -12,46 +12,46 @@ from config import PSQL_CREDS
 
 
 class CrashResponse(BaseModel):
-    month: str
-    year: int
-    max_severity: str
-    vehicle_count: int
-    bicycle_count: int
-    bicycle_fatalities: int
-    ped_count: int
-    ped_fatalities: int
-    vehicle_occupants: Union[int, str]
-    collision_type: str
+    month: str = Field(..., alias="Month")
+    year: int = Field(..., alias="Year")
+    max_severity: str = Field(..., alias="Maximum severity")
+    vehicle_count: int = Field(..., alias="Vehicles")
+    bicycle_count: int = Field(..., alias="Bicyclists")
+    bicycle_fatalities: int = Field(..., alias="Bicyclist fatalities")
+    ped_count: int = Field(..., alias="Pedestrians")
+    ped_fatalities: int = Field(..., alias="Pedestrian fatalities")
+    vehicle_occupants: Union[int, str] = Field(..., alias="Vehicle occupants")
+    collision_type: str = Field(..., alias="Collision type")
 
 
 class CrashResponseWithId(BaseModel):
     id: str
-    month: str
-    year: int
-    max_severity: str
-    vehicle_count: int
-    bicycle_count: int
-    bicycle_fatalities: int
-    ped_count: int
-    ped_fatalities: int
-    vehicle_occupants: Union[int, str]
-    collision_type: str
+    month: str = Field(..., alias="Month")
+    year: int = Field(..., alias="Year")
+    max_severity: str = Field(..., alias="Maximum severity")
+    vehicle_count: int = Field(..., alias="Vehicles")
+    bicycle_count: int = Field(..., alias="Bicyclists")
+    bicycle_fatalities: int = Field(..., alias="Bicyclist fatalities")
+    ped_count: int = Field(..., alias="Pedestrians")
+    ped_fatalities: int = Field(..., alias="Pedestrian fatalities")
+    vehicle_occupants: Union[int, str] = Field(..., alias="Vehicle occupants")
+    collision_type: str = Field(..., alias="Collision type")
 
 
 class SeverityResponse(BaseModel):
-    fatal: int
-    major: int
-    moderate: int
-    minor: int
-    unknown_severity: int = Field(..., alias="unknown severity")
-    uninjured: int
-    unknown_if_injured: int = Field(..., alias="unknown if injured")
+    fatal: int = Field(..., alias="Fatal")
+    major: int = Field(..., alias="Major")
+    moderate: int = Field(..., alias="Moderate")
+    minor: int = Field(..., alias="Minor")
+    unknown_severity: int = Field(..., alias="Unknown severity")
+    uninjured: int = Field(..., alias="Uninjured")
+    unknown_if_injured: int = Field(..., alias="Unknown if injured")
 
 
 class ModeResponse(BaseModel):
-    bike: int
-    ped: int
-    vehicle_occupants: int = Field(..., alias="vehicle occupants")
+    bike: int = Field(..., alias="Bicyclists")
+    ped: int = Field(..., alias="Pedestrians")
+    vehicle_occupants: int = Field(..., alias="Vehicle occupants")
 
 
 class CollisionTypeResponse(BaseModel):
@@ -68,7 +68,7 @@ class CollisionTypeResponse(BaseModel):
 
 
 class YearResponse(BaseModel):
-    total_crashes: int = Field(..., alias="total crashes")
+    total_crashes: int = Field(..., alias="Total crashes")
     severity: SeverityResponse
     mode: ModeResponse
     type: CollisionTypeResponse
@@ -151,17 +151,17 @@ def get_crashes():
     crashes = []
     for row in result:
         if row[9]:
-            max_severity = "fatality"
+            max_severity = "Fatality"
         elif row[10]:
-            max_severity = "major injury"
+            max_severity = "Major injury"
         elif row[11]:
-            max_severity = "moderate injury"
+            max_severity = "Moderate injury"
         elif row[12]:
-            max_severity = "minor injury"
+            max_severity = "Minor injury"
         elif row[13]:
-            max_severity = "unknown injury"
+            max_severity = "Unknown injury"
         else:
-            max_severity = "no fatality or injury"
+            max_severity = "No fatality or injury"
 
         # persons is a nullable field, because there were some null values in NJ
         if row[7] is None:
@@ -223,17 +223,17 @@ def get_crash(id: str):
         return JSONResponse(status_code=404, content={"message": "Crash not found"})
 
     if result[9]:
-        max_severity = "fatality"
+        max_severity = "Fatality"
     elif result[10]:
-        max_severity = "major injury"
+        max_severity = "Major injury"
     elif result[11]:
-        max_severity = "moderate injury"
+        max_severity = "Moderate injury"
     elif result[12]:
-        max_severity = "minor injury"
+        max_severity = "Minor injury"
     elif result[13]:
-        max_severity = "unknown injury"
+        max_severity = "Unknown injury"
     else:
-        max_severity = "no fatality or injury"
+        max_severity = "No fatality or injury"
 
     # persons is a nullable field, because there were some null values in NJ
     if result[7] is None:
@@ -242,16 +242,16 @@ def get_crash(id: str):
         vehicle_occupants = result[7] - result[3] - result[5]
 
     crash = {
-        "month": calendar.month_name[result[0]],
-        "year": result[1],
-        "max_severity": max_severity,
-        "vehicle_count": result[2],
-        "bicycle_count": result[3],
-        "bicycle_fatalities": result[4],
-        "ped_count": result[5],
-        "ped_fatalities": result[6],
-        "vehicle_occupants": vehicle_occupants,
-        "collision_type": result[8],
+        "Month": calendar.month_name[result[0]],
+        "Year": result[1],
+        "Maximum severity": max_severity,
+        "Vehicles": result[2],
+        "Bicyclists": result[3],
+        "Bicyclist fatalities": result[4],
+        "Pedestrians": result[5],
+        "Pedestrian fatalities": result[6],
+        "Vehicle occupants": vehicle_occupants,
+        "Collision type": result[8],
     }
     return crash
 
@@ -388,20 +388,20 @@ def get_summary(
 
     for row in result:
         summary[str(row[0])] = {
-            "total crashes": row[11],
+            "Total crashes": row[11],
             "severity": {
-                "fatal": row[1],
-                "major": row[2],
-                "moderate": row[3],
-                "minor": row[4],
-                "unknown severity": row[5],
-                "uninjured": row[6],
-                "unknown if injured": row[7],
+                "Fatal": row[1],
+                "Major": row[2],
+                "Moderate": row[3],
+                "Minor": row[4],
+                "Unknown severity": row[5],
+                "Uninjured": row[6],
+                "Unknown if injured": row[7],
             },
             "mode": {
-                "bike": row[8],
-                "ped": row[9],
-                "vehicle occupants": row[10] - row[9] - row[8],
+                "Bicyclists": row[8],
+                "Pedestrians": row[9],
+                "Vehicle occupants": row[10] - row[9] - row[8],
             },
             "type": {},
         }

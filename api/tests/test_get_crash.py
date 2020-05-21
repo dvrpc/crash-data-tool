@@ -17,44 +17,44 @@ def test_data_correct1(client):
     response = client.get(endpoint + "NJ201808052018-34718")
     data = response.json()
     assert len(data) == 10
-    assert data["month"] == "December"
-    assert data["year"] == 2018
-    assert data["vehicle_count"] == 1
-    assert data["bicycle_count"] == 1
-    assert data["bicycle_fatalities"] == 1
-    assert data["ped_count"] == 0
-    assert data["ped_fatalities"] == 0
-    assert data["vehicle_occupants"] == 1
-    assert data["collision_type"] == "Hit pedestrian"
+    assert data["Month"] == "December"
+    assert data["Year"] == 2018
+    assert data["Vehicles"] == 1
+    assert data["Bicyclists"] == 1
+    assert data["Bicyclist fatalities"] == 1
+    assert data["Pedestrians"] == 0
+    assert data["Pedestrian fatalities"] == 0
+    assert data["Vehicle occupants"] == 1
+    assert data["Collision type"] == "Hit pedestrian"
 
 
 def test_data_correct2(client):
     response = client.get(endpoint + "NJ201403042014-489")
     data = response.json()
     assert len(data) == 10
-    assert data["month"] == "January"
-    assert data["year"] == 2014
-    assert data["vehicle_count"] == 2
-    assert data["bicycle_count"] == 0
-    assert data["bicycle_fatalities"] == 0
-    assert data["ped_count"] == 0
-    assert data["ped_fatalities"] == 0
-    assert data["vehicle_occupants"] == 2
-    assert data["collision_type"] == "Angle"
+    assert data["Month"] == "January"
+    assert data["Year"] == 2014
+    assert data["Vehicles"] == 2
+    assert data["Bicyclists"] == 0
+    assert data["Bicyclist fatalities"] == 0
+    assert data["Pedestrians"] == 0
+    assert data["Pedestrian fatalities"] == 0
+    assert data["Vehicle occupants"] == 2
+    assert data["Collision type"] == "Angle"
 
 
 @pytest.mark.parametrize(
     "id,expected_max_severity",
     [
-        ("PA2014075953", "no fatality or injury"),
-        ("PA2015077824", "minor injury"),
-        ("PA2015107449", "moderate injury"),
-        ("PA2016004173", "major injury"),
-        ("PA2016004153", "fatality"),
-        ("PA2016004167", "unknown injury"),
+        ("PA2014075953", "No fatality or injury"),
+        ("PA2015077824", "Minor injury"),
+        ("PA2015107449", "Moderate injury"),
+        ("PA2016004173", "Major injury"),
+        ("PA2016004153", "Fatality"),
+        ("PA2016004167", "Unknown injury"),
     ],
 )
 def test_max_severity(client, id, expected_max_severity):
     response = client.get(endpoint + id)
     data = response.json()
-    assert data["max_severity"] == expected_max_severity
+    assert data["Maximum severity"] == expected_max_severity

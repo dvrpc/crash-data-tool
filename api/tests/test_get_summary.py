@@ -166,7 +166,7 @@ def test_KSI_only1(client, area, value):
     data = response.json()
     fatal_and_major_values = []
     for k, v in data.items():
-        fatal_and_major_values.append([v["severity"]["fatal"], v["severity"]["major"]])
+        fatal_and_major_values.append([v["severity"]["Fatal"], v["severity"]["Major"]])
 
     print(fatal_and_major_values)  # only prints if tests fails
     # the inner any() creates a list of either True or False values (if either value is Truthy -
@@ -216,8 +216,8 @@ def test_summed_collision_types_equals_total_crashes(client, area, value, ksi_on
     data = response.json()
     yr_17_sum_collisions = sum([value for value in data["2017"]["type"].values()])
     yr_18_sum_collisions = sum([value for value in data["2018"]["type"].values()])
-    assert yr_17_sum_collisions == data["2017"]["total crashes"]
-    assert yr_18_sum_collisions == data["2018"]["total crashes"]
+    assert yr_17_sum_collisions == data["2017"]["Total crashes"]
+    assert yr_18_sum_collisions == data["2018"]["Total crashes"]
 
 
 ############################
@@ -233,29 +233,29 @@ def test_data_Chadds_Ford(client):
     y_18 = data["2018"]
 
     total_injured_14 = (
-        y_14["severity"]["major"]
-        + y_14["severity"]["moderate"]
-        + y_14["severity"]["minor"]
-        + y_14["severity"]["unknown severity"]
+        y_14["severity"]["Major"]
+        + y_14["severity"]["Moderate"]
+        + y_14["severity"]["Minor"]
+        + y_14["severity"]["Unknown severity"]
     )
 
     total_injured_18 = (
-        y_18["severity"]["major"]
-        + y_18["severity"]["moderate"]
-        + y_18["severity"]["minor"]
-        + y_18["severity"]["unknown severity"]
+        y_18["severity"]["Major"]
+        + y_18["severity"]["Moderate"]
+        + y_18["severity"]["Minor"]
+        + y_18["severity"]["Unknown severity"]
     )
-    assert y_14["total crashes"] == 86
-    assert y_14["severity"]["fatal"] == 1
-    assert y_14["severity"]["unknown if injured"] == 6
-    assert y_14["mode"]["bike"] == 0
-    assert y_14["mode"]["ped"] == 0
+    assert y_14["Total crashes"] == 86
+    assert y_14["severity"]["Fatal"] == 1
+    assert y_14["severity"]["Unknown if injured"] == 6
+    assert y_14["mode"]["Bicyclists"] == 0
+    assert y_14["mode"]["Pedestrians"] == 0
     assert total_injured_14 == 65
-    assert y_18["total crashes"] == 79
-    assert y_18["severity"]["fatal"] == 0
-    assert y_18["severity"]["unknown if injured"] == 4
-    assert y_18["mode"]["bike"] == 0
-    assert y_18["mode"]["ped"] == 1
+    assert y_18["Total crashes"] == 79
+    assert y_18["severity"]["Fatal"] == 0
+    assert y_18["severity"]["Unknown if injured"] == 4
+    assert y_18["mode"]["Bicyclists"] == 0
+    assert y_18["mode"]["Pedestrians"] == 1
     assert total_injured_18 == 50
 
 
@@ -266,27 +266,27 @@ def test_data_Burlington(client):
     y_18 = data["2018"]
 
     total_injured_18 = (
-        y_18["severity"]["major"]
-        + y_18["severity"]["moderate"]
-        + y_18["severity"]["minor"]
-        + y_18["severity"]["unknown severity"]
+        y_18["severity"]["Major"]
+        + y_18["severity"]["Moderate"]
+        + y_18["severity"]["Minor"]
+        + y_18["severity"]["Unknown severity"]
     )
 
     total_injured_17 = (
-        y_17["severity"]["major"]
-        + y_17["severity"]["moderate"]
-        + y_17["severity"]["minor"]
-        + y_17["severity"]["unknown severity"]
+        y_17["severity"]["Major"]
+        + y_17["severity"]["Moderate"]
+        + y_17["severity"]["Minor"]
+        + y_17["severity"]["Unknown severity"]
     )
-    assert y_17["total crashes"] == 11825
-    assert y_17["severity"]["fatal"] == 51
-    assert y_17["mode"]["bike"] == 57
-    assert y_17["mode"]["ped"] == 100
+    assert y_17["Total crashes"] == 11825
+    assert y_17["severity"]["Fatal"] == 51
+    assert y_17["mode"]["Bicyclists"] == 57
+    assert y_17["mode"]["Pedestrians"] == 100
     assert total_injured_17 == 4139
-    assert y_18["total crashes"] == 12237
-    assert y_18["severity"]["fatal"] == 43
-    assert y_18["mode"]["bike"] == 59
-    assert y_18["mode"]["ped"] == 107
+    assert y_18["Total crashes"] == 12237
+    assert y_18["severity"]["Fatal"] == 43
+    assert y_18["mode"]["Bicyclists"] == 59
+    assert y_18["mode"]["Pedestrians"] == 107
     assert total_injured_18 == 3883
 
 
@@ -297,27 +297,27 @@ def test_data_Camden(client):
     y_18 = data["2018"]
 
     total_injured_18 = (
-        y_18["severity"]["major"]
-        + y_18["severity"]["moderate"]
-        + y_18["severity"]["minor"]
-        + y_18["severity"]["unknown severity"]
+        y_18["severity"]["Major"]
+        + y_18["severity"]["Moderate"]
+        + y_18["severity"]["Minor"]
+        + y_18["severity"]["Unknown severity"]
     )
 
     total_injured_17 = (
-        y_17["severity"]["major"]
-        + y_17["severity"]["moderate"]
-        + y_17["severity"]["minor"]
-        + y_17["severity"]["unknown severity"]
+        y_17["severity"]["Major"]
+        + y_17["severity"]["Moderate"]
+        + y_17["severity"]["Minor"]
+        + y_17["severity"]["Unknown severity"]
     )
-    assert y_17["total crashes"] == 15179
-    assert y_17["severity"]["fatal"] == 47
-    assert y_17["mode"]["bike"] == 109
-    assert y_17["mode"]["ped"] == 268
+    assert y_17["Total crashes"] == 15179
+    assert y_17["severity"]["Fatal"] == 47
+    assert y_17["mode"]["Bicyclists"] == 109
+    assert y_17["mode"]["Pedestrians"] == 268
     assert total_injured_17 == 5623
-    assert y_18["total crashes"] == 15758
-    assert y_18["severity"]["fatal"] == 49
-    assert y_18["mode"]["bike"] == 122
-    assert y_18["mode"]["ped"] == 260
+    assert y_18["Total crashes"] == 15758
+    assert y_18["severity"]["Fatal"] == 49
+    assert y_18["mode"]["Bicyclists"] == 122
+    assert y_18["mode"]["Pedestrians"] == 260
     assert total_injured_18 == 5763
 
 
@@ -328,27 +328,27 @@ def test_data_Gloucester(client):
     y_18 = data["2018"]
 
     total_injured_18 = (
-        y_18["severity"]["major"]
-        + y_18["severity"]["moderate"]
-        + y_18["severity"]["minor"]
-        + y_18["severity"]["unknown severity"]
+        y_18["severity"]["Major"]
+        + y_18["severity"]["Moderate"]
+        + y_18["severity"]["Minor"]
+        + y_18["severity"]["Unknown severity"]
     )
 
     total_injured_17 = (
-        y_17["severity"]["major"]
-        + y_17["severity"]["moderate"]
-        + y_17["severity"]["minor"]
-        + y_17["severity"]["unknown severity"]
+        y_17["severity"]["Major"]
+        + y_17["severity"]["Moderate"]
+        + y_17["severity"]["Minor"]
+        + y_17["severity"]["Unknown severity"]
     )
-    assert y_17["total crashes"] == 7517
-    assert y_17["severity"]["fatal"] == 46
-    assert y_17["mode"]["bike"] == 34
-    assert y_17["mode"]["ped"] == 61
+    assert y_17["Total crashes"] == 7517
+    assert y_17["severity"]["Fatal"] == 46
+    assert y_17["mode"]["Bicyclists"] == 34
+    assert y_17["mode"]["Pedestrians"] == 61
     assert total_injured_17 == 2635
-    assert y_18["total crashes"] == 7715
-    assert y_18["severity"]["fatal"] == 40
-    assert y_18["mode"]["bike"] == 39
-    assert y_18["mode"]["ped"] == 65
+    assert y_18["Total crashes"] == 7715
+    assert y_18["severity"]["Fatal"] == 40
+    assert y_18["mode"]["Bicyclists"] == 39
+    assert y_18["mode"]["Pedestrians"] == 65
     assert total_injured_18 == 2538
 
 
@@ -362,84 +362,84 @@ def test_data_PA(client):
     y_18 = data["2018"]
 
     total_injured_18 = (
-        y_18["severity"]["major"]
-        + y_18["severity"]["moderate"]
-        + y_18["severity"]["minor"]
-        + y_18["severity"]["unknown severity"]
+        y_18["severity"]["Major"]
+        + y_18["severity"]["Moderate"]
+        + y_18["severity"]["Minor"]
+        + y_18["severity"]["Unknown severity"]
     )
     total_injured_17 = (
-        y_17["severity"]["major"]
-        + y_17["severity"]["moderate"]
-        + y_17["severity"]["minor"]
-        + y_17["severity"]["unknown severity"]
+        y_17["severity"]["Major"]
+        + y_17["severity"]["Moderate"]
+        + y_17["severity"]["Minor"]
+        + y_17["severity"]["Unknown severity"]
     )
     total_injured_16 = (
-        y_16["severity"]["major"]
-        + y_16["severity"]["moderate"]
-        + y_16["severity"]["minor"]
-        + y_16["severity"]["unknown severity"]
+        y_16["severity"]["Major"]
+        + y_16["severity"]["Moderate"]
+        + y_16["severity"]["Minor"]
+        + y_16["severity"]["Unknown severity"]
     )
     total_injured_15 = (
-        y_15["severity"]["major"]
-        + y_15["severity"]["moderate"]
-        + y_15["severity"]["minor"]
-        + y_15["severity"]["unknown severity"]
+        y_15["severity"]["Major"]
+        + y_15["severity"]["Moderate"]
+        + y_15["severity"]["Minor"]
+        + y_15["severity"]["Unknown severity"]
     )
     total_injured_14 = (
-        y_14["severity"]["major"]
-        + y_14["severity"]["moderate"]
-        + y_14["severity"]["minor"]
-        + y_14["severity"]["unknown severity"]
+        y_14["severity"]["Major"]
+        + y_14["severity"]["Moderate"]
+        + y_14["severity"]["Minor"]
+        + y_14["severity"]["Unknown severity"]
     )
-    assert y_14["total crashes"] == 33740
-    assert y_14["severity"]["fatal"] == 239
-    assert y_14["severity"]["major"] == 637
-    assert y_14["severity"]["moderate"] == 3039
-    assert y_14["severity"]["minor"] == 12223
-    assert y_14["severity"]["unknown severity"] == 9764
-    assert y_14["mode"]["bike"] == 720
-    assert y_14["mode"]["ped"] == 2198
-    assert y_14["mode"]["vehicle occupants"] == 83251 - 720 - 2198
+    assert y_14["Total crashes"] == 33740
+    assert y_14["severity"]["Fatal"] == 239
+    assert y_14["severity"]["Major"] == 637
+    assert y_14["severity"]["Moderate"] == 3039
+    assert y_14["severity"]["Minor"] == 12223
+    assert y_14["severity"]["Unknown severity"] == 9764
+    assert y_14["mode"]["Bicyclists"] == 720
+    assert y_14["mode"]["Pedestrians"] == 2198
+    assert y_14["mode"]["Vehicle occupants"] == 83251 - 720 - 2198
     assert total_injured_14 == 25663
-    assert y_15["total crashes"] == 35786
-    assert y_15["severity"]["fatal"] == 240
-    assert y_15["severity"]["major"] == 736
-    assert y_15["severity"]["moderate"] == 3194
-    assert y_15["severity"]["minor"] == 12534
-    assert y_15["severity"]["unknown severity"] == 10531
-    assert y_15["mode"]["bike"] == 687
-    assert y_15["mode"]["ped"] == 2181
-    assert y_15["mode"]["vehicle occupants"] == 88825 - 2181 - 687
+    assert y_15["Total crashes"] == 35786
+    assert y_15["severity"]["Fatal"] == 240
+    assert y_15["severity"]["Major"] == 736
+    assert y_15["severity"]["Moderate"] == 3194
+    assert y_15["severity"]["Minor"] == 12534
+    assert y_15["severity"]["Unknown severity"] == 10531
+    assert y_15["mode"]["Bicyclists"] == 687
+    assert y_15["mode"]["Pedestrians"] == 2181
+    assert y_15["mode"]["Vehicle occupants"] == 88825 - 2181 - 687
     assert total_injured_15 == 26995
-    assert y_16["total crashes"] == 37048
-    assert y_16["severity"]["fatal"] == 238
-    assert y_16["severity"]["major"] == 995
-    assert y_16["severity"]["moderate"] == 6199
-    assert y_16["severity"]["minor"] == 9827
-    assert y_16["severity"]["unknown severity"] == 11073
-    assert y_16["mode"]["bike"] == 680
-    assert y_16["mode"]["ped"] == 2403
-    assert y_16["mode"]["vehicle occupants"] == 92423 - 2403 - 680
+    assert y_16["Total crashes"] == 37048
+    assert y_16["severity"]["Fatal"] == 238
+    assert y_16["severity"]["Major"] == 995
+    assert y_16["severity"]["Moderate"] == 6199
+    assert y_16["severity"]["Minor"] == 9827
+    assert y_16["severity"]["Unknown severity"] == 11073
+    assert y_16["mode"]["Bicyclists"] == 680
+    assert y_16["mode"]["Pedestrians"] == 2403
+    assert y_16["mode"]["Vehicle occupants"] == 92423 - 2403 - 680
     assert total_injured_16 == 28094  # db has 28102, but sum of components is 28094
-    assert y_17["total crashes"] == 36192
-    assert y_17["severity"]["fatal"] == 245
-    assert y_17["severity"]["major"] == 969
-    assert y_17["severity"]["moderate"] == 6605
-    assert y_17["severity"]["minor"] == 9225
-    assert y_17["severity"]["unknown severity"] == 10075
-    assert y_17["mode"]["bike"] == 618
-    assert y_17["mode"]["ped"] == 2253
-    assert y_17["mode"]["vehicle occupants"] == 89206 - 618 - 2253
+    assert y_17["Total crashes"] == 36192
+    assert y_17["severity"]["Fatal"] == 245
+    assert y_17["severity"]["Major"] == 969
+    assert y_17["severity"]["Moderate"] == 6605
+    assert y_17["severity"]["Minor"] == 9225
+    assert y_17["severity"]["Unknown severity"] == 10075
+    assert y_17["mode"]["Bicyclists"] == 618
+    assert y_17["mode"]["Pedestrians"] == 2253
+    assert y_17["mode"]["Vehicle occupants"] == 89206 - 618 - 2253
     assert total_injured_17 == 26874  # db has 26884, but sum of components is 26874
-    assert y_18["total crashes"] == 36306
-    assert y_18["severity"]["fatal"] == 272
-    assert y_18["severity"]["major"] == 1014
-    assert y_18["severity"]["moderate"] == 8380
-    assert y_18["severity"]["minor"] == 7437
-    assert y_18["severity"]["unknown severity"] == 9294
-    assert y_18["mode"]["bike"] == 489
-    assert y_18["mode"]["ped"] == 2272
-    assert y_18["mode"]["vehicle occupants"] == 88096 - 489 - 2272
+    assert y_18["Total crashes"] == 36306
+    assert y_18["severity"]["Fatal"] == 272
+    assert y_18["severity"]["Major"] == 1014
+    assert y_18["severity"]["Moderate"] == 8380
+    assert y_18["severity"]["Minor"] == 7437
+    assert y_18["severity"]["Unknown severity"] == 9294
+    assert y_18["mode"]["Bicyclists"] == 489
+    assert y_18["mode"]["Pedestrians"] == 2272
+    assert y_18["mode"]["Vehicle occupants"] == 88096 - 489 - 2272
     assert total_injured_18 == 26125  # db has 26129, but sum of components is 29125
 
 
@@ -456,9 +456,9 @@ def test_total_crashes_by_NJ_county(client, county, crashes14, crashes15, crashe
     response = client.get(endpoint + f"?county={county}")
     data = response.json()
 
-    assert data["2014"]["total crashes"] == crashes14
-    assert data["2015"]["total crashes"] == crashes15
-    assert data["2016"]["total crashes"] == crashes16
+    assert data["2014"]["Total crashes"] == crashes14
+    assert data["2015"]["Total crashes"] == crashes15
+    assert data["2016"]["Total crashes"] == crashes16
 
 
 @pytest.mark.parametrize(
@@ -475,22 +475,22 @@ def test_total_injured_by_NJ_county(client, county, injured14, injured15, injure
     data = response.json()
 
     total_injured_14 = (
-        data["2014"]["severity"]["major"]
-        + data["2014"]["severity"]["moderate"]
-        + data["2014"]["severity"]["minor"]
-        + data["2014"]["severity"]["unknown severity"]
+        data["2014"]["severity"]["Major"]
+        + data["2014"]["severity"]["Moderate"]
+        + data["2014"]["severity"]["Minor"]
+        + data["2014"]["severity"]["Unknown severity"]
     )
     total_injured_15 = (
-        data["2015"]["severity"]["major"]
-        + data["2015"]["severity"]["moderate"]
-        + data["2015"]["severity"]["minor"]
-        + data["2015"]["severity"]["unknown severity"]
+        data["2015"]["severity"]["Major"]
+        + data["2015"]["severity"]["Moderate"]
+        + data["2015"]["severity"]["Minor"]
+        + data["2015"]["severity"]["Unknown severity"]
     )
     total_injured_16 = (
-        data["2016"]["severity"]["major"]
-        + data["2016"]["severity"]["moderate"]
-        + data["2016"]["severity"]["minor"]
-        + data["2016"]["severity"]["unknown severity"]
+        data["2016"]["severity"]["Major"]
+        + data["2016"]["severity"]["Moderate"]
+        + data["2016"]["severity"]["Minor"]
+        + data["2016"]["severity"]["Unknown severity"]
     )
     assert total_injured_14 == injured14
     assert total_injured_15 == injured15
