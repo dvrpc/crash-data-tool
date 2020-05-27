@@ -1,8 +1,8 @@
-import pytest
-
 """
 Testing get_summary()
 """
+
+import pytest
 
 endpoint = "/api/crash-data/v1/summary"
 

@@ -4,11 +4,9 @@ depending on setup)
 
 BEGIN;
 
-CREATE EXTENSION postgis;
+CREATE EXTENSION IF NOT EXISTS postgis;
 
-/* 
-create one table for all the data 
-
+/* create one table for all the data 
 There are four categories of how people are physically affected by a crash:
     - fatality ("fatalities" column below)
     - injured (injuries)
@@ -24,6 +22,7 @@ Within injuries, there are also four categories:
 
 CREATE TABLE crash (
     id text PRIMARY KEY NOT NULL,
+    geoid bigint,
     state text NOT NULL,
     county text NOT NULL,
     municipality text NOT NULL,
@@ -45,6 +44,7 @@ CREATE TABLE crash (
     mod_inj integer NOT NULL,
     min_inj integer NOT NULL,
     unk_inj integer,
+    max_severity text,
     bike_fatalities integer NOT NULL,
     ped_fatalities integer NOT NULL
 );

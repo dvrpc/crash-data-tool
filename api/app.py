@@ -129,11 +129,7 @@ def get_crashes():
             ped_fatalities,
             persons,
             collision_type,
-            fatalities,
-            maj_inj,
-            mod_inj,
-            min_inj,
-            unk_inj,
+            max_severity,
             id
         FROM crash
     """
@@ -150,18 +146,6 @@ def get_crashes():
 
     crashes = []
     for row in result:
-        if row[9]:
-            max_severity = "Fatality"
-        elif row[10]:
-            max_severity = "Major injury"
-        elif row[11]:
-            max_severity = "Moderate injury"
-        elif row[12]:
-            max_severity = "Minor injury"
-        elif row[13]:
-            max_severity = "Unknown injury"
-        else:
-            max_severity = "No fatality or injury"
 
         # persons is a nullable field, because there were some null values in NJ
         if row[7] is None:
@@ -170,17 +154,17 @@ def get_crashes():
             vehicle_occupants = row[7] - row[3] - row[5]
 
         crash = {
-            "id": row[14],
-            "month": calendar.month_name[row[0]],
-            "year": row[1],
-            "max_severity": max_severity,
-            "vehicle_count": row[2],
-            "bicycle_count": row[3],
-            "bicycle_fatalities": row[4],
-            "ped_count": row[5],
-            "ped_fatalities": row[6],
-            "vehicle_occupants": vehicle_occupants,
-            "collision_type": row[8],
+            "id": row[10],
+            "Month": calendar.month_name[row[0]],
+            "Year": row[1],
+            "Maximum severity": row[9],
+            "Vehicles": row[2],
+            "Bicyclists": row[3],
+            "Bicyclist fatalities": row[4],
+            "Pedestrians": row[5],
+            "Pedestrian fatalities": row[6],
+            "Vehicle occupants": vehicle_occupants,
+            "Collision type": row[8],
         }
         crashes.append(crash)
     return crashes
@@ -203,11 +187,7 @@ def get_crash(id: str):
             ped_fatalities,
             persons,
             collision_type,
-            fatalities,
-            maj_inj,
-            mod_inj,
-            min_inj,
-            unk_inj
+            max_severity
         FROM crash
         WHERE id = %s
         """
@@ -222,19 +202,6 @@ def get_crash(id: str):
     if not result:
         return JSONResponse(status_code=404, content={"message": "Crash not found"})
 
-    if result[9]:
-        max_severity = "Fatality"
-    elif result[10]:
-        max_severity = "Major injury"
-    elif result[11]:
-        max_severity = "Moderate injury"
-    elif result[12]:
-        max_severity = "Minor injury"
-    elif result[13]:
-        max_severity = "Unknown injury"
-    else:
-        max_severity = "No fatality or injury"
-
     # persons is a nullable field, because there were some null values in NJ
     if result[7] is None:
         vehicle_occupants = "Unknown"
@@ -244,7 +211,7 @@ def get_crash(id: str):
     crash = {
         "Month": calendar.month_name[result[0]],
         "Year": result[1],
-        "Maximum severity": max_severity,
+        "Maximum severity": result[9],
         "Vehicles": result[2],
         "Bicyclists": result[3],
         "Bicyclist fatalities": result[4],
@@ -342,6 +309,8 @@ def get_summary(
             values.append(municipality)
     elif geoid:
         # get the name and area type for this geoid
+        # this checks the geoid table, rather than the crash table, because the crash table
+        # only has geoids at the municipality level.
         cursor.execute("SELECT state, county, municipality from geoid where geoid = %s", [geoid])
         result = cursor.fetchone()
         if not result:
