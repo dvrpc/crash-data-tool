@@ -135,23 +135,28 @@ export const getBoundingBox = id => async dispatch => {
     let featureServer;
     let codeType;
 
-    // 0 for Municipalities, 1 for Counties
-    id.length > 5 ? featureServer = 0 : featureServer = 1
+    // determine feature server and code type based on query type
+    if(id.length > 5 ) {
+        featureServer = 'MunicipalBoundaries'
+        codeType = `geoid_10='${id}'` 
+    } else {
+        featureServer = 'CountyBoundaries'
+        codeType = `FIPS='${id}'`
+    }    
 
-    // counties and munis have different code types
-    featureServer ? codeType = `FIPS=${id}` : codeType = `GEOID_10=${id}` 
-
-    // boundary query string w/appropriate featureServer & id    
     // https://services.arcgis.com/rkitYk91zieQFZov/ArcGIS/rest/services/Philadelphia_Neighborhoods/FeatureServer/0
     // ^ Philly neighborhoods API should we decide to add that
-    const backupAPI = `https://services1.arcgis.com/LWtWv6q6BJyKidj8/ArcGIS/rest/services/DVRPC_Boundaries/FeatureServer/${featureServer}/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
-    const stream = await fetch(backupAPI, postOptions)
+    
+    // boundary query string w/appropriate featureServer & id    
+    const boundaries = `https://arcgis.dvrpc.org/portal/rest/services/Boundaries/${featureServer}/FeatureServer/0/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
+    const stream = await fetch(boundaries, postOptions)
     
     if(stream.ok) {
         const response = await stream.json()
         const extent = response.extent
         
-        if (!extent) {
+        // ESRI returns the same object regardless of success or fail so check for extent AND contents of extent
+        if (!extent || extent.xmin === "NaN") {
             console.log('bbox call returned null extent')
             return
         }
