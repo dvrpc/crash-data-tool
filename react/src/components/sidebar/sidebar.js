@@ -113,6 +113,7 @@ class Sidebar extends Component {
         let from = this.state.from
         let to = this.state.to
         let chartsRange = {from, to}
+        let totals = {crashes: '80,982', fatalities: '1,203', severe: '800', peds: '10,000', bikes: '45'}
 
         // draw charts
         let data;
@@ -131,7 +132,7 @@ class Sidebar extends Component {
             <section id="sidebar" className="no-print">
                 <h1 id="crash-map-sidebar-header" className="centered-text">Crash Statistics for {area}</h1>
                 <span id="crash-map-print-sidebar" onClick={this.setSrc}>print statistics</span>
-                <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2018. This dataset is also used by our state and local partners.</p>
+                <p className="sidebar-paragraphs first-paragraph">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2018. This dataset is also used by our state and local partners.</p>
                 <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong>. You can adjust the range and severity type using the forms below.</p>
                 
                 <form className="crash-map-charts-form" id="crash-map-update-range" onSubmit={this.updateRange}>
@@ -175,6 +176,15 @@ class Sidebar extends Component {
                 </form>
 
                 <hr id="sidebar-hr" />
+
+                <h2 id="first-subheader" className="centered-text crash-map-sidebar-subheader">Totals</h2>
+                    <ul id="crash-map-sidebar-ul">
+                        <li><strong>Crashes</strong> <span>{totals.crashes}</span></li>
+                        <li><strong>Fatalities</strong> <span>{totals.fatalities}</span></li>
+                        <li><strong>Severe Injuries</strong> <span>{totals.severe}</span></li>
+                        <li><strong>Pedestrians</strong> <span>{totals.peds}</span></li>
+                        <li><strong>Bikes</strong> <span>{totals.bikes}</span></li>
+                    </ul>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crashes over Time</h2>
                     <Line data={data.trendChart} options={trendOptions}/>

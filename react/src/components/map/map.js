@@ -305,11 +305,10 @@ class Map extends Component {
             // add crashtype
             if(crashType === 'ksi') {
                 const ksiFilter = [
-                    ['>', 'max_sever', 0],
-                    ['<', 'max_sever', 3]
+                    ['==', 'ksi', 1]
                 ]
                 polygonFilter = polygonFilter.concat(ksiFilter)
-            }            
+            }
             
             this.map.setFilter('crash-circles', polygonFilter)
             this.map.setFilter('crash-heat', polygonFilter)
