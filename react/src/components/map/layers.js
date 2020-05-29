@@ -74,9 +74,6 @@ const crashHeat = {
     'source-layer': 'crash',
     maxzoom: 11,
     // KSI: Killed or severely injured
-
-    // @UPDATE: new default IF we commit to strings to max_sever
-    // filter: ['==', ['get', 'ksi'], 1]
     filter: ['any', 
         ['==', ['get', 'max_sever'], 1],
         ['==', ['get', 'max_sever'], 2],
@@ -85,7 +82,6 @@ const crashHeat = {
         'heatmap-weight': [
             'interpolate',
             ['linear'],
-            // @UPDATE: IF we commit to strings, the numbers on the left will need to change
             ['get', 'max_sever'],
             1, 2,
             2, 1,
@@ -130,7 +126,6 @@ const crashCircles = {
     source: 'Crashes',
     'source-layer': 'crash',
     minzoom: 11,
-    // filter: ['==', ['get', 'ksi'], 1]
     filter: ['any',
         ['==', ['get', 'max_sever'], 1],
         ['==', ['get', 'max_sever'], 2],
@@ -138,7 +133,6 @@ const crashCircles = {
     paint: {
         'circle-color': [
             'match',
-            // @UPDATE: IF we commit to strings, the numbers on the left will need to change
             ['get', 'max_sever'],
             0, '#f7f7f7',
             1, '#d62839',

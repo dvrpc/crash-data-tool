@@ -305,7 +305,8 @@ class Map extends Component {
             // add crashtype
             if(crashType === 'ksi') {
                 const ksiFilter = [
-                    ['==', 'ksi', 1]
+                    ['>', 'max_sever', 0],
+                    ['<', 'max_sever', 3],
                 ]
                 polygonFilter = polygonFilter.concat(ksiFilter)
             }
@@ -580,7 +581,9 @@ class Map extends Component {
 
             // create popup content (success or fail)
             if(result.fail){
-                return popups.catchPopupFail(result.crn)
+                // remove the state code from the CRN for printing
+                const crnOutput = result.crn.substring(2)
+                return popups.catchPopupFail(crnOutput)
             }else{
                 return popups.setPopup(result, current, length)
             }

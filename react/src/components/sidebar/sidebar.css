@@ -47,6 +47,9 @@
 .first-paragraph{
     margin: 2% 0;
 }
+.crash-map-sidebar-totals{
+    color: #414770;
+}
 #crash-map-sidebar-ul{
     list-style-type: none;
 }

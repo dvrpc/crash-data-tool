@@ -54,7 +54,7 @@ const setPopup = (popupInfo, index, length) => {
 // handle popup failure
 const catchPopupFail = crn => {
     return `
-        <h3 class="crash-popup-header">Oops!</h3>
+        <h3 class="crash-popup-header">Sorry!</h3>
         <p>Something went wrong and the data was unable to be fetched, please try again.</p>
         <p>If the issue persists, please contact <a href="mailto:kmurphy@dvrpc.org">kmurphy@dvrpc.org</a> and let him know the data for crash number <strong>${crn}</strong> is not available. Thank you. </p>
     `

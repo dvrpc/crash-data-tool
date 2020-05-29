@@ -106,6 +106,20 @@ class Sidebar extends Component {
         this.props.setSrc(src)
     }
 
+    getTotals = data => {
+        const totalsObj = {crashes: 'calculating...', fatalities: 'calculating...', severe: 'calculating...', peds: 'calculating...', bikes: 'calculating...'}
+
+        if(data) {
+            totalsObj.crashes = data.crashes.reduce((total, num) => total + num).toLocaleString()
+            totalsObj.fatalities = data.severity[0].toLocaleString()
+            totalsObj.severe = (data.severity[0] + data.severity[1] + data.severity[2]).toLocaleString()
+            totalsObj.peds = data.mode[1].toLocaleString()
+            totalsObj.bikes = data.mode[0].toLocaleString()
+        }
+
+        return totalsObj
+    }
+
     render() {
         // set dynamic text
         let area = this.props.context || this.state.context
@@ -113,16 +127,19 @@ class Sidebar extends Component {
         let from = this.state.from
         let to = this.state.to
         let chartsRange = {from, to}
-        let totals = {crashes: '80,982', fatalities: '1,203', severe: '800', peds: '10,000', bikes: '45'}
-
-        // draw charts
         let data;
+        let totals;
+
+        // populate chart data
         if(this.props.data){
             data = charts.makeCharts(this.props.data, chartsRange)
+            const totalDerivedFrom = {crashes: data.trendChart.datasets[0].data, severity: data.severityChart.datasets[0].data, mode: data.modeChart.datasets[0].data}
+            totals = this.getTotals(totalDerivedFrom)
 
         }else{
             // placeholder state while waiting for default fetch response
             data = charts.makeCharts(null, chartsRange)
+            totals = this.getTotals()
         }
 
         const severityOptions = charts.chartOptions('Injury type', 'Number of persons')
@@ -179,11 +196,11 @@ class Sidebar extends Component {
 
                 <h2 id="first-subheader" className="centered-text crash-map-sidebar-subheader">Totals</h2>
                     <ul id="crash-map-sidebar-ul">
-                        <li><strong>Crashes</strong> <span>{totals.crashes}</span></li>
-                        <li><strong>Fatalities</strong> <span>{totals.fatalities}</span></li>
-                        <li><strong>Severe Injuries</strong> <span>{totals.severe}</span></li>
-                        <li><strong>Pedestrians</strong> <span>{totals.peds}</span></li>
-                        <li><strong>Bikes</strong> <span>{totals.bikes}</span></li>
+                        <li><span className="crash-map-sidebar-totals">Crashes</span> <strong>{totals.crashes}</strong></li>
+                        <li><span className="crash-map-sidebar-totals">Fatalities</span><strong>{totals.fatalities}</strong></li>
+                        <li><span className="crash-map-sidebar-totals">Severe Injuries</span> <strong>{totals.severe}</strong></li>
+                        <li><span className="crash-map-sidebar-totals">Pedestrians</span> <strong>{totals.peds}</strong></li>
+                        <li><span className="crash-map-sidebar-totals">Bikes</span> <strong>{totals.bikes}</strong></li>
                     </ul>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crashes over Time</h2>
