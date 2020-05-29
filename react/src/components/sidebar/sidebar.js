@@ -112,7 +112,7 @@ class Sidebar extends Component {
         if(data) {
             totalsObj.crashes = data.crashes.reduce((total, num) => total + num).toLocaleString()
             totalsObj.fatalities = data.severity[0].toLocaleString()
-            totalsObj.severe = (data.severity[0] + data.severity[1] + data.severity[2]).toLocaleString()
+            totalsObj.severe = (data.severity[0] + data.severity[1]).toLocaleString()
             totalsObj.peds = data.mode[1].toLocaleString()
             totalsObj.bikes = data.mode[0].toLocaleString()
         }
