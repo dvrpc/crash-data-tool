@@ -322,6 +322,8 @@ cur.execute("UPDATE crash SET geom = ST_SetSRID(ST_MakePoint(longitude, latitude
 # API/joining with the geoid table) so we can easily export their values in a geojson via script
 
 # set max_severity
+# unlike API's get_crash and get_crashes, this uses ints, since there the max_severity on the
+# tiles is heavily used
 cur.execute(
     """
     SELECT
@@ -337,17 +339,17 @@ cur.execute(
 
 for row in cur.fetchall():
     if row[1]:
-        max_severity = "Fatality"
+        max_severity = 0
     elif row[2]:
-        max_severity = "Major injury"
+        max_severity = 1
     elif row[3]:
-        max_severity = "Moderate injury"
+        max_severity = 2
     elif row[4]:
-        max_severity = "Minor injury"
+        max_severity = 3
     elif row[5]:
-        max_severity = "Unknown injury"
+        max_severity = 4
     else:
-        max_severity = "No fatality or injury"
+        max_severity = 5
 
     cur.execute("UPDATE crash SET max_severity = %s WHERE id = %s", [max_severity, row[0]])
 

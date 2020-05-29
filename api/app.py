@@ -97,6 +97,15 @@ def get_db_cursor():
     return connection.cursor()
 
 
+max_severity_lookup = {
+    "0": "Fatality",
+    "1": "Major injury",
+    "2": "Moderate injury",
+    "3": "Minor injury",
+    "4": "Unknown injury",
+    "5": "No fatality or injury",
+}
+
 app = FastAPI(openapi_url="/api/crash-data/v1/openapi.json", docs_url="/api/crash-data/v1/docs")
 app.openapi = custom_openapi
 responses = {
@@ -157,7 +166,7 @@ def get_crashes():
             "id": row[10],
             "Month": calendar.month_name[row[0]],
             "Year": row[1],
-            "Maximum severity": row[9],
+            "Maximum severity": max_severity_lookup[row[9]],
             "Vehicles": row[2],
             "Bicyclists": row[3],
             "Bicyclist fatalities": row[4],
@@ -211,7 +220,7 @@ def get_crash(id: str):
     crash = {
         "Month": calendar.month_name[result[0]],
         "Year": result[1],
-        "Maximum severity": result[9],
+        "Maximum severity": max_severity_lookup[result[9]],
         "Vehicles": result[2],
         "Bicyclists": result[3],
         "Bicyclist fatalities": result[4],
