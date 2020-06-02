@@ -19,8 +19,8 @@ const postOptions = {
 // @UPDATE: new ksi filter
     // if we don't have to use strings for max severity, this can go back to the old way because we will drop the ksi field
 const ksiFilter = [
-    ['>', 'max_sever', 0],
-    ['<', 'max_sever', 3],
+    ['>', 'max_sever', -1],
+    ['<', 'max_sever', 2],
 ]
 const rangeFilter = (from, to) => {
     return [

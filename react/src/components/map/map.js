@@ -305,8 +305,8 @@ class Map extends Component {
             // add crashtype
             if(crashType === 'ksi') {
                 const ksiFilter = [
-                    ['>', 'max_sever', 0],
-                    ['<', 'max_sever', 3],
+                    ['>', 'max_sever', -1],
+                    ['<', 'max_sever', 2],
                 ]
                 polygonFilter = polygonFilter.concat(ksiFilter)
             }
