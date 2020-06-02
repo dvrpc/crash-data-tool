@@ -26,6 +26,10 @@
     color: #fff;
     background: #f4a22d;
 }
+#search-form input[name="address"] {
+    background: #fff;
+    color: initial;
+}
 
 
 /* Media Queries */
