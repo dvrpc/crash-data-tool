@@ -16,8 +16,6 @@ const postOptions = {
 }
 
 // Filters
-// @UPDATE: new ksi filter
-    // if we don't have to use strings for max severity, this can go back to the old way because we will drop the ksi field
 const ksiFilter = [
     ['>', 'max_sever', -1],
     ['<', 'max_sever', 2],
@@ -215,7 +213,6 @@ export const setMapFilter = filter => dispatch => {
     // handle crash type
     if(type === 'ksi'){
         mapFilter = mapFilter.concat(ksiFilter)
-        console.log('new map filter is ', mapFilter)
     }else {
         noFilterCondition++
     }
