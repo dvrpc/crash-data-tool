@@ -166,7 +166,8 @@ def test_KSI_only1(client, area, value):
     data = response.json()
     fatal_and_major_values = []
     for k, v in data.items():
-        fatal_and_major_values.append([v["severity"]["Fatal"], v["severity"]["Major"]])
+        if v["Total crashes"] != 0:
+            fatal_and_major_values.append([v["severity"]["Fatal"], v["severity"]["Major"]])
 
     print(fatal_and_major_values)  # only prints if tests fails
     # the inner any() creates a list of either True or False values (if either value is Truthy -
