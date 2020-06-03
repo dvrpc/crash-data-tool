@@ -208,7 +208,7 @@ class Sidebar extends Component {
                         <li><span className="crash-map-sidebar-totals">Fatalities</span><strong>{totals.fatalities}</strong></li>
                         <li><span className="crash-map-sidebar-totals">Severe Injuries</span> <strong>{totals.severe}</strong></li>
                         <li><span className="crash-map-sidebar-totals">Pedestrians</span> <strong>{totals.peds}</strong></li>
-                        <li><span className="crash-map-sidebar-totals">Bikes</span> <strong>{totals.bikes}</strong></li>
+                        <li><span className="crash-map-sidebar-totals">Bicyclists</span> <strong>{totals.bikes}</strong></li>
                     </ul>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crashes over Time</h2>
