@@ -128,6 +128,7 @@ const makePlaceholders = () => {
 const formatData = (yearData, output) => {
     Object.keys(yearData).forEach(key => {
         const innerObj = yearData[key]
+        if(innerObj === null) return // escape empty years
         const innerKeys = Object.keys(innerObj)
 
         // extract data from years into correct locations
@@ -137,7 +138,7 @@ const formatData = (yearData, output) => {
             })
         }else {
             output.trend.push(innerObj)
-        }        
+        }
     })
 }
 
