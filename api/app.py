@@ -69,9 +69,9 @@ class CollisionTypeResponse(BaseModel):
 
 class YearResponse(BaseModel):
     total_crashes: int = Field(..., alias="Total crashes")
-    severity: SeverityResponse
-    mode: ModeResponse
-    type: CollisionTypeResponse
+    severity: Union[SeverityResponse, None]
+    mode: Union[ModeResponse, None]
+    type: Union[CollisionTypeResponse, None]
 
 
 class Message(BaseModel):
@@ -400,6 +400,13 @@ def get_summary(
 
     for k in summary.keys():
         summary[k]["type"] = collisions_by_year[k]
+
+    # set total crashes = 0 if year not present, to make charting easier/provide additional info
+    years = ["2014", "2015", "2016", "2017", "2018"]
+
+    for each in years:
+        if not summary.get(each):
+            summary[each] = {"Total crashes": 0}
     return summary
 
 
