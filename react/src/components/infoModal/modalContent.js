@@ -23,18 +23,18 @@ export const modalContent = {
       <ul>
         <li>
           <strong>Interact with the Sidebar</strong><br />
-          <span>View crash statistics for the selected geography in a series of charts that give a detailed breakdown of trend, severity, mode and crash type.</span><br />
-          <span>Interact with the data by toggling the forms to change the date range and crash types.</span><br />
+          <span>View crash statistics for the selected geography, date range and crash type through a series of charts that give a breakdown of totals, trends, severity, mode and crash type.</span><br />
+          <span>Interact with the data by toggling the forms to change the date range and crash types for any selected area. These changes will also be reflected ono the map.</span><br />
         </li>
         <li>
           <strong>Interact with the Map</strong><br />
           <span>Hover counties or municipalities to see their name and click on them to get crash statistics for that county or municipality.</span></br >
-          <span>Click on the polygon map overlay to draw a polygon over a selected area and get crash statistics for the selected area.</span><br />
+          <span>Click on the polygon map overlay to draw a polygon over a selected area and get crash statistics for the selected area. Click on the map to add a vertex to the polygon, double click to finish the polygon and get crash statistics for the area it covers. A drawn polygon with yellow borders can be moved and the statistics will be updated for the new location. Clicking on the map outside of a drawn polygon will turn it blue and set it in place. These polygons cannot be moved, but you can click "remove boundary" to delete it and draw another one.</span><br />
           <span>Click on the DVRPC logo map overlay to recenter the map on the entire region.</span>
         </li>
         <li>
           <strong>Interact with the Navigation</strong><br />
-          <span>Select geography type from the "Search By" dropdowns and click "search" to view crash statistics for the selected area.</span>
+          <span>Select geography type from the "Search By" dropdowns and click "search" to view crash statistics for the selected area. You can also search by address to zoom to a specific location, but this will not update the crash statistics.</span>
         </li>
       </ul>
     `,

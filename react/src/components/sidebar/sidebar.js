@@ -217,7 +217,7 @@ class Sidebar extends Component {
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crash Severity</h2>
                     <Bar data={data.severityChart} options={severityOptions}/>
-                    <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in <strong>{area}</strong> by crash severity from <strong>{from}</strong> to <strong>{to}</strong>. Injury severity is divided into seven possible categories, as defined in the "About" section of the information modal. ** We can workshop this text, including changing the modal to an actionable word isntead of a ? **</p>
+                    <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in <strong>{area}</strong> by crash severity from <strong>{from}</strong> to <strong>{to}</strong>. Injury severity is divided into seven possible categories, as defined in the "About" section of the information modal. You can access it by clicking on the "?" next to the DVRPC logo on the navbar.</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Mode</h2>
                     <Doughnut data={data.modeChart} />
