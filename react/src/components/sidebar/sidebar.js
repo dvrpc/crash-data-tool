@@ -211,7 +211,7 @@ class Sidebar extends Component {
                         <li><span className="crash-map-sidebar-totals">Bicyclists</span> <strong>{totals.bikes}</strong></li>
                     </ul>
 
-                <h2 className="centered-text crash-map-sidebar-subheader">Crashes over Time</h2>
+                <h2 className="centered-text crash-map-sidebar-subheader">Crashes Over Time</h2>
                     <Line data={data.trendChart} options={trendOptions}/>
                     <p className="sidebar-paragraphs">This chart shows <strong>{crashType}</strong> crashes in <strong>{area}</strong> by crash severity from <strong>{from}</strong> to <strong>{to}</strong>. Crash trends can be useful for identifying if the frequency of crashes is increasing or decreasing over time, but it is important not to infer patterns from single-year spikes or drops in crashes or in datasets with limited data points.</p>
 
