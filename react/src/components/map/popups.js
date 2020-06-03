@@ -1,5 +1,3 @@
-import { severityLookup } from './mapLookups.js'
-
 const options = {
     method: 'GET',
     mode: 'cors',
@@ -29,10 +27,6 @@ const getPopupInfo = async crash => {
 }
 
 const setPopup = (popupInfo, index, length) => {
-    popupInfo.severity = severityLookup[popupInfo.severity]
-
-    console.log('info at setpopup ', popupInfo)
-
     return `
         <h3 class="crash-popup-header">Crash Record Number: ${popupInfo.crn.substring(2)}</h3>
         <hr id="crash-popup-hr" />

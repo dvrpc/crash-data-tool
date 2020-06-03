@@ -110,11 +110,19 @@ class Sidebar extends Component {
         const totalsObj = {crashes: 'calculating...', fatalities: 'calculating...', severe: 'calculating...', peds: 'calculating...', bikes: 'calculating...'}
 
         if(data) {
-            totalsObj.crashes = data.crashes.reduce((total, num) => total + num).toLocaleString()
-            totalsObj.fatalities = data.severity[0].toLocaleString()
-            totalsObj.severe = (data.severity[0] + data.severity[1]).toLocaleString()
-            totalsObj.peds = data.mode[1].toLocaleString()
-            totalsObj.bikes = data.mode[0].toLocaleString()
+            if(data.crashes.length) {
+                totalsObj.crashes = data.crashes.reduce((total, num) => total + num).toLocaleString()
+                totalsObj.fatalities = data.severity[0].toLocaleString()
+                totalsObj.severe = (data.severity[0] + data.severity[1]).toLocaleString()
+                totalsObj.peds = data.mode[1].toLocaleString()
+                totalsObj.bikes = data.mode[0].toLocaleString()
+            } else {
+                totalsObj.crashes = 0
+                totalsObj.fatalities = 0
+                totalsObj.severe = 0
+                totalsObj.peds = 0
+                totalsObj.bikes = 0
+            }
         }
 
         return totalsObj
