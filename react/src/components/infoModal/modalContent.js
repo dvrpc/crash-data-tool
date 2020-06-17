@@ -23,7 +23,7 @@ export const modalContent = {
       <ul>
         <li>
           <strong>Interact with the Sidebar</strong><br />
-          <span>View crash statistics for the selected geography, date range and crash type through a series of charts that give a breakdown of totals, trends, severity, mode and crash type.</span><br />
+          <span>View crash statistics for the selected geography, date range and crash type via a series of charts that give a breakdown of totals, trends, severity, mode and crash type.</span><br />
           <span>Interact with the data by toggling the forms to change the date range and crash types for any selected area. These changes will also be reflected ono the map.</span><br />
         </li>
         <li>
