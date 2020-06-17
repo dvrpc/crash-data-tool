@@ -75,12 +75,15 @@ class Sidebar extends Component {
             let context = this.props.context || this.state.context
             let isKSI = selected === 'KSI' ? 'yes' : 'no'
 
-            // return special case for regional states
+            // return special case for regional stats
             if(context === 'the DVRPC region') {
                 this.props.getCrashData({geoID: '', isKSI})
                 this.setState({crashType: selected})
                 return
             }
+
+            // handle  Philly being both a county and muni
+            if(context === 'Philadelphia City') context = 'Philadelphia County'
 
             let nameArr = context.split(' ')
             const countyCheck = nameArr.pop()
@@ -89,6 +92,8 @@ class Sidebar extends Component {
             let geoID;
             let geojson;
             const bbox = this.props.polygonBbox
+
+            console.log('context ', context)
 
             // assign values to geoId and geojson
             geoID = isCounty ? counties[nameArr[0]] : munis[context]
