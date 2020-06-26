@@ -13,7 +13,8 @@ const chartOptions = (xlabel, ylabel) =>{
                     display: true,
                     labelString: xlabel,
                     fontColor: '#0a0908'
-                }
+                },
+                offset: true
             }],
             yAxes: [{
                 scaleLabel: {
