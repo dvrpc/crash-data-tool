@@ -41,10 +41,6 @@ class Sidebar extends Component {
             }
         }
 
-        // send the inputs to makeCharts 
-        //const data = charts.makeCharts(this.props.data, range)
-        // @UPDATE END
-
         // update store state
         this.props.setCrashRange(range)
 
@@ -113,7 +109,7 @@ class Sidebar extends Component {
 
     getTotals = data => {
         const totalsObj = {crashes: 'calculating...', fatalities: 'calculating...', severe: 'calculating...', peds: 'calculating...', bikes: 'calculating...'}
-        console.log('data at getTotals ', data)
+
         if(data && data.crashes.length) {
             totalsObj.crashes = data.crashes.reduce((total, num) => total + num).toLocaleString()
             totalsObj.fatalities = data.severity[0].toLocaleString()
