@@ -15,12 +15,14 @@ class Sidebar extends Component {
         super(props)
 
         this.state = {
-            data: this.props.getCrashData({geoID: '', isKSI: 'yes'}),
+            data: 'default',
             context: 'the DVRPC region',
             crashType: 'KSI',
             from: 2014,
             to: 2018
         }
+
+        this.props.getCrashData({geoID: '', isKSI: 'yes'})
     }
 
     updateRange = e => {
@@ -40,14 +42,14 @@ class Sidebar extends Component {
         }
 
         // send the inputs to makeCharts 
-        const data = charts.makeCharts(this.props.data, range)
+        //const data = charts.makeCharts(this.props.data, range)
+        // @UPDATE END
 
         // update store state
         this.props.setCrashRange(range)
 
         // setState to update data & trigger a re-render
         this.setState({
-            data, 
             from: range.from,
             to: range.to
         })
@@ -77,8 +79,8 @@ class Sidebar extends Component {
 
             // return special case for regional stats
             if(context === 'the DVRPC region') {
+                this.setState({crashType: selected, data: 'calc'})
                 this.props.getCrashData({geoID: '', isKSI})
-                this.setState({crashType: selected})
                 return
             }
 
@@ -93,15 +95,13 @@ class Sidebar extends Component {
             let geojson;
             const bbox = this.props.polygonBbox
 
-            console.log('context ', context)
-
             // assign values to geoId and geojson
             geoID = isCounty ? counties[nameArr[0]] : munis[context]
             geojson = bbox
             
             // update data and local state
+            this.setState({crashType: selected, data: 'calc'})
             this.props.getCrashData({geoID, geojson, isKSI})
-            this.setState({crashType: selected})
         }
     }
 
@@ -113,24 +113,44 @@ class Sidebar extends Component {
 
     getTotals = data => {
         const totalsObj = {crashes: 'calculating...', fatalities: 'calculating...', severe: 'calculating...', peds: 'calculating...', bikes: 'calculating...'}
-
-        if(data) {
-            if(data.crashes.length) {
-                totalsObj.crashes = data.crashes.reduce((total, num) => total + num).toLocaleString()
-                totalsObj.fatalities = data.severity[0].toLocaleString()
-                totalsObj.severe = (data.severity[0] + data.severity[1]).toLocaleString()
-                totalsObj.peds = data.mode[1].toLocaleString()
-                totalsObj.bikes = data.mode[0].toLocaleString()
-            } else {
-                totalsObj.crashes = 0
-                totalsObj.fatalities = 0
-                totalsObj.severe = 0
-                totalsObj.peds = 0
-                totalsObj.bikes = 0
-            }
+        console.log('data at getTotals ', data)
+        if(data && data.crashes.length) {
+            totalsObj.crashes = data.crashes.reduce((total, num) => total + num).toLocaleString()
+            totalsObj.fatalities = data.severity[0].toLocaleString()
+            totalsObj.severe = (data.severity[0] + data.severity[1]).toLocaleString()
+            totalsObj.peds = data.mode[1].toLocaleString()
+            totalsObj.bikes = data.mode[0].toLocaleString()
         }
 
         return totalsObj
+    }
+
+    // shallow compare the first layer of objects
+    compare = (obj1, obj2) => {
+        for(var data in obj1) {
+            const inner1 = obj1[data]
+            const inner2 = obj2[data]
+
+            for (var data2 in inner1) {
+                if(inner1[data2] !== inner2[data2]) return false
+                break
+            }
+        }
+        
+        return true
+    }
+
+    componentDidUpdate(prevProps) {
+        const checkOld = prevProps.data
+        const checkNew = this.props.data
+        const current = this.state.data
+        
+        // handle totals/charts state transitions
+        if(checkNew && current === 'default') this.setState( {data: this.props.data} )
+        else if(checkNew && checkOld) {
+            const areEqual = this.compare(checkNew, checkOld)
+            if(!areEqual) this.setState( {data: this.props.data} )
+        }
     }
 
     render() {
@@ -144,11 +164,10 @@ class Sidebar extends Component {
         let totals;
 
         // populate chart data
-        if(this.props.data){
-            data = charts.makeCharts(this.props.data, chartsRange)
-            const totalDerivedFrom = {crashes: data.trendChart.datasets[0].data, severity: data.severityChart.datasets[0].data, mode: data.modeChart.datasets[0].data}
-            totals = this.getTotals(totalDerivedFrom)
-
+        if(this.state.data){
+            data = charts.makeCharts(this.state.data, chartsRange)
+            const totalsObj = {crashes: data.trendChart.datasets[0].data, severity: data.severityChart.datasets[0].data, mode: data.modeChart.datasets[0].data}
+            totals = this.getTotals(totalsObj)
         }else{
             // placeholder state while waiting for default fetch response
             data = charts.makeCharts(null, chartsRange)
@@ -170,7 +189,7 @@ class Sidebar extends Component {
                         <legend>Select Date Range: </legend>
 
                         <label htmlFor="from">From: </label>
-                        <select id="crash-select-from" name="from" className="crash-map-first-input">
+                        <select id="crash-select-from" name="from" className="crash-map-first-input hover-btn">
                             <option value="2014">2014</option>
                             <option value="2015">2015</option>
                             <option value="2016">2016</option>
@@ -179,7 +198,7 @@ class Sidebar extends Component {
                         </select>
 
                         <label htmlFor="to">To: </label>
-                        <select name="to">
+                        <select name="to" className="hover-btn">
                             <option value="2018">2018</option>
                             <option value="2017">2017</option>
                             <option value="2016">2016</option>
@@ -187,7 +206,7 @@ class Sidebar extends Component {
                             <option value="2014">2014</option>
                         </select>
 
-                        <button id="crash-range-button" type="submit">Update</button>
+                        <button id="crash-range-button" className="hover-btn" type="submit">Update</button>
                     </fieldset>
                 </form>
 
@@ -196,12 +215,12 @@ class Sidebar extends Component {
                         <legend>Select Severity Type: </legend>
 
                         <label htmlFor="ksi">KSI: </label>
-                        <input type="radio" value="ksi" name="crashType" className="crash-map-first-input" defaultChecked></input>
+                        <input type="radio" value="ksi" name="crashType" className="crash-map-first-input hover-btn" defaultChecked></input>
 
                         <label htmlFor="all">All: </label>
-                        <input type="radio" value="all" name="crashType"></input>
+                        <input type="radio" value="all" name="crashType" className="hover-btn"></input>
 
-                        <button id="crash-range-button" type="submit">Update</button>
+                        <button id="crash-range-button" className="hover-btn" type="submit">Update</button>
                     </fieldset>
                 </form>
 

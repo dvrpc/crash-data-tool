@@ -116,7 +116,6 @@ const formatYears = years => {
 ////
 // initialize empty charts
 const makePlaceholders = () => {
-    
     const collisionTypeChart = collisionType({'Non-collision':0, 'Rear-end':0, 'Head-on':0, 'Rear-to-rear (backing)':0, 'Angle':0, 'Sideswipe (same direction)':0, 'Sideswipe (opposite direction)':0, 'Hit fixed object':0, 'Hit pedestrian':0, 'Other or unknown':0})
     const severityChart = severity({Fatal:0,Major:0,Moderate:0,Minor:0,Uninjured:0,'Unknown Severity':0,'Unknown Injury':0})
     const modeChart = mode({Bicyclists: 0,Pedestrians: 0,'Vehicle Occupants':0})
@@ -169,7 +168,6 @@ const makeCharts = (data, range) => {
     if(!data) return makePlaceholders()
 
     let severityChart, modeChart, collisionTypeChart, trendChart;
-
     let output = {
         mode: {},
         severity: {},
@@ -179,7 +177,6 @@ const makeCharts = (data, range) => {
 
     // determine whether to build chart data for all years or a specified range of years
     range ? output = hasSetRange(data, range, output) : output = hasAllYears(data, output)
-    
     severityChart = severity(output.severity)
     modeChart = mode(output.mode)
     collisionTypeChart = collisionType(output.type)

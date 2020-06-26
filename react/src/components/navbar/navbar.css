@@ -25,15 +25,11 @@
     color: #f6efee;
     border-color: #f6efee;
     border-radius: 3px;
-    background: none;
+    background: #437b82;
     font-size: 1rem;
-    font-weight: 900;
     padding: 2px 8px;
     cursor: pointer;
-}
-#crash-map-nav-info-btn:hover {
-    background: #f6efee;
-    color: #424b54;
+    letter-spacing: 1px;
 }
 
 

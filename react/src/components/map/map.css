@@ -102,13 +102,17 @@
     justify-content: space-around;
     color: #414770;
     text-align: center;
-    background: #ececec;
-    margin-bottom: -5px;
+    width: 70%;
+    margin: 0 auto -5px auto;
 }
 #crash-popup-pagination button{
     border: none;
     background: inherit;
-    font-size: 1.05rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0px 12px 2px 12px;
+    background: #ececec;
+    border-radius: 3px;
 }
 
 /* Media Queries */

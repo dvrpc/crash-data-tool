@@ -60,7 +60,7 @@ class Search extends Component {
             <form id="search-form" className="no-print" onSubmit={ this.submitSearch }>
                 <fieldset className="search-form-fieldset" name="type" form="search-form">
                     <label id="seearch-by-label" htmlFor="select-search-type">Search By: </label>
-                    <select name="type" id="select-search-type" onChange={ this.selectSearch }>
+                    <select name="type" id="select-search-type" className="hover-btn" onChange={ this.selectSearch }>
                         <option value="county">County</option>
                         <option value="municipality">Municipality</option>
                         <option value="address">Address</option>
@@ -68,7 +68,7 @@ class Search extends Component {
                 </fieldset>
                 {selectedSearch ? (
                     <fieldset className="search-form-fieldset" name="boundary" form="search-form">
-                        <select name="boundary" id="search-type">
+                        <select name="boundary" id="search-type" className="hover-btn">
                             { selectedSearch.map(e => <option key={e}>{e}</option>) }
                         </select>
                     </fieldset>
@@ -78,7 +78,7 @@ class Search extends Component {
                     </fieldset>
                     )
                 }
-                <input type="submit" value="Search" />
+                <input type="submit" className="hover-btn" value="Search" />
             </form>
         )
     }

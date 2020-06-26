@@ -40,9 +40,9 @@ const setPopup = (popupInfo, index, length) => {
             <li>Bicyclists involved: ${popupInfo.Bicyclists}</li>
         </ul>
         <div id="crash-popup-pagination">
-            <button id="crash-previous-popup"><</button>
+            <button id="crash-previous-popup" class="hover-btn"><</button>
             <p>${index} of ${length}</p>
-            <button id="crash-next-popup">></button>
+            <button id="crash-next-popup" class="hover-btn">></button>
         </div>
     `
 }
