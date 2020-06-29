@@ -59,7 +59,7 @@ class Search extends Component {
         return (
             <form id="search-form" className="no-print" onSubmit={ this.submitSearch }>
                 <fieldset className="search-form-fieldset" name="type" form="search-form">
-                    <label id="seearch-by-label" htmlFor="select-search-type">Search By: </label>
+                    <label id="search-by-label" htmlFor="select-search-type">Search By: </label>
                     <select name="type" id="select-search-type" className="hover-btn" onChange={ this.selectSearch }>
                         <option value="county">County</option>
                         <option value="municipality">Municipality</option>
@@ -74,11 +74,11 @@ class Search extends Component {
                     </fieldset>
                     ) : (
                     <fieldset className="search-form-fieldset" name="address" form="search-form">
-                        <input name="address" type="text" placeholder="enter address" />
+                        <input name="address" type="text" placeholder="enter address" id="search-form-address" />
                     </fieldset>
                     )
                 }
-                <input type="submit" className="hover-btn" value="Search" />
+                <input type="submit" className="hover-btn search-form-submit" value="search" />
             </form>
         )
     }

@@ -1,7 +1,7 @@
 ////
 // Functions to process chart data
 ////
-// General bar chart options
+// General chart options
 const chartOptions = (xlabel, ylabel) =>{
     return {
         legend: {
@@ -29,8 +29,23 @@ const chartOptions = (xlabel, ylabel) =>{
         }
     }
 }
+// transform db response into a format the charting functions can consume
+const formatData = (yearData, output) => {
+    Object.keys(yearData).forEach(key => {
+        const innerObj = yearData[key]
+        if(innerObj === null) return // escape empty years
+        const innerKeys = Object.keys(innerObj)
 
-// Trend chart data
+        // extract data from years into correct locations
+        if(innerKeys.length){
+            Object.keys(innerObj).forEach(innerKey => {
+                output[key][innerKey] = output[key][innerKey] ? innerObj[innerKey] + output[key][innerKey] : innerObj[innerKey]
+            })
+        }else {
+            output.trend.push(innerObj)
+        }
+    })
+}
 const trend = (data, years) => {
     years = formatYears(years)
     return {
@@ -40,7 +55,6 @@ const trend = (data, years) => {
         }]
     }
 }
-// Severity chart data
 const severity = rawData => {
     let labels = []
     let data = []
@@ -58,7 +72,6 @@ const severity = rawData => {
         }]
     }
 }
-// Mode Chart data
 const mode = rawData => {
     let labels = []
     let data = []
@@ -76,7 +89,6 @@ const mode = rawData => {
         }]
     }
 }
-// Collision Type chart data
 const collisionType = rawData => {
     let labels = []
     let data = []
@@ -93,6 +105,26 @@ const collisionType = rawData => {
             backgroundColor: ['#b7b6c1','#c6e0ff','#dd403a','#89043d', '#f2d1c9', '#e086d3', '#8332ac', '#a99985', '#bad1cd', '#aec3b0']
         }]
     }
+}
+// default call that formats all available years of data
+const hasAllYears = (data, output) => {
+    for(var year in data){
+        const yearData = data[year]
+        formatData(yearData, output)
+    }
+
+    return output
+}
+// accepts a custom range and formats specified years of data into a format that can be consuemd by chart functions
+const hasSetRange = (data, range, output) => {
+    for(var year in data){
+        if(year >= range.from && year <= range.to){
+            const yearData = data[year]
+            formatData(yearData, output)
+        }
+    }
+
+    return output
 }
 // Crashes over Time chart data
 const formatYears = years => {
@@ -123,47 +155,6 @@ const makePlaceholders = () => {
     const trendChart = trend([0,0,0,0,0,0],null)
     return { collisionTypeChart, severityChart, modeChart, trendChart }
 }
-
-// transform db response into a format the charting functions can consume
-const formatData = (yearData, output) => {
-    Object.keys(yearData).forEach(key => {
-        const innerObj = yearData[key]
-        if(innerObj === null) return // escape empty years
-        const innerKeys = Object.keys(innerObj)
-
-        // extract data from years into correct locations
-        if(innerKeys.length){
-            Object.keys(innerObj).forEach(innerKey => {
-                output[key][innerKey] = output[key][innerKey] ? innerObj[innerKey] + output[key][innerKey] : innerObj[innerKey]
-            })
-        }else {
-            output.trend.push(innerObj)
-        }
-    })
-}
-
-// default call that formats all available years of data
-const hasAllYears = (data, output) => {
-    for(var year in data){
-        const yearData = data[year]
-        formatData(yearData, output)
-    }
-
-    return output
-}
-
-// accepts a custom range and formats specified years of data into a format that can be consuemd by chart functions
-const hasSetRange = (data, range, output) => {
-    for(var year in data){
-        if(year >= range.from && year <= range.to){
-            const yearData = data[year]
-            formatData(yearData, output)
-        }
-    }
-
-    return output
-}
-
 // using the API response to build the actual charts
 const makeCharts = (data, range) => {
     if(!data) return makePlaceholders()

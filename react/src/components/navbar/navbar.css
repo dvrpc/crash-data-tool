@@ -54,4 +54,7 @@
     #search-by-label, #search-form select, #search-form input{
         font-size: 10px;
     }
+    #search-by-label{
+        margin-right: 4px;
+    }
 }
