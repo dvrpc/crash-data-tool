@@ -24,20 +24,6 @@ class CrashResponse(BaseModel):
     collision_type: str = Field(..., alias="Collision type")
 
 
-class CrashResponseWithId(BaseModel):
-    id: str
-    month: str = Field(..., alias="Month")
-    year: int = Field(..., alias="Year")
-    max_severity: str = Field(..., alias="Maximum severity")
-    vehicle_count: int = Field(..., alias="Vehicles")
-    bicycle_count: int = Field(..., alias="Bicyclists")
-    bicycle_fatalities: int = Field(..., alias="Bicyclist fatalities")
-    ped_count: int = Field(..., alias="Pedestrians")
-    ped_fatalities: int = Field(..., alias="Pedestrian fatalities")
-    vehicle_occupants: Union[int, str] = Field(..., alias="Vehicle occupants")
-    collision_type: str = Field(..., alias="Collision type")
-
-
 class SeverityResponse(BaseModel):
     fatal: int = Field(..., alias="Fatal")
     major: int = Field(..., alias="Major")
@@ -119,64 +105,6 @@ app.add_middleware(
     allow_methods=["GET"],
     allow_headers=["*"],
 )
-
-
-@app.get(
-    "/api/crash-data/v1/crashes", response_model=List[CrashResponseWithId], responses=responses,
-)
-def get_crashes():
-    """Get information about all crashes."""
-    cursor = get_db_cursor()
-    query = """
-        SELECT
-            month,
-            year,
-            vehicles,
-            bicyclists,
-            bike_fatalities,
-            pedestrians,
-            ped_fatalities,
-            persons,
-            collision_type,
-            max_severity,
-            id
-        FROM crash
-    """
-
-    try:
-        cursor.execute(query)
-    except psycopg2.Error as e:
-        return JSONResponse(status_code=400, content={"message": "Database error: " + str(e)})
-
-    result = cursor.fetchall()
-
-    if not result:
-        return JSONResponse(status_code=404, content={"message": "Error: no crashes found."})
-
-    crashes = []
-    for row in result:
-
-        # persons is a nullable field, because there were some null values in NJ
-        if row[7] is None:
-            vehicle_occupants = "Unknown"
-        else:
-            vehicle_occupants = row[7] - row[3] - row[5]
-
-        crash = {
-            "id": row[10],
-            "Month": calendar.month_name[row[0]],
-            "Year": row[1],
-            "Maximum severity": max_severity_lookup[row[9]],
-            "Vehicles": row[2],
-            "Bicyclists": row[3],
-            "Bicyclist fatalities": row[4],
-            "Pedestrians": row[5],
-            "Pedestrian fatalities": row[6],
-            "Vehicle occupants": vehicle_occupants,
-            "Collision type": row[8],
-        }
-        crashes.append(crash)
-    return crashes
 
 
 @app.get(
