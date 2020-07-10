@@ -178,6 +178,8 @@ def insert_nj_accidents(filename):
             # also put negative on long
             lat = None if not row["Latitude"].strip() else float(row["Latitude"])
             lon = None if not row["Longitude"].strip() else -(abs(float(row["Longitude"])))
+            sri = None if not row["SRI"] else row["SRI"]
+            milepost = None if not row["MilePost"] else float(row["MilePost"])
             if not row["CrashTypeCode"]:
                 collision_type = "Other or unknown"
             else:
@@ -202,7 +204,8 @@ def insert_nj_accidents(filename):
                 """
                 INSERT INTO crash (
                     id, state, county, municipality,
-                    latitude, longitude, year, month,
+                    latitude, longitude, sri, milepost,
+                    year, month,
                     collision_type,
                     vehicles, persons,
                     fatalities, injuries, uninjured, unknown,
@@ -210,7 +213,7 @@ def insert_nj_accidents(filename):
                     bicyclists, bike_fatalities, pedestrians, ped_fatalities
                 )
                 VALUES (
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                     %s, %s
                 )
                 """,
@@ -221,6 +224,8 @@ def insert_nj_accidents(filename):
                     municipality.title(),
                     lat,
                     lon,
+                    sri,
+                    milepost,
                     row["CrashDate"].split("/")[2],
                     row["CrashDate"].split("/")[0],
                     collision_type,

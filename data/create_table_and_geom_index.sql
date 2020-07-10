@@ -28,6 +28,8 @@ CREATE TABLE crash (
     municipality text NOT NULL,
     latitude numeric,
     longitude numeric,
+    sri text,
+    milepost numeric,
     geom geometry(Point, 4326),
     year integer NOT NULL,
     month integer NOT NULL,
