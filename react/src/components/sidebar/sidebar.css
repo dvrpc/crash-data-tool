@@ -40,6 +40,10 @@
     cursor: pointer;
     color: #33658A;
 }
+.polarChart{
+    height: 500px;
+    width: 500px;
+}
 .sidebar-paragraphs, #crash-map-sidebar-ul{
     padding: 0 3%;
     margin: 0;
