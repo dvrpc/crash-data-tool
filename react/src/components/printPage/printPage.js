@@ -49,7 +49,7 @@ class PrintPage extends Component {
                 <section id="print-section">
                     <img id="print-map" alt="map of extent" ref={el => this.mapImg = el} />
                     <h1 className="centered-text print-header">Crash Statistics for {area}</h1>
-                    <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2018. This dataset is also used by our state and local partners.</p>
+                    <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2018. Five years of data is typically used by local, state, and federal partners in safety analyses.</p>
                     <p className="sidebar-paragraphs">The following tables are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong>.</p>
             
                     <hr />
