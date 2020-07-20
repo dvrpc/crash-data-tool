@@ -235,13 +235,13 @@ class Sidebar extends Component {
                     <Line data={data.trendChart} options={trendOptions}/>
                     <p className="sidebar-paragraphs">This chart shows <strong>{crashType}</strong> crashes in <strong>{area}</strong> by crash severity from <strong>{from}</strong> to <strong>{to}</strong>. Crash trends can be useful for identifying if the frequency of crashes is increasing or decreasing over time, but it is important not to infer patterns from single-year spikes or drops in crashes or in datasets with limited data points.</p>
 
-                <h2 className="centered-text crash-map-sidebar-subheader">Crash Severity</h2>
+                <h2 className="centered-text crash-map-sidebar-subheader">Injury Severity</h2>
                     <Bar data={data.severityChart} options={severityOptions}/>
-                    <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in <strong>{area}</strong> by crash severity from <strong>{from}</strong> to <strong>{to}</strong>. Injury severity is divided into seven possible categories, as defined in the "About" section of the information modal. You can access it by clicking on the "?" next to the DVRPC logo on the navbar.</p>
+                    <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in <strong>{area}</strong> by crash severity from <strong>{from}</strong> to <strong>{to}</strong>. Injury severity is divided into seven possible categories, as defined in the "About" section of the information modal. You can access it by clicking on the "info" button next to the DVRPC logo on the navbar.</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Mode</h2>
                     <Doughnut data={data.modeChart} />
-                    <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in the <strong>{area}</strong> by mode from <strong>{from}</strong> to <strong>{to}.</strong> Pedestrians and bicyclists are often a focus of transportation safety planning efforts because they are the road users most vulnerable to sever injuries in the event of a crash. This is reflected in data that consistently shows pedestrians account for a disproportionate number of the injuries sustained on the road.</p>
+                    <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in the <strong>{area}</strong> by mode from <strong>{from}</strong> to <strong>{to}.</strong> Pedestrians and bicyclists are often a focus of transportation safety planning efforts because they are the road users most vulnerable to severe injuries in the event of a crash. This is reflected in data that consistently shows pedestrians account for a disproportionate number of the injuries sustained on the road.</p>
                 
                 <h2 className="centered-text crash-map-sidebar-subheader">Collision Type</h2>
                     <Doughnut data={data.collisionTypeChart} />
