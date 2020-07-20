@@ -13,7 +13,7 @@
     border-radius: 3px;
     display: none;
 }
-#crash-map-modal strong{
+#crash-map-modal h4, #crash-map-modal strong{
     color: #414770;
 }
 #crash-map-modal-x{
@@ -44,7 +44,7 @@
     justify-content: space-between;
     margin: 0 auto;
     width: 85%;
-    margin-top: 20px;
+    margin-top: 15px;
 }
 .crash-map-modal-active-tab{
     color: #437b82;
