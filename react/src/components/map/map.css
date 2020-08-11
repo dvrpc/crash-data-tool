@@ -61,7 +61,7 @@
     top: 10px;
     left: calc(50% - 33px);
     right: auto;
-    padding: 6px 10px;
+    padding: 10px;
     border: none;
     cursor: pointer;
 }
@@ -74,12 +74,14 @@
 /* Popups */
 .mapboxgl-popup{
     max-width: 45%;
+    z-index: 2;
 }
 .mapboxgl-popup-content{
-    padding: 20px 15px;
+    padding: 30px 12px 20px 12px;
     box-shadow: 1px 2px 3px rgba(0,0,0,0.4);
 }
 .mapboxgl-popup-close-button{
+    font-size: 1.4rem;
     font-weight: 800;
 }
 .crash-popup-header{
@@ -110,7 +112,7 @@
     background: inherit;
     font-size: 0.9rem;
     cursor: pointer;
-    padding: 0px 12px 2px 12px;
+    padding: 2px 12px 4px 12px;
     background: #ececec;
     border-radius: 3px;
 }

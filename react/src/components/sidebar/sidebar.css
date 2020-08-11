@@ -74,8 +74,14 @@
     margin-top: 3%;
 }
 .crash-map-charts-fieldset{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background: #fcfcfc;
     border: 1px solid #f4a22d;
+}
+.crash-map-fieldset-subgroup{
+    width: 80%;
 }
 .crash-map-first-input{
     margin-right: 3%;
@@ -84,7 +90,8 @@
     float: right;
     border-radius: 3px;
     border: none;
-    padding: 4px 8px;
+    padding: 8px;
+    margin-top: -4px;
     background: #f4a22d;
     color: #fff;
     cursor: pointer;

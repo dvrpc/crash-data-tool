@@ -3,11 +3,10 @@
     justify-content: space-around;
     color: #f6efee;
     background: #171a21;
-    /* this is a bad way to get over the sidebar padding and force full width @TODO do this better  */
-    width: 103%;
+    width: 100%;
     margin-left: -3%;
     margin-top: 3%;
-    padding: 5% 3%;
+    padding: 7% 5%;
 }
 .footer a {
     color: unset;

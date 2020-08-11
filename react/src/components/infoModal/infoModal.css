@@ -1,7 +1,10 @@
 #crash-map-modal{
     position: absolute;
+    z-index: 15;
+    overflow-x: auto;
+    height: 85vh;
     width: 800px;
-    top: 15px;
+    top: 7.5vh;
     left: 50%;
     right: auto;
     margin-left: -400px;
@@ -16,9 +19,14 @@
 #crash-map-modal h4, #crash-map-modal strong{
     color: #414770;
 }
+#crash-map-modal h4{
+    font-size: 1rem;
+}
 #crash-map-modal-x{
     font-size: 1.2rem;
     float: right;
+    padding-top: 5px;
+    padding-right: 15px;
     border: none;
     background: transparent;
     font-weight: 900;
@@ -37,7 +45,7 @@
     padding: 0;
 }
 #crash-map-modal li{
-    margin-bottom: 1%;
+    margin-bottom: 2%;
 }
 #crash-map-modal-tabs{
     display: flex;
@@ -47,6 +55,7 @@
     margin-top: 15px;
 }
 .crash-map-modal-active-tab{
+    cursor: initial;
     color: #437b82;
     font-weight: 900 !important;
     border-left: 1px solid #424b54;
@@ -65,6 +74,7 @@
 }
 #crash-map-modal-content{
     width: 85%;
+    max-width: 75ch;
     margin: 0 auto;
     padding: 15px 0;
 }
