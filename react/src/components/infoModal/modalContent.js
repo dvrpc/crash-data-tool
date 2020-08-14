@@ -2,7 +2,7 @@ export const modalContent = {
     about: `
       <p>In transportation planning, crash data is a vital resource for identifying crash trends and needed safety improvements. DVRPC is consistent with state and local partners by employing a Vision Zero approach to crash data analysis: no loss of life in our region's roadways is acceptable. Roadway owners and policymakers should focus on preventing crashes that result in fatalities or serious injuries - the most severe crashes on the road.</p>
       <span>Injury severity from crashes is divided into seven possible categories:</span>
-      <ol>
+      <ol class="crash-map-modal-category-list">
         <li><details><summary><strong>Fatality</strong></summary> Fatalities stemming from crashes may occur up to 30 days following the crash for the injury to be coded as fatal.</details></li>
         <li><details><summary><strong>Suspected Serious Injury</strong></summary> The responding police officer suspects that the person sustained a serious, often incapacitating, injury.</details></li>
         <li><details><summary><strong>Suspected Minor Injury</strong></summary> The responding police officer suspects that the person sustained an injury less sever than a serious injury, and the injury is "evident".</details></li>
@@ -26,15 +26,18 @@ export const modalContent = {
       <ul>
         <li>
           <h4>Interact with the Crash Data</h4>
-          <span>Change the form fields on the navbar and press "search" to update crash data geography. Choose between county and municipal level or enter an address to view regional statistics at that location.</span>/<br />
-          <span>Change the form fields on the sidebar to update years (2014 - 2018) or severity (KSI or All) of crash data and press "update" to update.
+          <ul>
+            <li>Click on counties (zoomed out) or municipalities (zoomed in) within the DVRPC region to get crash statistics for that county or municipality. You can also view county or municipal data by changing the form fields on the navbar and pressing "search" to update crash data geography. Enter an address to view regional statistics at that location.</li>
+            <li>Change the form fields on the sidebar to update years (2014 - 2018) or severity (KSI or All) of crash data and press "update" to update crash statistics for the current geography.</li>
+          </ul>
         </li>
         <li>
           <h4>Interact with the Map</h4>
-          <span>Change the zoom level to view crashes as a heat map (zoomed out) or as clusters (zoomed in)</span>/<br />
-          <span>Hover over counties or municipalities to see their name and click on them to get crash statistics for that county or municipality.</span></br >
-          <span>Click on the polygon map overlay to draw a polygon over a selected area and get crash statistics for the selected area. Click on the map to add a vertex to the polygon, double click to finish the polygon and get crash statistics for the area it covers. A drawn polygon with yellow borders can be moved and the statistics will be updated for the new location. Clicking on the map outside of a drawn polygon will turn it blue and set it in place. These polygons cannot be moved, but you can click "remove boundary" to delete it and draw another one.</span><br />
-          <span>Click on the DVRPC logo map overlay to recenter the map on the entire region.</span>
+          <ul>
+            <li>Change the zoom level to view crashes as a heat map (zoomed out) or as clusters (zoomed in) of crash circles</li>
+            <li>Click on the polygon map overlay (insert IMG here) to draw a polygon over a selected area and get crash statistics for the selected area. Double click to finish the polygon and get crash statistics for the area it covers. A drawn polygon with yellow borders can be moved and the statistics will be updated for the new location. Clicking on the map outside of a drawn polygon will turn it blue and set it in place. These polygons cannot be moved, but you can click "remove boundary" to delete them and draw another one.</li>
+            <li>Click on the DVRPC logo map overlay to recenter the map on the entire region.</li>
+          </ul>
         </li>
       </ul>
     `,

@@ -41,7 +41,7 @@ class Modal extends Component {
                     <div id="crash-map-modal-content">
                         <p>In transportation planning, crash data is a vital resource for identifying crash trends and needed safety improvements. DVRPC is consistent with state and local partners by employing a Vision Zero approach to crash data analysis: no loss of life in our region's roadways is acceptable. Roadway owners and policymakers should focus on preventing crashes that result in fatalities or serious injuries - the most severe crashes on the road.</p>
                         <span>Injury severity from crashes is divided into seven possible categories:</span>
-                        <ol>
+                        <ol className="crash-map-modal-category-list">
                             <li><details><summary className="crash-map-modal-summary"><strong>Fatality</strong></summary> Fatalities stemming from crashes may occur up to 30 days following the crash for the injury to be coded as fatal.</details></li>
                             <li><details><summary className="crash-map-modal-summary"><strong>Suspected Serious Injury</strong></summary> The responding police officer suspects that the person sustained a serious, often incapacitating, injury.</details></li>
                             <li><details><summary className="crash-map-modal-summary"><strong>Suspected Minor Injury</strong></summary> The responding police officer suspects that the person sustained an injury less sever than a serious injury, and the injury is "evident".</details></li>
