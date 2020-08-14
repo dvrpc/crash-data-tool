@@ -35,7 +35,7 @@ export const modalContent = {
           <h4>Interact with the Map</h4>
           <ul>
             <li>Change the zoom level to view crashes as a heat map (zoomed out) or as clusters (zoomed in) of crash circles</li>
-            <li>Click on the polygon map overlay (insert IMG here) to draw a polygon over a selected area and get crash statistics for the selected area. Double click to finish the polygon and get crash statistics for the area it covers. A drawn polygon with yellow borders can be moved and the statistics will be updated for the new location. Clicking on the map outside of a drawn polygon will turn it blue and set it in place. These polygons cannot be moved, but you can click "remove boundary" to delete them and draw another one.</li>
+            <li>Click on the polygon map overlay (insert IMG here) to draw a polygon over a selected area. Double click to finish the polygon and get crash statistics for the area it covers. A drawn polygon with yellow borders can be moved and the statistics will be updated for the new location. Clicking on the map outside of a drawn polygon will turn it blue and set it in place. These polygons cannot be moved, but you can click "remove boundary" to delete them and draw another one.</li>
             <li>Click on the DVRPC logo map overlay to recenter the map on the entire region.</li>
           </ul>
         </li>

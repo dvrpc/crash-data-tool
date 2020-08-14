@@ -59,16 +59,18 @@ class Search extends Component {
         return (
             <form id="search-form" className="no-print" onSubmit={ this.submitSearch }>
                 <fieldset className="search-form-fieldset" name="type" form="search-form">
-                    <label id="search-by-label" htmlFor="select-search-type">Search By: </label>
-                    <select name="type" id="select-search-type" className="hover-btn" onChange={ this.selectSearch }>
-                        <option value="county">County</option>
-                        <option value="municipality">Municipality</option>
-                        <option value="address">Address</option>
-                    </select>
+                    <label id="search-by-label">
+                        Search By:
+                        <select name="type" id="select-search-type" className="hover-btn search-form-select" onChange={ this.selectSearch }>
+                            <option value="county">County</option>
+                            <option value="municipality">Municipality</option>
+                            <option value="address">Address</option>
+                        </select>
+                    </label>
                 </fieldset>
                 {selectedSearch ? (
                     <fieldset className="search-form-fieldset" name="boundary" form="search-form">
-                        <select name="boundary" id="search-type" className="hover-btn">
+                        <select name="boundary" id="search-type" className="hover-btn search-form-select">
                             { selectedSearch.map(e => <option key={e}>{e}</option>) }
                         </select>
                     </fieldset>
