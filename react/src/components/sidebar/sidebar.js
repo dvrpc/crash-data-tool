@@ -185,26 +185,32 @@ class Sidebar extends Component {
                         <legend>Select Date Range: </legend>
 
                         <div className="crash-map-fieldset-subgroup">
-                            <label htmlFor="from">From: </label>
-                            <select id="crash-select-from" name="from" className="crash-map-first-input hover-btn">
-                                <option value="2014">2014</option>
-                                <option value="2015">2015</option>
-                                <option value="2016">2016</option>
-                                <option value="2017">2017</option>
-                                <option value="2018">2018</option>
-                            </select>
+                            <div className="crash-map-label-subgroup">
+                                <label>
+                                    From: 
+                                    <select id="crash-select-from" name="from" className="crash-map-first-input hover-btn">
+                                        <option value="2014">2014</option>
+                                        <option value="2015">2015</option>
+                                        <option value="2016">2016</option>
+                                        <option value="2017">2017</option>
+                                        <option value="2018">2018</option>
+                                    </select>
+                                </label>
 
-                            <label htmlFor="to">To: </label>
-                            <select name="to" className="hover-btn">
-                                <option value="2018">2018</option>
-                                <option value="2017">2017</option>
-                                <option value="2016">2016</option>
-                                <option value="2015">2015</option>
-                                <option value="2014">2014</option>
-                            </select>
+                                <label>
+                                    To:
+                                    <select name="to" className="hover-btn">
+                                        <option value="2018">2018</option>
+                                        <option value="2017">2017</option>
+                                        <option value="2016">2016</option>
+                                        <option value="2015">2015</option>
+                                        <option value="2014">2014</option>
+                                    </select>
+                                </label>
+                            </div>
+                            
+                            <button id="crash-range-button" className="hover-btn" type="submit">Update</button>
                         </div>
-
-                        <button id="crash-range-button" className="hover-btn" type="submit">Update</button>
                     </fieldset>
                 </form>
 
@@ -213,14 +219,20 @@ class Sidebar extends Component {
                         <legend>Select Severity Type: </legend>
 
                         <div className="crash-map-fieldset-subgroup">
-                            <label htmlFor="ksi">KSI: </label>
-                            <input type="radio" value="ksi" name="crashType" className="crash-map-first-input hover-btn" defaultChecked></input>
+                            <div className="crash-map-label-subgroup">
+                                <label>
+                                    KSI:
+                                    <input type="radio" value="ksi" name="crashType" className="crash-map-first-input hover-btn" defaultChecked></input>
+                                </label>
 
-                            <label htmlFor="all">All: </label>
-                            <input type="radio" value="all" name="crashType" className="hover-btn"></input>
+                                <label htmlFor="all">
+                                    All:
+                                    <input type="radio" value="all" name="crashType" className="hover-btn"></input>
+                                </label>
+                            </div>
+
+                            <button id="crash-range-button" className="hover-btn" type="submit">Update</button>
                         </div>
-
-                        <button id="crash-range-button" className="hover-btn" type="submit">Update</button>
                     </fieldset>
                 </form>
 
