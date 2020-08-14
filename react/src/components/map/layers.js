@@ -95,7 +95,7 @@ const crashHeat = {
             ['linear'],
             ['zoom'],
             8.2, 1,
-            11, 2
+            11, 1.5
         ],
         'heatmap-radius': [
             'interpolate',

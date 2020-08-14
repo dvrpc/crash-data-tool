@@ -29,13 +29,12 @@ const getPopupInfo = async crash => {
 const setPopup = (popupInfo, index, length) => {
     return `
         <h3 class="crash-popup-header">Crash Record Number: ${popupInfo.crn.substring(2)}</h3>
-        <hr id="crash-popup-hr" />
         <ul id="crash-popup-ul">
-            <li>Collision Type: ${popupInfo['Collision type']}</li>
-            <li>Max Severity: ${popupInfo['Maximum severity'] || 'Unknown'}</li>
-            <li>Crash Date: ${popupInfo.Month}, ${popupInfo.Year}</li>
+            <li>Collision type: ${popupInfo['Collision type']}</li>
+            <li>Max severity: ${popupInfo['Maximum severity'] || 'Unknown'}</li>
+            <li>Crash date: ${popupInfo.Month}, ${popupInfo.Year}</li>
             <li>Vehicles involved: ${popupInfo.Vehicles}</li>
-            <li>Vehicle Occupants involved: ${popupInfo['Vehicle occupants']}</li>
+            <li>Vehicle occupants involved: ${popupInfo['Vehicle occupants']}</li>
             <li>Pedestrians involved: ${popupInfo.Pedestrians}</li>
             <li>Bicyclists involved: ${popupInfo.Bicyclists}</li>
         </ul>

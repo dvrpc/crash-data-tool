@@ -47,6 +47,9 @@
 #crash-map-modal li{
     margin-bottom: 2%;
 }
+.crash-map-modal-summary{
+    cursor: pointer
+}
 #crash-map-modal-tabs{
     display: flex;
     justify-content: space-between;

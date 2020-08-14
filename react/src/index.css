@@ -11,13 +11,18 @@ body {
   line-height: 1.5;
   text-rendering: optimizeLegibility;
 }
+summary, select, input{
+  cursor: pointer
+}
 select, input {
   border-radius: 3px;
   border: none;
-  cursor: pointer;
 }
 select {
   padding: 6px 3px;
+}
+p{
+  max-width: 75ch;
 }
 
 
