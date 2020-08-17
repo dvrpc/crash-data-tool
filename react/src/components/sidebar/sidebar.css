@@ -13,8 +13,11 @@
     color: #f4a22d;
 }
 #crash-map-sidebar-header {
-    margin: 4% 0;
+    padding: 4% 0;
     font-size: 1.5rem;
+    position: sticky;
+    top: 0;
+    background: #f7f7f7;
 }
 #crash-map-sidebar-header, .crash-map-sidebar-subheader{
     color: #437b82;
@@ -107,9 +110,9 @@
         height: 40%;
         padding: 15px 10px;
     }
-    #crash-map-sidebar-header{
-        margin: 0;
+    #crash-map-sidebar-header {
         font-size: 1.2rem;
+        margin-top: -15px;
     }
     .crash-map-sidebar-subheader{
         font-size: 1rem;
