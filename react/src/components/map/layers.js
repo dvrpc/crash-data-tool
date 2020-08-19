@@ -145,7 +145,7 @@ const crashCircles = {
             ['boolean',
                 ['feature-state', 'hover'], false
             ],
-            5,
+            4,
             7
         ],
         'circle-opacity': [

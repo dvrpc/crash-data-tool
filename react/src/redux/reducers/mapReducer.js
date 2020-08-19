@@ -110,16 +110,13 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
     // handle geography & polygon queries    
     const query = geojson === undefined ? `geoid=${geoID}&ksi_only=${isKSI}` : `geojson=${geojson}&ksi_only=${isKSI}`
     const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?${query}`  
-      
-    const stream = await fetch(api, getOptions)
 
-    //error handling - pass the failure message + the boundary object to give context to the displayed error response
-    if(!stream.ok) {
-        const failObj = { fail: stream.statusText, boundaryObj }
-        dispatch(get_data_from_keyword(failObj))
-    }else{
+    try{
+        const stream = await fetch(api, getOptions)
         const response = await stream.json()
         dispatch(get_data_from_keyword(response))
+    }catch(error) {
+        console.error(error)
     }
 }
 
@@ -169,14 +166,13 @@ export const getBoundingBox = id => async dispatch => {
 }
 
 export const getPolygonCrashes = bbox => async dispatch => {
-    const api = `https://alpha.dvrpc.org/api/crash-data/v1/crash-ids?geojson=${bbox}`
-    const stream = await fetch(api, getOptions)
-
-    if(stream.ok) {
+    try{
+        const api = `https://alpha.dvrpc.org/api/crash-data/v1/crash-ids?geojson=${bbox}`
+        const stream = await fetch(api, getOptions)
         const response = await stream.json()
         dispatch(get_polygon_crns(response))
-    }else {
-        console.log('get crashes from polygon failed because ', stream)
+    }catch(error) {
+        console.error(error)
     }
 }
 

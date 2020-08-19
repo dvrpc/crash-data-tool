@@ -87,9 +87,25 @@ class Map extends Component {
         this.map.on('mousemove', 'county-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
         this.map.on('mouseleave', 'county-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
 
-        // clicking a GEOGRAPHY triggers the same set of actions as searching by muni
+        // handle click events
         this.map.on('click', 'municipality-fill', e => this.clickGeography(e))
         this.map.on('click', 'county-fill', e => this.clickGeography(e))
+        this.map.on('click', 'crash-circles', e => {
+            const features = e.features
+
+            // extract array of crn and severity for all crashes at that clicked point
+            const crnArray = features.map(crash => { return {crn: crash.properties.id, severity: crash.properties.max_sever} })
+            let index = 0
+
+            // initialize the mapbox popup object
+            const popup = new mapboxgl.Popup({
+                closebutton: true,
+                closeOnClick: true
+            }).setLngLat(e.lngLat)
+
+            // create popup and handle pagination if necessary
+            this.handlePopup(crnArray, index, popup)
+        })
         
         // update legend depending on zoom level (heatmap vs crash circles)
         this.map.on('zoomend', () => {
@@ -111,7 +127,6 @@ class Map extends Component {
         })
 
         // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
-        // @TODO: add hover effect to target
         this.map.on('mousemove', 'crash-circles', e => {
             this.map.getCanvas().style.cursor = 'pointer'
 
@@ -122,11 +137,12 @@ class Map extends Component {
                     id: hoveredCircle
                 })
             }
-
+            
             // @TODO: e.features[0].id does not exist. add this back in when circles lack of feature id is solved
+            // rn it looks like this won't work b/c our ID's have to be strings that are prepended with PA/NJ and therefore don't fit into the schema ugh
+            // worst case create a hover layer and activate that on hover but that's sub-optimal
             // if(e.features.length > 0) {
             //     hoveredCircle = e.features[0].id
-                
             //     this.map.setFeatureState(
             //         {
             //             source: 'Crashes',
@@ -157,24 +173,6 @@ class Map extends Component {
             hoveredCircle = null;
 
             this.map.getCanvas().style.cursor = ''
-        })
-
-        // clicking a circle creates a popup w/basic information
-        this.map.on('click', 'crash-circles', e => {
-            const features = e.features
-
-            // extract array of crn and severity for all crashes at that clicked point
-            const crnArray = features.map(crash => { return {crn: crash.properties.id, severity: crash.properties.max_sever} })
-            let index = 0
-
-            // initialize the mapbox popup object
-            const popup = new mapboxgl.Popup({
-                closebutton: true,
-                closeOnClick: true
-            }).setLngLat(e.lngLat)
-
-            // create popup and handle pagination if necessary
-            this.handlePopup(crnArray, index, popup)
         })
 
         // mutes other map other event listeners when the polygon draw tool is selected (shorts out when user finishes drawing b/c that also calls this function)
@@ -290,9 +288,10 @@ class Map extends Component {
 
         // apply polygon filter (special case)
         if(this.props.polyCRNS) {
+            const fail = this.props.polyCRNS.message
             let crashType = this.props.crashType || 'ksi'
             let range = this.props.range
-            let polygonFilter = ['all', ['in', 'id', ...this.props.polyCRNS]]
+            let polygonFilter = fail ? ['all', ['in', 'id', '' ]] : ['all', ['in', 'id', ...this.props.polyCRNS]]
 
             // add range
             if(range) {

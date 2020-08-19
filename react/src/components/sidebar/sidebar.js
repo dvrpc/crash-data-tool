@@ -108,8 +108,10 @@ class Sidebar extends Component {
     }
 
     getTotals = data => {
-        const totalsObj = {crashes: 'calculating...', fatalities: 'calculating...', severe: 'calculating...', peds: 'calculating...', bikes: 'calculating...'}
+        // default response
+        let totalsObj = {crashes: 'calculating...', fatalities: 'calculating...', severe: 'calculating...', peds: 'calculating...', bikes: 'calculating...'}
 
+        // formatted results response
         if(data && data.crashes.length) {
             totalsObj.crashes = data.crashes.reduce((total, num) => total + num).toLocaleString()
             totalsObj.fatalities = data.severity[0].toLocaleString()
@@ -117,11 +119,16 @@ class Sidebar extends Component {
             totalsObj.peds = data.mode[1].toLocaleString()
             totalsObj.bikes = data.mode[0].toLocaleString()
         }
+        
+        // empty results response
+        if(!this.state.data){
+            totalsObj = {crashes: 0, fatalities: 0, severe: 0, peds: 0, bikes: 0}
+        }
 
         return totalsObj
     }
 
-    // shallow compare the first layer of objects
+    // shallow compare the first layer of objects. expects a nested object
     compare = (obj1, obj2) => {
         for(var data in obj1) {
             const inner1 = obj1[data]
@@ -137,15 +144,20 @@ class Sidebar extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const checkOld = prevProps.data
-        const checkNew = this.props.data
+        let checkOld = prevProps.data && prevProps.data.message ? false : prevProps.data
+        let checkNew = this.props.data.message ? false : this.props.data
         const current = this.state.data
         
-        // handle totals/charts state transitions
+        // handle default state
         if(checkNew && current === 'default') this.setState( {data: this.props.data} )
-        else if(checkNew && checkOld) {
-            const areEqual = this.compare(checkNew, checkOld)
-            if(!areEqual) this.setState( {data: this.props.data} )
+        // handle updated state
+        else if(checkNew) {
+            let areEqual = checkOld ? this.compare(checkNew, checkOld) : false
+            if(!areEqual) this.setState( { data: this.props.data} )
+        }
+        // handle ksi state w/no crashes in the selected area
+        else if(!checkNew && current) {
+            this.setState( {data: null} )
         }
     }
 
