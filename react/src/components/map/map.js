@@ -111,6 +111,7 @@ class Map extends Component {
         })
 
         // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
+        // @TODO: add hover effect to target
         this.map.on('mousemove', 'crash-circles', e => {
             this.map.getCanvas().style.cursor = 'pointer'
 
@@ -139,6 +140,7 @@ class Map extends Component {
             // }
         })
 
+        // @TODO: remove hover effect from old target
         this.map.on('mouseleave', 'crash-circles', () => {
             if (hoveredCircle) {
                 this.map.setFeatureState(
