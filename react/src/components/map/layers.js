@@ -134,7 +134,7 @@ const crashCircles = {
             ['get', 'max_sever'],
             0, '#d62839',
             1, '#de5260',
-            2, '#e67e88',
+            2, '#fc9da6',
             3, '#6eb5cf',
             4, '#b6dae7',
             5, '#ffffff',
