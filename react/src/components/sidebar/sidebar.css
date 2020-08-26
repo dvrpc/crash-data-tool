@@ -92,7 +92,7 @@
 .crash-map-first-input{
     margin-right: 3%;
 }
-#crash-range-button{
+.crash-sidebar-toggle-button{
     float: right;
     border-radius: 3px;
     border: none;
