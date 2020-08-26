@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import logo from './logo-white.png'
+import logo from '../footer/img/footer-logo.png'
 
 import Search from '../search/search.js';
 import Modal from '../infoModal/infoModal.js';
