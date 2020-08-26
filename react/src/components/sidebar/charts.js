@@ -102,7 +102,7 @@ const collisionType = rawData => {
         labels,
         datasets: [{
             data,
-            backgroundColor: ['#b7b6c1','#c6e0ff','#dd403a','#89043d', '#f2d1c9', '#e086d3', '#8332ac', '#a99985', '#bad1cd', '#aec3b0']
+            backgroundColor: ['#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9', '#bc80bd']
         }]
     }
 }
