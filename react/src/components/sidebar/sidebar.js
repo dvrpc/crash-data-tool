@@ -221,7 +221,7 @@ class Sidebar extends Component {
                                 </label>
                             </div>
                             
-                            <button className="hover-btn crash-sidebar-toggle-button" type="submit">Update</button>
+                            <button className="hover-btn crash-sidebar-toggle-button" type="submit">update</button>
                         </div>
                     </fieldset>
                 </form>
@@ -243,7 +243,7 @@ class Sidebar extends Component {
                                 </label>
                             </div>
 
-                            <button className="hover-btn crash-sidebar-toggle-button" type="submit">Update</button>
+                            <button className="hover-btn crash-sidebar-toggle-button" type="submit">update</button>
                         </div>
                     </fieldset>
                 </form>
