@@ -9,9 +9,10 @@
 }
 #crash-nav-logo{
     width: 85px;
+    margin-top: 5px;
 }
 .nav-vr {
-    border: 1px dotted white;
+    border: 1px solid #f7f7f7;
     margin: 0 15px;
     padding: 2.5vh 0;
 }
