@@ -24,8 +24,8 @@
 /* Information Modal Button */
 #crash-map-nav-info-btn {
     color: #f6efee;
-    border-color: #568186;
     border-radius: 3px;
+    border: none;
     background: #437b82;
     font-size: 1rem;
     padding: 6px 8px;
