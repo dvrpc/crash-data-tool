@@ -207,7 +207,7 @@ export const setMapFilter = filter => dispatch => {
     }
 
     // handle crash type
-    if(type === 'ksi'){
+    if(type === 'KSI'){
         mapFilter = mapFilter.concat(ksiFilter)
     }else {
         noFilterCondition++

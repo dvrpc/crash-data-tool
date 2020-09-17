@@ -65,9 +65,6 @@ class Sidebar extends Component {
         // use selected radio button to set map filter
         this.props.setCrashTypeFilter(selected)
 
-        // update crashType dynamic text & filter
-        selected = selected === 'ksi' ? 'KSI' : 'All'
-
         // update data and set crashType state
         if(selected !== this.state.crashType) {
             let context = this.props.context || this.state.context
@@ -233,13 +230,13 @@ class Sidebar extends Component {
                         <div className="crash-map-fieldset-subgroup">
                             <div className="crash-map-label-subgroup">
                                 <label>
-                                    KSI:
-                                    <input type="radio" value="ksi" name="crashType" className="crash-map-first-input hover-btn" defaultChecked></input>
+                                    KSI
+                                    <input type="radio" value="KSI" name="crashType" className="crash-map-first-input hover-btn crash-map-input" defaultChecked></input>
                                 </label>
 
-                                <label htmlFor="all">
-                                    All:
-                                    <input type="radio" value="all" name="crashType" className="hover-btn"></input>
+                                <label>
+                                    All
+                                    <input type="radio" value="All" name="crashType" className="hover-btn crash-map-input"></input>
                                 </label>
                             </div>
 

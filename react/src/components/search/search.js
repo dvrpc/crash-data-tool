@@ -35,8 +35,8 @@ class Search extends Component {
 
         // get KSI and range state from store
         const range = this.props.range || {}
-        const ksiCheck = this.props.crashType || 'ksi'
-        output.isKSI = ksiCheck === 'ksi' ? 'yes' : 'no'
+        const ksiCheck = this.props.crashType || 'KSI'
+        output.isKSI = ksiCheck === 'KSI' ? 'yes' : 'no'
 
         const tileType = output.type[0]
         let sidebarName = tileType === 'c' ? `${output.name} County` : output.name

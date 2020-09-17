@@ -119,7 +119,8 @@ class Map extends Component {
             }
 
             if(zoom < 11 && legendTitle[0] !== 'N'){
-                let crashType = this.props.crashType || 'ksi'
+                console.log('what the fuck bruh ', this.props.crashType)
+                let crashType = this.props.crashType || 'KSI'
                 this.legendTitle.textContent = `Number of Crashes (${crashType})`
                 this.legendGradient.style.background = 'linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248)'
                 this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
@@ -196,7 +197,7 @@ class Map extends Component {
 
     componentDidUpdate(prevProps) {
         // set form filters (crash type and range) to prevProps or default value to hold on to state if a recalculation doesn't occur
-        const prevType = prevProps.crashType || 'ksi'
+        const prevType = prevProps.crashType || 'KSI'
         const prevRange = prevProps.range || {}
         let makeNewFilter = false
 
@@ -289,7 +290,7 @@ class Map extends Component {
         // apply polygon filter (special case)
         if(this.props.polyCRNS) {
             const fail = this.props.polyCRNS.message
-            let crashType = this.props.crashType || 'ksi'
+            let crashType = this.props.crashType || 'KSI'
             let range = this.props.range
             let polygonFilter = fail ? ['all', ['in', 'id', '' ]] : ['all', ['in', 'id', ...this.props.polyCRNS]]
 
@@ -304,7 +305,7 @@ class Map extends Component {
             }
 
             // add crashtype
-            if(crashType === 'ksi') {
+            if(crashType === 'KSI') {
                 const ksiFilter = [
                     ['>', 'max_sever', -1],
                     ['<', 'max_sever', 2],
@@ -380,8 +381,8 @@ class Map extends Component {
         }
 
         // update sidebar information
-        let newFilterType = this.props.crashType || 'ksi'
-        let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
+        let newFilterType = this.props.crashType || 'KSI'
+        let isKSI = newFilterType === 'KSI' ? 'yes' : 'no'
 
         const regionalStats = {geoID: '', isKSI}
         this.props.setDefaultState(regionalStats)
@@ -499,8 +500,8 @@ class Map extends Component {
 
         // get KSI and range state from store
         const range = this.props.range || {}
-        const newFilterType = this.props.crashType || 'ksi'
-        let isKSI = newFilterType === 'ksi' ? 'yes' : 'no'
+        const newFilterType = this.props.crashType || 'KSI'
+        let isKSI = newFilterType === 'KSI' ? 'yes' : 'no'
 
         // set layer-dependent variables
         let tileType;
@@ -557,8 +558,8 @@ class Map extends Component {
             }
         ))
         
-        let typeCheck = this.props.crashType || 'ksi'
-        let isKSI = typeCheck === 'ksi' ? 'yes' : 'no'
+        let typeCheck = this.props.crashType || 'KSI'
+        let isKSI = typeCheck === 'KSI' ? 'yes' : 'no'
 
         // create data object for API call
         const dataObj = {
@@ -623,7 +624,9 @@ class Map extends Component {
     }
 
     render() {
-        let crashType = this.props.crashType || 'ksi'
+        console.log('props crashtype ', this.props.crashType)
+        let crashType = this.props.crashType || 'KSI'
+        console.log('crash type at map render ', crashType)
         
         return (
             <main id="crashMap" className="no-print" ref={el => this.crashMap = el}>

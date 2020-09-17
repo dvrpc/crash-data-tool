@@ -17,6 +17,9 @@
     display: none;
     font-size: 1rem;
 }
+#crash-map-modal a{
+    color: #437b82;
+}
 #crash-map-modal h4, #crash-map-modal strong{
     color: #414770;
 }

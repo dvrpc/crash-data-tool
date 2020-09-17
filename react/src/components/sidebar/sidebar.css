@@ -10,8 +10,7 @@
     overflow-x: hidden;
 }
 #sidebar strong {
-    color: #f4a22d;
-    color: #414770;
+    color: #EE92C2;
 }
 #crash-map-sidebar-header {
     padding: 4% 0;
@@ -33,7 +32,7 @@
 }
 .crash-map-sidebar-subheader{
     font-size: 1.2rem;
-    margin-top: 10%;
+    margin-top: 15%;
 }
 #first-subheader{
     margin-top: 0;
@@ -42,7 +41,7 @@
     padding: 0 3%;
     text-decoration: underline;
     cursor: pointer;
-    color: #33658A;
+    color: #437b82;
 }
 .polarChart{
     height: 500px;
@@ -91,6 +90,9 @@
 }
 .crash-map-first-input{
     margin-right: 3%;
+}
+.crash-map-input {
+    margin-left: 6px;
 }
 .crash-sidebar-toggle-button{
     float: right;
