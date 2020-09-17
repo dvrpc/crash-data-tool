@@ -119,7 +119,6 @@ class Map extends Component {
             }
 
             if(zoom < 11 && legendTitle[0] !== 'N'){
-                console.log('what the fuck bruh ', this.props.crashType)
                 let crashType = this.props.crashType || 'KSI'
                 this.legendTitle.textContent = `Number of Crashes (${crashType})`
                 this.legendGradient.style.background = 'linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248)'
@@ -624,9 +623,7 @@ class Map extends Component {
     }
 
     render() {
-        console.log('props crashtype ', this.props.crashType)
         let crashType = this.props.crashType || 'KSI'
-        console.log('crash type at map render ', crashType)
         
         return (
             <main id="crashMap" className="no-print" ref={el => this.crashMap = el}>
