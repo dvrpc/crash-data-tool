@@ -21,7 +21,7 @@
     color: #437b82;
 }
 #crash-map-modal h4, #crash-map-modal strong{
-    color: #74226C;
+    color: #437b82;
 }
 #crash-map-modal h4{
     font-size: 1rem;
@@ -66,7 +66,7 @@
 }
 .crash-map-modal-active-tab{
     cursor: initial;
-    color: #74226C;
+    color: #437b82;
     font-weight: 900 !important;
     border-left: 1px solid #424b54;
     border-right: 1px solid #424b54;
