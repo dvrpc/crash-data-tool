@@ -70,9 +70,11 @@ class Search extends Component {
                 </fieldset>
                 {selectedSearch ? (
                     <fieldset className="search-form-fieldset" name="boundary" form="search-form">
-                        <select name="boundary" id="search-type" className="hover-btn search-form-select">
-                            { selectedSearch.map(e => <option key={e}>{e}</option>) }
-                        </select>
+                        <label>
+                            <select name="boundary" id="search-type" className="hover-btn search-form-select">
+                                { selectedSearch.map(e => <option key={e}>{e}</option>) }
+                            </select>
+                        </label>
                     </fieldset>
                     ) : (
                     <fieldset className="search-form-fieldset" name="address" form="search-form">
