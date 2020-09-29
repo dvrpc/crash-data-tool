@@ -38,10 +38,16 @@
     margin-top: 0;
 }
 #crash-map-print-sidebar{
+    display: flex;
+    align-items: center;
     padding: 0 3%;
     text-decoration: underline;
     cursor: pointer;
     color: #437b82;
+}
+#crash-map-print-icon {
+    height: 20px;
+    margin-right: 6px;
 }
 .polarChart{
     height: 500px;
