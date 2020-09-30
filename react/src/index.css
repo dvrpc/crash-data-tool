@@ -38,7 +38,6 @@ p{
 }
 .hover-btn:hover{
   box-shadow: 0.5px 1px 1.5px rgba(0,0,0,0.2);
-  filter: hue-rotate(345deg);
 }
 
 

@@ -1,6 +1,6 @@
 #navbar{
     height: 8vh;
-    background: #437b82;
+    background: #40757d;
     padding: 0 1vw;
     margin-bottom: 1vh;
     display: flex;
@@ -11,6 +11,7 @@
     width: 85px;
     margin-top: 5px;
 }
+
 .nav-vr {
     border: 1px solid #f7f7f7;
     margin: 0 15px;
@@ -20,21 +21,20 @@
     display: flex;
     align-items: center;
 }
-
 /* Information Modal Button */
 #crash-map-nav-info-btn {
     color: #f6efee;
     font-weight: 700;
     border-radius: 3px;
     border: none;
-    background: #437b82;
+    background: #40757d;
     font-size: 1rem;
     padding: 6px 8px;
     cursor: pointer;
     letter-spacing: 1px;
 }
 #crash-map-nav-info-btn:hover {
-    color: #437b82;
+    color: #40757d;
     background: #f6efee;
 }
 

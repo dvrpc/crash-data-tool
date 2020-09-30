@@ -10,18 +10,82 @@
     overflow-x: hidden;
 }
 #sidebar strong {
-    color: #437b82;
+    color: #40757d;
 }
+
+/* Modified with credit to: https://stijndewitt.com/2018/06/12/pure-css-drop-shadow-on-scroll/*/
 #crash-map-sidebar-header {
-    padding: 4% 0;
-    font-size: 1.5rem;
+    height: 90px;  /* 74 + 16px */
+    width: 107%;
+    margin-left: -3.5%;
     position: sticky;
-    top: 0;
+    -webkit-position: sticky;
     background: #f7f7f7;
+    /* negative top allows for 16 pixels of movement before sticking */
+    top: -16px; 
+    /* make sure header overlaps main*/
+    z-index: 1;
+    text-align: center;
+    /* fix weird flickering issue in chrome: https://stackoverflow.com/a/22224884/286685 */
+    -webkit-backface-visibility: hidden;
+}
+/* PSEUDO ELEMENTS to create drop-shadow */
+#crash-map-sidebar-header::before,
+#crash-map-sidebar-header::after {
+    content: '';
+    display: block;
+    height: 16px;
+    /* make pseudo elements sticky as well */
+    position: sticky;
+    -webkit-position: sticky;
+}
+/* SHADOW */
+#crash-map-sidebar-header::before {
+    top: 58px; /* shadow is at bottom of element, so at 58 + 16 = 74px */
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.8);
+}
+/* COVER */
+#crash-map-sidebar-header::after {
+    /* linear gradient from background color to transparent acts as
+    a transition effect so the shadow appears gradually */
+    background: linear-gradient(#f7f7f7 10%, rgba(247,247,247,0.8) 50%, rgba(247,247,247,0.4) 70%, transparent);
+    top: 0;
+    /* cover should fall over shadow */
+    z-index: 2;
+}
+/* #crash-map-sidebar-header CONTENT */
+#crash-map-sidebar-header >div {
+    background: #f7f7f7;
+    height: 50px;
+    padding: 20px;
+    position: sticky;
+    -webkit-position: sticky;
+    top: 0px;
+    /* compensate for shadow with negative margin */
+    margin-top: -24px;
+    /* content should fall over shadow and cover */
+    z-index: 3;
+}
+
+#crash-map-sidebar-header >div h1 {
+    margin: 0;
+}
+/* END Credit */
+
+#crash-map-sidebar-header-main {
+    display: block;
+    font-size: 1.25em;
+    text-align: center;
+    font-weight: 700;
+}
+#crash-map-sidebar-header-area {
+    font-size: 0.8em;
+    font-weight: 400;
 }
 #crash-map-sidebar-header, .crash-map-sidebar-subheader{
-    color: #437b82;
+    color: #40757d;
 }
+
 #sidebar-hr{
     border: 0;
     border-top: 1px solid #ddd;
@@ -40,13 +104,14 @@
 #crash-map-print-sidebar{
     display: flex;
     align-items: center;
+    margin-top: 16px;
     padding: 0 3%;
     text-decoration: underline;
     cursor: pointer;
-    color: #437b82;
+    color: #40757d;
 }
 #crash-map-print-icon {
-    height: 20px;
+    height: 16px;
     margin-right: 6px;
 }
 .polarChart{
@@ -81,12 +146,13 @@
 }
 .crash-map-charts-fieldset{
     background: #fcfcfc;
-    border: 1px solid #f4a22d;
+    border: 2px solid #f4a22d;
 }
 .crash-map-fieldset-subgroup{
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-weight: 700;
 }
 .crash-map-label-subgroup{
     width: 80%;
@@ -99,13 +165,18 @@
 }
 .crash-sidebar-toggle-button{
     float: right;
+    border: 2px solid #f4a22d;
     border-radius: 3px;
-    border: none;
-    padding: 8px;
-    margin-top: -4px;
     background: #f4a22d;
     color: #3c2109;
+    font-weight: 700;
+    padding: 8px;
+    margin-top: -4px;
     cursor: pointer;
+}
+.crash-sidebar-toggle-button:hover {
+    background: #3c2109;
+    color: #f4a22d;
 }
 
 
@@ -117,9 +188,17 @@
         padding: 0 10px;
     }
     #crash-map-sidebar-header {
-        font-size: 1.2rem;
-        padding: 2% 0;
-        margin-bottom: 15px;
+        height: 80px;
+    }
+    #crash-map-sidebar-header >div {
+        height: 48px;
+        padding: 16px;
+    }
+    #crash-map-sidebar-header-main {
+        font-size: 1em;
+    }
+    #crash-map-sidebar-header-area {
+        font-size: 0.65em;
     }
     .crash-map-sidebar-subheader{
         font-size: 1rem;

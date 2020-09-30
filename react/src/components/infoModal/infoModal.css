@@ -12,16 +12,16 @@
     z-index: 5;
     background-color: #f7f7f7;
     box-shadow: 0 0 100vh 100vh rgba(0,0,0,0.6);
-    border: 3px solid #437b82;
+    border: 3px solid #40757d;
     border-radius: 3px;
     display: none;
     font-size: 1rem;
 }
 #crash-map-modal a{
-    color: #437b82;
+    color: #40757d;
 }
 #crash-map-modal h4, #crash-map-modal strong{
-    color: #437b82;
+    color: #40757d;
 }
 #crash-map-modal h4{
     font-size: 1rem;
@@ -44,7 +44,7 @@
 }
 #crash-map-modal h2{
     color: #f6efee;
-    background: #437b82;
+    background: #40757d;
     padding: 15px 0 15px 7.5%;
 }
 #crash-map-modal ul{
@@ -66,7 +66,7 @@
 }
 .crash-map-modal-active-tab{
     cursor: initial;
-    color: #437b82;
+    color: #40757d;
     font-weight: 900 !important;
     border-left: 1px solid #424b54;
     border-right: 1px solid #424b54;

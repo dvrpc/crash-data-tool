@@ -28,8 +28,19 @@
     padding: 6px 8px;
 }
 .search-form-submit{
-    color: #3c2109;
-    background: #f4a22d;
+    color: #f6efee;
+    font-weight: 700;
+    border-radius: 3px;
+    border: none;
+    background: #40757d;
+    font-size: 1rem;
+    padding: 6px 8px;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+.search-form-submit:hover {
+    background: #f6efee;
+    color: #40757d;
 }
 #search-form-address {
     background: #fff;
