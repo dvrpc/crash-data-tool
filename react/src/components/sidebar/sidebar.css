@@ -56,7 +56,7 @@
 /* #crash-map-sidebar-header CONTENT */
 #crash-map-sidebar-header >div {
     background: #f7f7f7;
-    height: 50px;
+    height: 46px;
     padding: 20px;
     position: sticky;
     -webkit-position: sticky;
@@ -69,6 +69,7 @@
 
 #crash-map-sidebar-header >div h1 {
     margin: 0;
+    line-height: 1.25;
 }
 /* END Credit */
 
