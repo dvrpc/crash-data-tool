@@ -42,13 +42,13 @@
 /* SHADOW */
 #crash-map-sidebar-header::before {
     top: 58px; /* shadow is at bottom of element, so at 58 + 16 = 74px */
-    box-shadow: 0px 2px 5px rgba(0,0,0,0.8);
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.6);
 }
 /* COVER */
 #crash-map-sidebar-header::after {
     /* linear gradient from background color to transparent acts as
     a transition effect so the shadow appears gradually */
-    background: linear-gradient(#f7f7f7 10%, rgba(247,247,247,0.8) 50%, rgba(247,247,247,0.4) 70%, transparent);
+    background: linear-gradient(#f7f7f7 10%, rgba(247,247,247,0.7) 50%, rgba(247,247,247,0.4) 70%, transparent);
     top: 0;
     /* cover should fall over shadow */
     z-index: 2;
@@ -170,13 +170,13 @@
     border-radius: 3px;
     background: #f4a22d;
     color: #3c2109;
-    padding: 8px;
-    margin-top: -4px;
+    padding: 8px 16px;
+    margin-top: -7px;
     cursor: pointer;
 }
 .crash-sidebar-toggle-button:hover {
-    background: #3c2109;
-    color: #f4a22d;
+    filter: brightness(110%);
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.3);
 }
 
 

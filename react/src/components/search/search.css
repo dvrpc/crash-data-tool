@@ -13,10 +13,7 @@
     align-items: center;
     justify-content: space-between;
 }
-.search-form-select, #search-form-address {
-    margin-right: 10px;
-}
-#select-search-type{
+.search-form-select, .search-form-submit, #search-form-address {
     margin-left: 10px;
 }
 .search-form-fieldset{
@@ -24,27 +21,23 @@
     margin: 0;
     padding: 0;
 }
-#search-form input {
-    padding: 6px 8px;
-}
 .search-form-submit{
-    color: #f6efee;
-    font-weight: 700;
+    background: #f6efee;
     border-radius: 3px;
     border: none;
-    background: #40757d;
-    font-size: 1rem;
-    padding: 6px 8px;
+    color: #477076;
+    padding: 7px 14px;
     cursor: pointer;
     letter-spacing: 1px;
 }
 .search-form-submit:hover {
-    background: #f6efee;
-    color: #40757d;
+    filter: brightness(110%);
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.3);
 }
 #search-form-address {
     background: #fff;
     color: initial;
+    padding: 7px 14px;
 }
 
 

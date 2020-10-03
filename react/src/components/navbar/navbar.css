@@ -34,8 +34,7 @@
     letter-spacing: 1px;
 }
 #crash-map-nav-info-btn:hover {
-    color: #40757d;
-    background: #f6efee;
+    text-decoration: underline;
 }
 
 /* Media Queries */
