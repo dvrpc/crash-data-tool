@@ -44,18 +44,11 @@
 /* Media Queries */
 @media all and (max-width: 800px) {
     #search-by-label, .search-form-select, #search-form-address {
-        margin-right: 5px;
-    }
-    #select-search-type{
         margin-left: 5px;
     }
     .search-form-fieldset{
         display: flex;
         align-items: center;
-    }
-    .search-form-submit{
-        padding: 4px 0;
-        width: 45px;
     }
     .search-form-select, #search-form-address{
         width: 65px;
