@@ -1,11 +1,14 @@
 #navbar{
-    height: 8vh;
+    height: 9vh;
+    position: relative;
+    z-index: 5;
     background: #40757d;
     padding: 0 1vw;
-    margin-bottom: 1vh;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    /* @hmmmm: hmmm */
+    box-shadow: 0 4px 5px rgba(0,0,0,.6);
 }
 #crash-nav-logo{
     width: 85px;
