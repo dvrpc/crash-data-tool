@@ -150,7 +150,7 @@ const formatYears = years => {
 // initialize empty charts
 const makePlaceholders = () => {
     const collisionTypeChart = collisionType({'Non-collision':0, 'Rear-end':0, 'Head-on':0, 'Rear-to-rear (backing)':0, 'Angle':0, 'Sideswipe (same direction)':0, 'Sideswipe (opposite direction)':0, 'Hit fixed object':0, 'Hit pedestrian':0, 'Other or unknown':0})
-    const severityChart = severity({Fatal:0,Major:0,Moderate:0,Minor:0,Uninjured:0,'Unknown Severity':0,'Unknown Injury':0})
+    const severityChart = severity({'Fatality':0,'Suspected Serious Injury':0,'Suspected Minor Injury':0,'Possible Injury':0,'Not Injured':0,'Unknown Injury':0,'Unknown if Injured':0})
     const modeChart = mode({Bicyclists: 0,Pedestrians: 0,'Vehicle Occupants':0})
     const trendChart = trend([0,0,0,0,0,0],null)
     return { collisionTypeChart, severityChart, modeChart, trendChart }

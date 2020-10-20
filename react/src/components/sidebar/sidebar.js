@@ -112,7 +112,7 @@ class Sidebar extends Component {
         if(data && data.crashes.length) {
             totalsObj.crashes = data.crashes.reduce((total, num) => total + num).toLocaleString()
             totalsObj.fatalities = data.severity[0].toLocaleString()
-            totalsObj.severe = (data.severity[0] + data.severity[1]).toLocaleString()
+            totalsObj.severe = data.severity[1].toLocaleString()
             totalsObj.peds = data.mode[1].toLocaleString()
             totalsObj.bikes = data.mode[0].toLocaleString()
         }
@@ -257,7 +257,7 @@ class Sidebar extends Component {
                     <ul id="crash-map-sidebar-ul">
                         <li><span className="crash-map-sidebar-totals">Crashes</span> <strong>{totals.crashes}</strong></li>
                         <li><span className="crash-map-sidebar-totals">Fatalities</span><strong>{totals.fatalities}</strong></li>
-                        <li><span className="crash-map-sidebar-totals">Severe Injuries</span> <strong>{totals.severe}</strong></li>
+                        <li><span className="crash-map-sidebar-totals">Suspected Serious Injuries</span> <strong>{totals.severe}</strong></li>
                         <li><span className="crash-map-sidebar-totals">Pedestrians</span> <strong>{totals.peds}</strong></li>
                         <li><span className="crash-map-sidebar-totals">Bicyclists</span> <strong>{totals.bikes}</strong></li>
                     </ul>
