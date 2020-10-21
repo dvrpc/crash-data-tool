@@ -56,13 +56,15 @@ const trend = (data, years) => {
     }
 }
 const severity = rawData => {
-    let labels = []
+    //let labels = []
+    const labels = ['Fatality', 'Suspected Serious Injury', 'Suspected Minor Injury', 'Possible Injury', 'Not Injured', 'Unknown Injury', 'Unknown if Injured']
     let data = []
 
     for(const prop in rawData) {
-        labels.push(prop)
+        //labels.push(prop)
         data.push(rawData[prop])
     }
+
 
     return {
         labels,
