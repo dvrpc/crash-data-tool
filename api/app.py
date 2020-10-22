@@ -29,9 +29,9 @@ class SeverityResponse(BaseModel):
     major: int = Field(..., alias="Suspected Serious Injury")
     moderate: int = Field(..., alias="Suspected Minor Injury")
     minor: int = Field(..., alias="Possible Injury")
-    unknown_severity: int = Field(..., alias="Unknown severity")
+    unknown_severity: int = Field(..., alias="Unknown Severity")
     uninjured: int = Field(..., alias="Uninjured")
-    unknown_if_injured: int = Field(..., alias="Unknown if injured")
+    unknown_if_injured: int = Field(..., alias="Unknown if Injured")
 
 
 class ModeResponse(BaseModel):
@@ -70,8 +70,10 @@ def custom_openapi():
     openapi_schema = get_openapi(
         title="DVRPC Crash Data API",
         version="1.0",
-        description="Application Programming Interface for the Delaware Valley Regional "
-        "Planning Commission's data on crashes in the region.",
+        description=(
+            "Application Programming Interface for the Delaware Valley Regional "
+            "Planning Commission's data on crashes in the region."
+        ),
         routes=app.routes,
     )
     app.openapi_schema = openapi_schema
@@ -108,9 +110,7 @@ app.add_middleware(
 
 
 @app.get(
-    "/api/crash-data/v1/crashes/{id}",
-    response_model=CrashResponse,
-    responses=responses,
+    "/api/crash-data/v1/crashes/{id}", response_model=CrashResponse, responses=responses,
 )
 def get_crash(id: str):
     """Get information about an individual crash."""
@@ -163,9 +163,7 @@ def get_crash(id: str):
 
 
 @app.get(
-    "/api/crash-data/v1/summary",
-    response_model=Dict[str, YearResponse],
-    responses=responses,
+    "/api/crash-data/v1/summary", response_model=Dict[str, YearResponse], responses=responses,
 )
 def get_summary(
     state: str = Query(None, description="Select crashes by state"),
@@ -174,8 +172,7 @@ def get_summary(
     geoid: str = Query(None, description="Select crashes by geoid"),
     geojson: str = Query(None, description="Select crashes by geoson"),
     ksi_only: bool = Query(
-        False,
-        description="Limit results to crashes with fatalities or major injuries only",
+        False, description="Limit results to crashes with fatalities or major injuries only",
     ),
 ):
     """
@@ -243,8 +240,10 @@ def get_summary(
                 return JSONResponse(
                     status_code=400,
                     content={
-                        "message": "The name of the municipality provided exists in more "
-                        "than one county. Please also provide the county name."
+                        "message": (
+                            "The name of the municipality provided exists in more "
+                            "than one county. Please also provide the county name."
+                        )
                     },
                 )
             sub_clauses.append("municipality = %s")
@@ -256,10 +255,7 @@ def get_summary(
         cursor.execute("SELECT state, county, municipality from geoid where geoid = %s", [geoid])
         result = cursor.fetchone()
         if not result:
-            return JSONResponse(
-                status_code=404,
-                content={"message": "Given geoid not found."},
-            )
+            return JSONResponse(status_code=404, content={"message": "Given geoid not found."},)
         # now set up where clause
         sub_clauses.append("state = %s")
         values.append(result[0])
@@ -295,8 +291,7 @@ def get_summary(
     result = cursor.fetchall()
     if not result:
         return JSONResponse(
-            status_code=404,
-            content={"message": "No information found for given parameters"},
+            status_code=404, content={"message": "No information found for given parameters"},
         )
 
     summary = {}
@@ -369,8 +364,7 @@ def get_crash_ids(geojson: str):
 
     if not result:
         return JSONResponse(
-            status_code=404,
-            content={"message": "No crash ids found for given parameters."},
+            status_code=404, content={"message": "No crash ids found for given parameters."},
         )
 
     ids = []
