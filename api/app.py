@@ -25,10 +25,10 @@ class CrashResponse(BaseModel):
 
 
 class SeverityResponse(BaseModel):
-    fatal: int = Field(..., alias="Fatal")
-    major: int = Field(..., alias="Major")
-    moderate: int = Field(..., alias="Moderate")
-    minor: int = Field(..., alias="Minor")
+    fatal: int = Field(..., alias="Fatality")
+    major: int = Field(..., alias="Suspected Serious Injury")
+    moderate: int = Field(..., alias="Suspected Minor Injury")
+    minor: int = Field(..., alias="Possible Injury")
     unknown_severity: int = Field(..., alias="Unknown severity")
     uninjured: int = Field(..., alias="Uninjured")
     unknown_if_injured: int = Field(..., alias="Unknown if injured")
@@ -85,11 +85,11 @@ def get_db_cursor():
 
 max_severity_lookup = {
     "0": "Fatality",
-    "1": "Major injury",
-    "2": "Moderate injury",
-    "3": "Minor injury",
-    "4": "Unknown injury",
-    "5": "No fatality or injury",
+    "1": "Suspected Serious Injury",
+    "2": "Suspected Minor Injury",
+    "3": "Possible Injury",
+    "4": "Unknown Injury",
+    "5": "No Fatality or Injury",
 }
 
 app = FastAPI(openapi_url="/api/crash-data/v1/openapi.json", docs_url="/api/crash-data/v1/docs")
@@ -108,7 +108,9 @@ app.add_middleware(
 
 
 @app.get(
-    "/api/crash-data/v1/crashes/{id}", response_model=CrashResponse, responses=responses,
+    "/api/crash-data/v1/crashes/{id}",
+    response_model=CrashResponse,
+    responses=responses,
 )
 def get_crash(id: str):
     """Get information about an individual crash."""
@@ -161,7 +163,9 @@ def get_crash(id: str):
 
 
 @app.get(
-    "/api/crash-data/v1/summary", response_model=Dict[str, YearResponse], responses=responses,
+    "/api/crash-data/v1/summary",
+    response_model=Dict[str, YearResponse],
+    responses=responses,
 )
 def get_summary(
     state: str = Query(None, description="Select crashes by state"),
@@ -170,7 +174,8 @@ def get_summary(
     geoid: str = Query(None, description="Select crashes by geoid"),
     geojson: str = Query(None, description="Select crashes by geoson"),
     ksi_only: bool = Query(
-        False, description="Limit results to crashes with fatalities or major injuries only",
+        False,
+        description="Limit results to crashes with fatalities or major injuries only",
     ),
 ):
     """
@@ -251,7 +256,10 @@ def get_summary(
         cursor.execute("SELECT state, county, municipality from geoid where geoid = %s", [geoid])
         result = cursor.fetchone()
         if not result:
-            return JSONResponse(status_code=404, content={"message": "Given geoid not found."},)
+            return JSONResponse(
+                status_code=404,
+                content={"message": "Given geoid not found."},
+            )
         # now set up where clause
         sub_clauses.append("state = %s")
         values.append(result[0])
@@ -287,7 +295,8 @@ def get_summary(
     result = cursor.fetchall()
     if not result:
         return JSONResponse(
-            status_code=404, content={"message": "No information found for given parameters"},
+            status_code=404,
+            content={"message": "No information found for given parameters"},
         )
 
     summary = {}
@@ -296,13 +305,13 @@ def get_summary(
         summary[str(row[0])] = {
             "Total crashes": row[11],
             "severity": {
-                "Fatal": row[1],
-                "Major": row[2],
-                "Moderate": row[3],
-                "Minor": row[4],
-                "Unknown severity": row[5],
+                "Fatality": row[1],
+                "Suspected Serious Injury": row[2],
+                "Suspected Minor Injury": row[3],
+                "Possible Injury": row[4],
+                "Unknown Severity": row[5],
                 "Uninjured": row[6],
-                "Unknown if injured": row[7],
+                "Unknown if Injured": row[7],
             },
             "mode": {
                 "Bicyclists": row[8],
@@ -360,7 +369,8 @@ def get_crash_ids(geojson: str):
 
     if not result:
         return JSONResponse(
-            status_code=404, content={"message": "No crash ids found for given parameters."},
+            status_code=404,
+            content={"message": "No crash ids found for given parameters."},
         )
 
     ids = []
