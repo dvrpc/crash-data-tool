@@ -180,7 +180,7 @@ class Sidebar extends Component {
             totals = this.getTotals()
         }
 
-        const severityOptions = charts.chartOptions('Injury type', 'Number of persons')
+        const severityOptions = charts.chartOptions('Injury type', 'Number of persons', {bottom: 15})
         const trendOptions = charts.chartOptions('', 'Number of Crashes')
 
         return (

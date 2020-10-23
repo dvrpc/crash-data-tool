@@ -2,7 +2,7 @@
 // Functions to process chart data
 ////
 // General chart options
-const chartOptions = (xlabel, ylabel) =>{
+const chartOptions = (xlabel, ylabel, customPadding) =>{
     return {
         legend: {
             display: false
@@ -26,6 +26,9 @@ const chartOptions = (xlabel, ylabel) =>{
                     beginAtZero: true
                 }
             }]
+        },
+        layout: {
+            padding: customPadding
         }
     }
 }
@@ -56,21 +59,19 @@ const trend = (data, years) => {
     }
 }
 const severity = rawData => {
-    //let labels = []
-    const labels = ['Fatality', 'Suspected Serious Injury', 'Suspected Minor Injury', 'Possible Injury', 'Not Injured', 'Unknown Injury', 'Unknown if Injured']
+    let labels = []
     let data = []
 
     for(const prop in rawData) {
-        //labels.push(prop)
+        labels.push(prop)
         data.push(rawData[prop])
     }
-
 
     return {
         labels,
         datasets: [{
             data,
-            backgroundColor: ['#d62839','#e67e88','#e6887e','#93c7db','#4ba3c3','#e3e3e3', '#e3e3e3']
+            backgroundColor: ['#d62839','#e67e88','#e6887e','#93c7db','#4ba3c3','#cacaca', '#e3e3e3']
         }]
     }
 }
