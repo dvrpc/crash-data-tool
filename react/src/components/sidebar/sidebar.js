@@ -107,19 +107,17 @@ class Sidebar extends Component {
     getTotals = data => {
         // default response
         let totalsObj = {crashes: 'calculating...', fatalities: 'calculating...', severe: 'calculating...', peds: 'calculating...', bikes: 'calculating...'}
-
+        
         // formatted results response
-        if(data && data.crashes.length) {
+        if(data === 'empty') {
+            totalsObj = {crashes: 0, fatalities: 0, severe: 0, peds: 0, bikes: 0}
+        }
+        else if(data && data.crashes.length) {
             totalsObj.crashes = data.crashes.reduce((total, num) => total + num).toLocaleString()
             totalsObj.fatalities = data.severity[0].toLocaleString()
             totalsObj.severe = data.severity[1].toLocaleString()
             totalsObj.peds = data.mode[1].toLocaleString()
             totalsObj.bikes = data.mode[0].toLocaleString()
-        }
-        
-        // empty results response
-        if(!this.state.data){
-            totalsObj = {crashes: 0, fatalities: 0, severe: 0, peds: 0, bikes: 0}
         }
 
         return totalsObj
@@ -152,9 +150,9 @@ class Sidebar extends Component {
             let areEqual = checkOld ? this.compare(checkNew, checkOld) : false
             if(!areEqual) this.setState( { data: this.props.data} )
         }
-        // handle ksi state w/no crashes in the selected area
-        else if(!checkNew && current) {
-            this.setState( {data: null} )
+        // handle all 0 crash response
+        else if(!checkNew && current !== 'empty') {
+            this.setState( {data: 'empty'} )
         }
     }
 
@@ -166,18 +164,18 @@ class Sidebar extends Component {
         let from = this.state.from
         let to = this.state.to
         let chartsRange = {from, to}
-        let data;
+        let data = this.state.data;
         let totals;
 
         // populate chart data
-        if(this.state.data){
-            data = charts.makeCharts(this.state.data, chartsRange)
-            const totalsObj = {crashes: data.trendChart.datasets[0].data, severity: data.severityChart.datasets[0].data, mode: data.modeChart.datasets[0].data}
-            totals = this.getTotals(totalsObj)
+        if(data && data !== 'empty'){
+            data = charts.makeCharts(data, chartsRange)
+            const dataFormatted = {crashes: data.trendChart.datasets[0].data, severity: data.severityChart.datasets[0].data, mode: data.modeChart.datasets[0].data}
+            totals = this.getTotals(dataFormatted)
         }else{
-            // placeholder state while waiting for default fetch response
+            // handle undefined data (nonexistant or all 0 response)
+            totals = data === 'empty' ? this.getTotals(data) : this.getTotals()
             data = charts.makeCharts(null, chartsRange)
-            totals = this.getTotals()
         }
 
         const severityOptions = charts.chartOptions('Injury type', 'Number of persons', {bottom: 15})

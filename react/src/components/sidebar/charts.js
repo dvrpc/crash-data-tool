@@ -71,7 +71,7 @@ const severity = rawData => {
         labels,
         datasets: [{
             data,
-            backgroundColor: ['#d62839','#e67e88','#e6887e','#93c7db','#4ba3c3','#cacaca', '#e3e3e3']
+            backgroundColor: ['#c12433','#e67e88','#e6887e','#93c7db','#4ba3c3','#cacaca', '#e3e3e3']
         }]
     }
 }
