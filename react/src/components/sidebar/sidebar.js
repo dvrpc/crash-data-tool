@@ -140,7 +140,10 @@ class Sidebar extends Component {
 
     componentDidUpdate(prevProps) {
         let checkOld = prevProps.data && prevProps.data.message ? false : prevProps.data
-        let checkNew = this.props.data.message ? false : this.props.data
+        
+        // @REMINDER: this is a workaround to the API handling all 0's as a null response instead of a possible outcome
+        // 'empty' state is to differentiate between no response (intial render) and empty response (no crashes in selected area)
+        let checkNew = this.props.data.message ? false : this.props.data 
         const current = this.state.data
         
         // handle default state
@@ -173,7 +176,7 @@ class Sidebar extends Component {
             const dataFormatted = {crashes: data.trendChart.datasets[0].data, severity: data.severityChart.datasets[0].data, mode: data.modeChart.datasets[0].data}
             totals = this.getTotals(dataFormatted)
         }else{
-            // handle undefined data (nonexistant or all 0 response)
+            // handle undefined data (nonexistant or all 0 response both get lumped into here)
             totals = data === 'empty' ? this.getTotals(data) : this.getTotals()
             data = charts.makeCharts(null, chartsRange)
         }
