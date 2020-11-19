@@ -2,6 +2,8 @@
 
 If you are just updating data, start from step 5. However, note that as currently written, the data import first erases any existing data from the database.
 
+Note that this requires Postgres with the [PostGIS](https://postgis.net/) extension installed. See Postgres/PostGIS docs on installation. For Debian, install PostGIS on an already-installed Postgres 12 cluster with `sudo apt install postgres-12-postgis-3`.
+
 1. Create the database in postgres:
     1. switch to the postgres user: `su postgres`
     2. create the database: `createdb crash_data`
