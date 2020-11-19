@@ -25,18 +25,23 @@ export const modalContent = {
     how: `
       <ul>
         <li>
-          <h4>Interact with the Crash Data</h4>
+          <h4>Change Geography</h4>
           <ul>
-            <li>Click on counties (zoomed out) or municipalities (zoomed in) within the DVRPC region to get crash statistics for that county or municipality. You can also view county or municipal data by changing the form fields on the navbar and pressing "search" to update crash data geography. Enter an address to view regional statistics at that location.</li>
-            <li>Change the form fields on the sidebar to update years (2014 - 2018) or severity (KSI or All) of crash data and press "update" to update crash statistics for the current geography.</li>
+            <li><em>From the map:</em> Click on counties (zoomed out) or municipalities (zoomed in) within the DVRPC region to get crash statistics for that county or municipality. You can also view custom geographies by clicking the IMG icon on the map, which opens the polygon editor. Click to drop vertices and double click to finish drawing a polygon. The polygon can be moved and crash statistics will be re-calculated.</li>
+            <li><em>From the navbar:</em> View county or municipal data by changing the form fields on the navbar and pressing "go" to update crash statistics to that area. Searching by address will zoom to a location but will not update crash statistics.</li>
           </ul>
         </li>
         <li>
-          <h4>Interact with the Map</h4>
+          <h4>Filter Crashes</h4>
           <ul>
-            <li>Change the zoom level to view crashes as a heat map (zoomed out) or as clusters (zoomed in) of crash circles</li>
-            <li>Click on the polygon map overlay (insert IMG here) to draw a polygon over a selected area. Double click to finish the polygon and get crash statistics for the area it covers. A drawn polygon with yellow borders can be moved and the statistics will be updated for the new location. Clicking on the map outside of a drawn polygon will turn it blue and set it in place. These polygons cannot be moved, but you can click "remove boundary" to delete them and draw another one.</li>
-            <li>Click on the DVRPC logo map overlay to recenter the map on the entire region.</li>
+            <li><em>By crash type:</em> Choose between KSI (killed and severe injury) or All crash types on the sidebar form labeled "Select Severity Type" and press update to apply the filter.</li>
+            <li><em>By date:</em> Select a range between 2014 and 2018 on the sidebar form labeled "Select Date Range" and press update to apply the filter. View a single year of data by setting it to both From and To.</li>
+          </ul>
+        </li>
+        <li>  
+          <h4>View Crash Details</h4>
+          <ul>
+            <li>Zoom in to the crash circles view and click on any crash circle to create a popup with details for that specific crash. At higher zoom levels, crashes in similar locations may aggregate to the same point resulting in popups with multiple pages of crash details.</li>
           </ul>
         </li>
       </ul>
