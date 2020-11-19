@@ -46,12 +46,12 @@ def test_data_correct2(client):
 @pytest.mark.parametrize(
     "id,expected_max_severity",
     [
-        ("PA2014075953", "No fatality or injury"),
-        ("PA2015077824", "Minor injury"),
-        ("PA2015107449", "Moderate injury"),
-        ("PA2016004173", "Major injury"),
+        ("PA2014075953", "No Fatality or Injury"),
+        ("PA2015077824", "Possible Injury"),
+        ("PA2015107449", "Suspected Minor Injury"),
+        ("PA2016004173", "Suspected Serious Injury"),
         ("PA2016004153", "Fatality"),
-        ("PA2016004167", "Unknown injury"),
+        ("PA2016004167", "Unknown Injury"),
     ],
 )
 def test_max_severity(client, id, expected_max_severity):
