@@ -1,10 +1,10 @@
 /* General */
 #sidebar-wrapper {
     position: absolute;
-    padding: 5px 1px 5px 0;
+    padding: 5px 1px 0px 0;
     font-size: 14px;
     width: 35vw;
-    height: 96%;
+    height: 90vh;
     border-radius: 3px;
     z-index: 10;
     top: 10px;
@@ -14,6 +14,7 @@
 }
 #sidebar{
     padding: 0 5px;
+    border-bottom-left-radius: 3px;
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
@@ -31,7 +32,7 @@
     -webkit-position: sticky;
     background: #f7f7f7;
     /* negative top allows for 16 pixels of movement before sticking */
-    top: -16px; 
+    top: -16px;
     /* make sure header overlaps main*/
     z-index: 1;
     text-align: center;

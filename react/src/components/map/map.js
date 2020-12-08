@@ -328,6 +328,7 @@ class Map extends Component {
 
         // zoom to a bounding box when appropriate (all non-address searches)
         if(this.props.bbox && prevProps.bbox !== this.props.bbox) {
+            // @TODO shift bbox slightly to the right like for center (from -75.2273 to -75.85)
             this.map.fitBounds(this.props.bbox)
         }
     }
