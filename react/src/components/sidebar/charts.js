@@ -36,7 +36,9 @@ const chartOptions = (xlabel, ylabel, customPadding) =>{
 const formatData = (yearData, output) => {
     Object.keys(yearData).forEach(key => {
         const innerObj = yearData[key]
-        if(innerObj === null) return // escape empty years
+
+        if(!innerObj) return // escape empty years
+        
         const innerKeys = Object.keys(innerObj)
 
         // extract data from years into correct locations

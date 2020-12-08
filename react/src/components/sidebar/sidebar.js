@@ -143,7 +143,7 @@ class Sidebar extends Component {
         
         // @REMINDER: this is a workaround to the API handling all 0's as a null response instead of a possible outcome
         // 'empty' state is to differentiate between no response (intial render) and empty response (no crashes in selected area)
-        let checkNew = this.props.data.message ? false : this.props.data 
+        let checkNew = this.props.data.message ? false : this.props.data
         const current = this.state.data
         
         // handle default state

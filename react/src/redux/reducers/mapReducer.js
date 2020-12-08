@@ -133,6 +133,7 @@ export const getBoundingBox = id => async dispatch => {
     let codeType;
 
     // determine feature server and code type based on query type
+    // @TODO create philly neighborhoods lookup and check if it exists in there before doing the length. So if(philly), else if(>5), else
     if(id.length > 5 ) {
         featureServer = 'MunicipalBoundaries'
         codeType = `geoid_10='${id}'` 
@@ -141,8 +142,8 @@ export const getBoundingBox = id => async dispatch => {
         codeType = `FIPS='${id}'`
     }    
 
-    // https://services.arcgis.com/rkitYk91zieQFZov/ArcGIS/rest/services/Philadelphia_Neighborhoods/FeatureServer/0
-    // ^ Philly neighborhoods API should we decide to add that
+    //  https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=geoid=${phillyID}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json
+    // ^ New Philly neighborhoods API
     
     // boundary query string w/appropriate featureServer & id    
     const boundaries = `https://arcgis.dvrpc.org/portal/rest/services/Boundaries/${featureServer}/FeatureServer/0/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
