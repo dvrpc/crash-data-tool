@@ -41,7 +41,7 @@ class Map extends Component {
         this.map = new mapboxgl.Map({
             container: this.crashMap,
             style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
-            center: [-75.2273, 40.071],
+            center: [-75.85, 40.071],
             zoom: this.state.zoom,
             //@Note: this is a performance hit but necessary to export the map canvas
             preserveDrawingBuffer: true
@@ -342,7 +342,7 @@ class Map extends Component {
     /*****************/
 
     // reset map to default view
-    resetControl = () => this.map.flyTo({center: [-75.2273, 40.071], zoom: this.state.zoom})
+    resetControl = () => this.map.flyTo({center: [-75.85, 40.071], zoom: this.state.zoom})
 
     // reveal the boundary overlay when a boundary is established
     showBoundaryOverlay = () => this.boundaryOverlay.classList.remove('hidden')

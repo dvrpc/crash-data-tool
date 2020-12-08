@@ -185,7 +185,8 @@ class Sidebar extends Component {
         const trendOptions = charts.chartOptions('', 'Number of Crashes')
 
         return (
-            <section id="sidebar" className="no-print">
+            <div id="sidebar-wrapper">
+                <section id="sidebar" className="no-print">
                 <header id="crash-map-sidebar-header">
                     <div>
                         <h1 className="centered-text"><span id="crash-map-sidebar-header-main">Crash Statistics</span><span id="crash-map-sidebar-header-area">FOR {areaHeader}</span></h1>
@@ -281,6 +282,7 @@ class Sidebar extends Component {
 
                 <Footer />
             </section>
+        </div>
         );
     }
 }
