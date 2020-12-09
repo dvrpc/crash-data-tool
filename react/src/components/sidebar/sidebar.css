@@ -4,7 +4,6 @@
     padding: 1px 1px 0 0;
     font-size: 14px;
     width: 35vw;
-    height: 90vh;
     height: calc(93vh - 20px);
     border-radius: 3px;
     z-index: 4;
@@ -109,7 +108,7 @@
 }
 .crash-map-sidebar-subheader{
     font-size: 1.2rem;
-    margin-top: 20%;
+    margin-top: 15%;
 }
 #first-subheader{
     margin-top: 0;
@@ -194,10 +193,19 @@
 
 /* Media Queries */
 @media all and (max-width: 800px) {
-    #sidebar{
+    #sidebar-wrapper {
+        position: initial;
         width: calc(100% - 20px);
         height: 45%;
         padding: 0 10px;
+        box-shadow: none;
+        border-radius: 0;
+        top: 0;
+        left: 0;
+    }
+    #sidebar{
+        padding: 0;
+        border-radius: 0;
     }
     #crash-map-sidebar-header {
         height: 80px;
