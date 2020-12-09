@@ -328,8 +328,15 @@ class Map extends Component {
 
         // zoom to a bounding box when appropriate (all non-address searches)
         if(this.props.bbox && prevProps.bbox !== this.props.bbox) {
-            // @TODO shift bbox slightly to the right like for center (from -75.2273 to -75.85)
-            this.map.fitBounds(this.props.bbox)
+            if( window.innerWidth > 800 ) {
+                // handle desktop offset
+                const leftPad = (window.innerWidth * 0.35 + 10)
+                const padding = {top: 0, bottom: 0, left: leftPad, right: 0}
+
+                this.map.fitBounds(this.props.bbox, {padding})
+            } else {
+                this.map.fitBounds(this.props.bbox)
+            }
         }
     }
 
@@ -345,7 +352,6 @@ class Map extends Component {
     // reset map to default view
     resetControl = () => {
         const longitudeOffset = window.innerWidth > 800 ? -75.85 : -75.2273
-
         this.map.flyTo({center: [longitudeOffset, 40.071], zoom: this.state.zoom})
     }
 
