@@ -36,12 +36,12 @@ class Map extends Component {
 
     componentDidMount() {
         mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
-        
+        const longitudeOffset = window.innerWidth > 800 ? -75.85 : -75.2273
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
             style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
-            center: [-75.85, 40.071],
+            center: [longitudeOffset, 40.071],
             zoom: this.state.zoom,
             //@Note: this is a performance hit but necessary to export the map canvas
             preserveDrawingBuffer: true
@@ -343,7 +343,11 @@ class Map extends Component {
     /*****************/
 
     // reset map to default view
-    resetControl = () => this.map.flyTo({center: [-75.85, 40.071], zoom: this.state.zoom})
+    resetControl = () => {
+        const longitudeOffset = window.innerWidth > 800 ? -75.85 : -75.2273
+
+        this.map.flyTo({center: [longitudeOffset, 40.071], zoom: this.state.zoom})
+    }
 
     // reveal the boundary overlay when a boundary is established
     showBoundaryOverlay = () => this.boundaryOverlay.classList.remove('hidden')
