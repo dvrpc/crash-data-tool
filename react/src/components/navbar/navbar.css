@@ -3,11 +3,10 @@
     position: relative;
     z-index: 5;
     background: #40757d;
-    padding: 0 1vw;
+    padding: 0 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* @hmmmm: hmmm */
     box-shadow: 0 4px 5px rgba(0,0,0,.6);
 }
 #crash-nav-logo{
