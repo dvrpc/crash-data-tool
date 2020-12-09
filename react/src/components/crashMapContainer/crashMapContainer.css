@@ -1,6 +1,7 @@
 #crash-map-content-wrapper{
     display: flex;
-    height: 91vh;
+    position: relative;
+    height: 93vh;
 }
 
 /* Media queries */
