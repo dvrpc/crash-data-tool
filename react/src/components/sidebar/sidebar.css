@@ -38,6 +38,7 @@
     text-align: center;
     /* fix weird flickering issue in chrome: https://stackoverflow.com/a/22224884/286685 */
     -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 /* PSEUDO ELEMENTS to create drop-shadow */
 #crash-map-sidebar-header::before,
