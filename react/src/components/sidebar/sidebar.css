@@ -126,17 +126,26 @@
     height: 16px;
     margin-right: 6px;
 }
-.polarChart{
-    height: 500px;
-    width: 500px;
+.chartjs-render-monitor {
+    background: white;
+    box-shadow: 1px 2px 3px rgba(0,0,0,.4);
+    border-radius: 3px;
 }
-.sidebar-paragraphs, #crash-map-sidebar-ul{
-    margin: 0;
+/* handle custom padding per chart type */
+#trend-chart {
+    padding-top: 20px;
+}
+#mode-chart, #collision-chart, #severity-chart {
+    padding: 15px 0;
 }
 .first-paragraph{
     margin: 2% 0;
 }
+.sidebar-paragraphs {
+    margin-top: 10px;
+}
 #crash-map-sidebar-ul{
+    margin: 0;
     padding: 0;
     list-style-type: none;
 }
