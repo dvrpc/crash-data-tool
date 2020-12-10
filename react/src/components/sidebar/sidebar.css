@@ -138,6 +138,9 @@
 #severity-chart {
     padding: 25px 10px 15px 2px;
 }
+#trend-chart, #severity-chart {
+    width: calc(100% - 12px) !important;
+}
 #mode-chart, #collision-chart {
     padding: 20px 0;
 }
