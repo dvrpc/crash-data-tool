@@ -133,10 +133,13 @@
 }
 /* handle custom padding per chart type */
 #trend-chart {
-    padding-top: 20px;
+    padding: 25px 10px 0 2px;
 }
-#mode-chart, #collision-chart, #severity-chart {
-    padding: 15px 0;
+#severity-chart {
+    padding: 25px 10px 15px 2px;
+}
+#mode-chart, #collision-chart {
+    padding: 20px 0;
 }
 .first-paragraph{
     margin: 2% 0;
