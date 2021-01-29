@@ -10,8 +10,8 @@
     box-shadow: 0 4px 5px rgba(0,0,0,.6);
 }
 #crash-nav-logo{
+    display: block;
     width: 85px;
-    margin-top: 5px;
 }
 
 .nav-vr {
