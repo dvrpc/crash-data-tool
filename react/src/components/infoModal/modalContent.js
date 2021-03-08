@@ -1,3 +1,5 @@
+import polygon from './polygon.png'
+
 export const modalContent = {
     about: `
       <p>In transportation planning, crash data is a vital resource for identifying crash trends and needed safety improvements. DVRPC is consistent with state and local partners by employing a Vision Zero approach to crash data analysis: no loss of life in our region's roadways is acceptable. Roadway owners and policymakers should focus on preventing crashes that result in fatalities or serious injuries - the most severe crashes on the road.</p>
@@ -28,7 +30,7 @@ export const modalContent = {
         <li>
           <h4>Change Geography</h4>
           <ul>
-            <li><em>From the map:</em> Click on counties (zoomed out) or municipalities (zoomed in) within the DVRPC region to get crash statistics for that county or municipality. You can also view custom geographies by clicking the IMG icon on the map, which opens the polygon editor. Click to drop vertices and double click to finish drawing a polygon. The polygon can be moved and crash statistics will be re-calculated.</li>
+            <li><em>From the map:</em> Click on counties (zoomed out) or municipalities (zoomed in) within the DVRPC region to get crash statistics for that county or municipality. You can also view custom geographies by clicking the <img src=${polygon} alt="polygon tool icon" /> icon on the map, which opens the polygon editor. Click to drop vertices and double click to finish drawing a polygon. The polygon can be moved and crash statistics will be re-calculated.</li>
             <li><em>From the navbar:</em> View county or municipal data by changing the form fields on the navbar and pressing "go" to update crash statistics to that area. Searching by address will zoom to a location but will not update crash statistics.</li>
           </ul>
         </li>
