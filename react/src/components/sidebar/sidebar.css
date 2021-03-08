@@ -68,7 +68,6 @@
 #crash-map-sidebar-header >div {
     background: #f7f7f7;
     height: 53px;
-    /* @TODO mess around with this so that padding-bottom can be 8px */
     padding: 10px 20px 15px 20px;
     position: sticky;
     -webkit-position: sticky;
@@ -193,19 +192,23 @@
 }
 .crash-sidebar-toggle-button{
     float: right;
-    border: 2px solid #f4a22d;
+    border: none;
     border-radius: 3px;
-    background: #f4a22d;
-    color: #3c2109;
+    background: #f7f7f7;
+    color: #40757d;
     padding: 8px 16px;
     margin-top: -7px;
     cursor: pointer;
+    box-shadow: 0.5px 1px 1.5px rgba(0,0,0,.3);
 }
 .crash-sidebar-toggle-button:hover {
     filter: brightness(110%);
     box-shadow: 1px 2px 3px rgba(0,0,0,0.3);
 }
-
+.crash-sidebar-toggle-button:active {
+    box-shadow: none;
+    border: 2px #f7f7f7 inset;
+}
 
 /* Media Queries */
 @media all and (max-width: 800px) {

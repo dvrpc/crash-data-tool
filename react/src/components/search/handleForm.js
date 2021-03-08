@@ -9,11 +9,15 @@ const geocode = async query => {
     const token = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
     const api = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${token}&autocomplete=true&bbox=-76.09405517578125,39.49211914385648,-74.32525634765625,40.614734298694216`
     
-    // @TODO: add error handling
-    const stream = await fetch(api)
-    const result = await stream.json()
-
-    return result
+    try {
+        const stream = await fetch(api)
+        const result = await stream.json()
+    
+        return result
+    } catch (error) {
+        console.error(error)
+        return false
+    }
 }
 
 

@@ -2,9 +2,9 @@
     position: absolute;
     z-index: 15;
     overflow-x: auto;
-    height: 85vh;
+    height: 90vh;
     width: 800px;
-    top: 7.5vh;
+    top: 5vh;
     left: 50%;
     right: auto;
     margin-left: -400px;
@@ -45,7 +45,7 @@
 #crash-map-modal h2{
     color: #f6efee;
     background: #40757d;
-    padding: 15px 0 15px 7.5%;
+    padding: 10px 0 10px 7.5%;
 }
 #crash-map-modal ul{
     list-style-type: none;
@@ -77,7 +77,7 @@
 }
 #crash-map-modal-tabs h3{
     width: 33.33%;
-    padding: 15px 0;
+    padding: 10px 0;
     text-align: center;
     font-weight: 500;
     border-bottom: 2px solid #424b54;
@@ -89,7 +89,7 @@
     padding: 15px 0;
 }
 #crash-map-modal-content p{
-    margin: 1% 0;
+    margin-bottom: 1%;
 }
 #crash-map-modal-hr{
     margin: 2% 0;

@@ -68,7 +68,6 @@ class Search extends Component {
                         </select>
                     </label>
                 </fieldset>
-                {/* @TODO remove the submit button. refactor submitSearch from a form loop to just getting the two select values */}
                 {selectedSearch ? (
                     <fieldset className="search-form-fieldset" name="boundary" form="search-form">
                         <label>
