@@ -68,7 +68,6 @@
 #crash-map-sidebar-header >div {
     background: #f7f7f7;
     height: 53px;
-    /* @TODO mess around with this so that padding-bottom can be 8px */
     padding: 10px 20px 15px 20px;
     position: sticky;
     -webkit-position: sticky;
