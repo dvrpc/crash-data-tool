@@ -19,8 +19,9 @@ export const modalContent = {
         <li><details><summary><strong>Unknown Injury</strong></summary> An injury is suspected but the severity of the injury is unknown.</details></li>
         <li><details><summary><strong>Unknown if Injured</strong></summary> Data is unavailable regarding whether the person was injured.</details></li>
     </ol>
-      <hr id="crash-map-modal-hr"/>
-      <p><strong>Contact:</strong> Kevin Murphy <a href="mailto:kmurphy@dvrpc.org">kmurphy@dvrpc.org</a></p>
+    <p>Following FHWA guidance, most counties in Pennsylvania (except Philadelphia) adopted the term "Suspected Serious Injury" in place of "Major Injury," "Suspected Minor Injury" in place of "Moderate Injury," and "Possible Injury" in place of "Minor Injury" starting in 2016. This change did not represent a significant change in the definition of these injury types, but nonetheless has appeared to lead to an increase in injuries labeled "Suspected Serious Injury" and corresponding drops in injuries labeled as lesser severity. The same change in terminology was adopted in 2019 in Philadelphia and in the New Jersey counties in the DVRPC region.</p>
+    <hr id="crash-map-modal-hr"/>
+    <p><strong>Contact:</strong> Kevin Murphy <a href="mailto:kmurphy@dvrpc.org">kmurphy@dvrpc.org</a></p>
     `,
     how: `
       <ul>
