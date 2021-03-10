@@ -23,7 +23,6 @@ class Search extends Component {
 
     submitSearch = e => {
         const output = form.parseSearch(e)
-        console.log('form output ', output)
 
         // zoom to area for address searches & exit
         if(output.coords) {
@@ -40,7 +39,17 @@ class Search extends Component {
         output.isKSI = ksiCheck === 'KSI' ? 'yes' : 'no'
 
         const tileType = output.type[0]
-        let sidebarName = tileType === 'c' ? `${output.name} County` : output.name
+        let sidebarName;
+        switch(tileType) {
+            case 'c':
+                sidebarName = `${output.name} County`
+                break
+            case 'p':
+                sidebarName = `${output.name}, Philadelphia`
+                break
+            default:
+                sidebarName = output.name
+        }
 
         // create data, filter and boundary objects
         const dataObj = { geoID: output.geoID, isKSI: output.isKSI }

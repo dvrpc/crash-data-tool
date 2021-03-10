@@ -141,7 +141,7 @@ export const getBoundingBox = id => async dispatch => {
         id += 100
         query = `https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=geoid='${id}'&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
     }else {
-        if(id.length > 5 ) {
+        if(id.toString().length > 5 ) {
             featureServer = 'MunicipalBoundaries'
             codeType = `geoid_10='${id}'` 
         } else {
@@ -152,8 +152,6 @@ export const getBoundingBox = id => async dispatch => {
         query = `https://arcgis.dvrpc.org/portal/rest/services/Boundaries/${featureServer}/FeatureServer/0/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
     }
 
-    
-    // const boundaries = `https://arcgis.dvrpc.org/portal/rest/services/Boundaries/${featureServer}/FeatureServer/0/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
     const stream = await fetch(query, postOptions)
     
     if(stream.ok) {

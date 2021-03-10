@@ -67,10 +67,11 @@ const municipalityFill = {
     }
 }
 
+// geojson source
 const phillyOutline = {
-    id: 'municipality-outline',
+    id: 'philly-outline',
     type: 'line',
-    source: 'Boundaries',
+    source: 'PPA',
     'source-layer': 'municipalities',
     minzoom: 8.4,
     paint: {
