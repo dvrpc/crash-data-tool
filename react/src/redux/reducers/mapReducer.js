@@ -27,6 +27,11 @@ const rangeFilter = (from, to) => {
     ]
 }
 
+// lookup
+const phillyLookup = [
+    4210160004
+]
+
 
 /**********************/
 /****** ACTIONS ******/
@@ -127,27 +132,29 @@ export const setMapBounding = bounding => dispatch => dispatch(set_map_bounding(
 export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
 
 export const getBoundingBox = id => async dispatch => {
-    id = id.toString()
-
     let featureServer;
     let codeType;
+    let query;
 
     // determine feature server and code type based on query type
-    // @TODO create philly neighborhoods lookup and check if it exists in there before doing the length. So if(philly), else if(>5), else
-    if(id.length > 5 ) {
-        featureServer = 'MunicipalBoundaries'
-        codeType = `geoid_10='${id}'` 
-    } else {
-        featureServer = 'CountyBoundaries'
-        codeType = `FIPS='${id}'`
-    }    
+    if(phillyLookup.includes(id)) {
+        id += 100
+        query = `https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=geoid='${id}'&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
+    }else {
+        if(id.length > 5 ) {
+            featureServer = 'MunicipalBoundaries'
+            codeType = `geoid_10='${id}'` 
+        } else {
+            featureServer = 'CountyBoundaries'
+            codeType = `FIPS='${id}'`
+        }
 
-    //  https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=geoid=${phillyID}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json
-    // ^ New Philly neighborhoods API
+        query = `https://arcgis.dvrpc.org/portal/rest/services/Boundaries/${featureServer}/FeatureServer/0/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
+    }
+
     
-    // boundary query string w/appropriate featureServer & id    
-    const boundaries = `https://arcgis.dvrpc.org/portal/rest/services/Boundaries/${featureServer}/FeatureServer/0/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
-    const stream = await fetch(boundaries, postOptions)
+    // const boundaries = `https://arcgis.dvrpc.org/portal/rest/services/Boundaries/${featureServer}/FeatureServer/0/query?where=${codeType}&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
+    const stream = await fetch(query, postOptions)
     
     if(stream.ok) {
         const response = await stream.json()
