@@ -274,6 +274,7 @@ class Map extends Component {
 
             // create new filter
             const boundingObj = this.props.bounding
+            console.log(boundingObj)
             this.setBoundary(boundingObj)
             this.showBoundaryOverlay()
 

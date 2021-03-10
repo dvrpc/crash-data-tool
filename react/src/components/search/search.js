@@ -23,6 +23,7 @@ class Search extends Component {
 
     submitSearch = e => {
         const output = form.parseSearch(e)
+        console.log('form output ', output)
 
         // zoom to area for address searches & exit
         if(output.coords) {
@@ -64,6 +65,7 @@ class Search extends Component {
                         <select name="type" id="select-search-type" className="hover-btn search-form-select" onChange={ this.selectSearch }>
                             <option value="county">County</option>
                             <option value="municipality">Municipality</option>
+                            <option value="philly">Philadelphia Planning Areas</option>
                             <option value="address">Address</option>
                         </select>
                     </label>

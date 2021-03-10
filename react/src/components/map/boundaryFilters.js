@@ -7,6 +7,9 @@ const createBoundaryFilter = boundingObj => {
         filter: ['==', 'geoid', id],
     }
 
+    console.log('filter ', filter)
+    // a shitty hack here would be to check if !type and do the philly neighborhoods that way...
+
     return filter
 }
 

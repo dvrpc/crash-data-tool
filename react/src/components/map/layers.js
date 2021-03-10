@@ -67,13 +67,24 @@ const municipalityFill = {
     }
 }
 
+const phillyOutline = {
+    id: 'municipality-outline',
+    type: 'line',
+    source: 'Boundaries',
+    'source-layer': 'municipalities',
+    minzoom: 8.4,
+    paint: {
+        'line-width': 0.5,
+        'line-color': '#e3f2fd'
+    }
+}
+
 const crashHeat = {
     id: 'crash-heat',
     type: 'heatmap',
     source: 'Crashes',
     'source-layer': 'crash',
     maxzoom: 11,
-    // KSI: Killed or severely injured
     filter: ['any', 
         ['==', ['get', 'max_sever'], 0],
         ['==', ['get', 'max_sever'], 1],
@@ -94,8 +105,6 @@ const crashHeat = {
         ],
         'heatmap-radius': [
             'interpolate', ['linear'], ['zoom'],
-            // 8.2, 1.5,
-            // 10, 2.5
             8.2, 1.7,
             10, 2.5
         ],
