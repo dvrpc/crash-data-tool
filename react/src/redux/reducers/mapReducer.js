@@ -138,7 +138,6 @@ export const getBoundingBox = id => async dispatch => {
 
     // determine feature server and code type based on query type
     if(phillyLookup.includes(id)) {
-        id += 100
         query = `https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=geoid='${id}'&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
     }else {
         if(id.toString().length > 5 ) {
