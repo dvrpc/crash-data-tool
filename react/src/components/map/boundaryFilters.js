@@ -9,7 +9,7 @@ const createBoundaryFilter = boundingObj => {
         layer: `${type}-outline`,
         filter: ['==', 'geoid', id],
     }
-    console.log(filter)
+
     return filter
 }
 
@@ -25,6 +25,14 @@ const removeBoundaryFilter = () => {
         },
         muni: {
             layer: 'municipality-outline',
+            filter: null,
+            paint: {
+                width: 0.5,
+                color: '#e3f2fd'
+            }
+        },
+        philly: {
+            layer: 'philly-outline',
             filter: null,
             paint: {
                 width: 0.5,
