@@ -72,7 +72,6 @@ const phillyOutline = {
     id: 'philly-outline',
     type: 'line',
     source: 'PPA',
-    'source-layer': 'municipalities',
     minzoom: 8.4,
     paint: {
         'line-width': 0.5,
@@ -152,4 +151,4 @@ const crashCircles = {
     }
 }
 
-export { countyOutline, countyFill, municipalityOutline, municipalityFill, crashHeat, crashCircles }
+export { countyOutline, countyFill, municipalityOutline, municipalityFill, phillyOutline, crashHeat, crashCircles }

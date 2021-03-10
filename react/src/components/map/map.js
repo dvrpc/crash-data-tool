@@ -64,6 +64,11 @@ class Map extends Component {
                 url: 'https://tiles.dvrpc.org/data/crash.json'
             })
 
+            this.map.addSource("PPA", {
+                type: 'geojson',
+                data: 'https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=1=1&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=geojson'
+            })
+
             // add county boundaries
             this.map.addLayer(layers.countyOutline)
             this.map.addLayer(layers.countyFill)
@@ -71,6 +76,9 @@ class Map extends Component {
             // add municipal boundaries
             this.map.addLayer(layers.municipalityOutline)
             this.map.addLayer(layers.municipalityFill)
+
+            // add PPA's
+            this.map.addLayer(layers.phillyOutline)
 
             // add crash data layers
             this.map.addLayer(layers.crashHeat)
