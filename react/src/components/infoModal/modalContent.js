@@ -31,7 +31,7 @@ export const modalContent = {
           <h4>Change Geography</h4>
           <ul>
             <li><em>From the map:</em> Click on counties (zoomed out) or municipalities (zoomed in) within the DVRPC region to get crash statistics for that county or municipality. You can also view custom geographies by clicking the <img src=${polygon} alt="polygon tool icon" /> icon on the map, which opens the polygon editor. Click to drop vertices and double click to finish drawing a polygon. The polygon can be moved and crash statistics will be re-calculated.</li>
-            <li><em>From the navbar:</em> View county or municipal data by changing the form fields on the navbar and pressing "go" to update crash statistics to that area. Searching by address will zoom to a location but will not update crash statistics.</li>
+            <li><em>From the navbar:</em> View county or municipal data by changing the form fields on the navbar and pressing "go" to update crash statistics to that area. You can also view Philadelphia Planning Areas by selecting the "Philadelphia Planning Areas" from the dropdown. This option is only available from the navbar dropdown. Searching by address will zoom to a location but will not update crash statistics.</li>
           </ul>
         </li>
         <li>
