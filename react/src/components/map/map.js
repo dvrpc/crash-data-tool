@@ -250,7 +250,7 @@ class Map extends Component {
                 filterObj.id = boundary.id
                 filterObj.tileType = boundary.tileType
                 filterObj.boundary = true
-            }   
+            }
             this.props.setMapFilter(filterObj)
         }
 
@@ -289,7 +289,6 @@ class Map extends Component {
             // update map filter & circle toggle state when coming from search
             if(boundingObj.filter) {
                 const toggleFilter = boundingObj.filter
-
                 this.props.setMapFilter(toggleFilter)
                 this.setState({boundary: toggleFilter})
             }

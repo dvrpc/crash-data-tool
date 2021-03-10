@@ -6,7 +6,7 @@ const createBoundaryFilter = boundingObj => {
         layer: `${type}-outline`,
         filter: ['==', 'geoid', id],
     }
-
+    console.log(filter)
     return filter
 }
 

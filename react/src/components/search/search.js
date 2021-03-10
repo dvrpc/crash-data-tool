@@ -38,9 +38,10 @@ class Search extends Component {
         const ksiCheck = this.props.crashType || 'KSI'
         output.isKSI = ksiCheck === 'KSI' ? 'yes' : 'no'
 
-        const tileType = output.type[0]
+        // handle PPA being munis but not munis
+        const tileType = output.type[0] === 'p' ? 'm' : output.type[0]
         let sidebarName;
-        switch(tileType) {
+        switch(output.type[0]) {
             case 'c':
                 sidebarName = `${output.name} County`
                 break
