@@ -2,6 +2,9 @@ const createBoundaryFilter = boundingObj => {
     let { type, id } = {...boundingObj}
     id = id.toString()
 
+    // handle PPA (add 100 because reasons...)
+    if(type === 'philly') id = (parseInt(id) + 100).toString()
+
     const filter = {
         layer: `${type}-outline`,
         filter: ['==', 'geoid', id],

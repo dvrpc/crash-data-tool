@@ -66,7 +66,7 @@ class Map extends Component {
 
             this.map.addSource("PPA", {
                 type: 'geojson',
-                data: 'https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=&resultRecordCount=&returnTrueCurves=false&returnExceededLimitFeatures=false&quantizationParameters=&returnCentroid=false&sqlFormat=none&resultType=&featureEncoding=esriDefault&datumTransformation=&f=geojson'
+                data: 'https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=co_name%3D%27Philadelphia%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=geoid&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=&resultRecordCount=&returnTrueCurves=false&returnExceededLimitFeatures=false&quantizationParameters=&returnCentroid=false&sqlFormat=none&resultType=&featureEncoding=esriDefault&datumTransformation=&f=geojson'
             })
 
             // add county boundaries
@@ -264,13 +264,6 @@ class Map extends Component {
 
         // add boundaries and their corresponding filters/styles/sidebar stats
         if(this.props.bounding !== prevProps.bounding) {
-
-            // first remove any existing boundary filter and polygon
-            // if(this.state.polygon){
-            //     this.state.draw.deleteAll()
-            //     this.props.removePolyCRNS()
-            // }
-
             const { county, muni } = removeBoundaryFilter()
 
             this.map.setFilter(county.layer, county.filter)
@@ -371,7 +364,7 @@ class Map extends Component {
         
         // derive layer styles from boundaryObj
         const filter = createBoundaryFilter(boundaryObj)
-
+        console.log('filter bruh what the fuck ', filter)
         // set the appropriate filters
         this.map.setFilter(filter.layer, filter.filter)
         
