@@ -38,8 +38,19 @@ class Search extends Component {
         const ksiCheck = this.props.crashType || 'KSI'
         output.isKSI = ksiCheck === 'KSI' ? 'yes' : 'no'
 
-        const tileType = output.type[0]
-        let sidebarName = tileType === 'c' ? `${output.name} County` : output.name
+        // handle PPA being munis but not munis
+        const tileType = output.type[0] === 'p' ? 'm' : output.type[0]
+        let sidebarName;
+        switch(output.type[0]) {
+            case 'c':
+                sidebarName = `${output.name} County`
+                break
+            case 'p':
+                sidebarName = `${output.name}, Philadelphia`
+                break
+            default:
+                sidebarName = output.name
+        }
 
         // create data, filter and boundary objects
         const dataObj = { geoID: output.geoID, isKSI: output.isKSI }
@@ -64,6 +75,7 @@ class Search extends Component {
                         <select name="type" id="select-search-type" className="hover-btn search-form-select" onChange={ this.selectSearch }>
                             <option value="county">County</option>
                             <option value="municipality">Municipality</option>
+                            <option value="philly">Philadelphia Planning Areas</option>
                             <option value="address">Address</option>
                         </select>
                     </label>

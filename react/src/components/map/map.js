@@ -64,6 +64,11 @@ class Map extends Component {
                 url: 'https://tiles.dvrpc.org/data/crash.json'
             })
 
+            this.map.addSource("PPA", {
+                type: 'geojson',
+                data: 'https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=co_name%3D%27Philadelphia%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=geoid&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=&resultRecordCount=&returnTrueCurves=false&returnExceededLimitFeatures=false&quantizationParameters=&returnCentroid=false&sqlFormat=none&resultType=&featureEncoding=esriDefault&datumTransformation=&f=geojson'
+            })
+
             // add county boundaries
             this.map.addLayer(layers.countyOutline)
             this.map.addLayer(layers.countyFill)
@@ -71,6 +76,9 @@ class Map extends Component {
             // add municipal boundaries
             this.map.addLayer(layers.municipalityOutline)
             this.map.addLayer(layers.municipalityFill)
+
+            // add PPA's
+            this.map.addLayer(layers.phillyOutline)
 
             // add crash data layers
             this.map.addLayer(layers.crashHeat)
@@ -242,7 +250,7 @@ class Map extends Component {
                 filterObj.id = boundary.id
                 filterObj.tileType = boundary.tileType
                 filterObj.boundary = true
-            }   
+            }
             this.props.setMapFilter(filterObj)
         }
 
@@ -256,31 +264,28 @@ class Map extends Component {
 
         // add boundaries and their corresponding filters/styles/sidebar stats
         if(this.props.bounding !== prevProps.bounding) {
-
-            // first remove any existing boundary filter and polygon
-            // if(this.state.polygon){
-            //     this.state.draw.deleteAll()
-            //     this.props.removePolyCRNS()
-            // }
-
-            const { county, muni } = removeBoundaryFilter()
+            const { county, muni, philly } = removeBoundaryFilter()
 
             this.map.setFilter(county.layer, county.filter)
             this.map.setFilter(muni.layer, muni.filter)
+            this.map.setFilter(philly.layer, philly.filter)
+
             this.map.setPaintProperty(county.layer, 'line-width', county.paint.width)
             this.map.setPaintProperty(county.layer, 'line-color', county.paint.color)
             this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
             this.map.setPaintProperty(muni.layer, 'line-color', muni.paint.color)
+            this.map.setPaintProperty(philly.layer, 'line-width', philly.paint.width)
+            this.map.setPaintProperty(philly.layer, 'line-color', philly.paint.color)
 
             // create new filter
             const boundingObj = this.props.bounding
+
             this.setBoundary(boundingObj)
             this.showBoundaryOverlay()
 
             // update map filter & circle toggle state when coming from search
             if(boundingObj.filter) {
                 const toggleFilter = boundingObj.filter
-
                 this.props.setMapFilter(toggleFilter)
                 this.setState({boundary: toggleFilter})
             }
@@ -399,7 +404,7 @@ class Map extends Component {
         this.props.setSidebarHeaderContext('the DVRPC region')
 
         // get default map filters and paint properties
-        const { county, muni } = removeBoundaryFilter()
+        const { county, muni, philly } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
         let range = this.props.range || {}
@@ -411,10 +416,14 @@ class Map extends Component {
         // update map
         this.map.setFilter(county.layer, county.filter)
         this.map.setFilter(muni.layer, muni.filter)
+        this.map.setFilter(philly.layer, philly.filter)
+
         this.map.setPaintProperty(county.layer, 'line-width', county.paint.width)
         this.map.setPaintProperty(county.layer, 'line-color', county.paint.color)
         this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
         this.map.setPaintProperty(muni.layer, 'line-color', muni.paint.color)
+        this.map.setPaintProperty(philly.layer, 'line-width', philly.paint.width)
+        this.map.setPaintProperty(philly.layer, 'line-color', philly.paint.color)
         
         // update boundary state to allow hover effects now that boundaries are removed & update polygon state to enable normal event listener interaction
         this.setState({

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
 
-import {counties, munis } from '../search/dropdowns'
+import {counties, munis, philly } from '../search/dropdowns'
 import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
 import print from './print.png'
@@ -81,15 +81,19 @@ class Sidebar extends Component {
             if(context === 'Philadelphia City') context = 'Philadelphia County'
 
             let nameArr = context.split(' ')
-            const countyCheck = nameArr.pop()
-            let isCounty = countyCheck === 'County' ? true : false
-            
+            const bonusCheck = nameArr.pop()
+            let isCounty = bonusCheck === 'County' ? true : false
+            let isPPA = bonusCheck === 'Philadelphia' ? true : false
+
             let geoID;
             let geojson;
             const bbox = this.props.polygonBbox
 
             // assign values to geoId and geojson
-            geoID = isCounty ? counties[nameArr[0]] : munis[context]
+            if(isCounty) geoID = counties[nameArr[0]]
+            else if(isPPA) geoID = philly[nameArr.join(' ').slice(0, -1)]
+            else geoID = munis[context]
+
             geojson = bbox
             
             // update data and local state
@@ -260,8 +264,8 @@ class Sidebar extends Component {
                         <li><span className="crash-map-sidebar-totals">Crashes</span> <strong>{totals.crashes}</strong></li>
                         <li><span className="crash-map-sidebar-totals">Fatalities</span><strong>{totals.fatalities}</strong></li>
                         <li><span className="crash-map-sidebar-totals">Suspected Serious Injuries</span> <strong>{totals.severe}</strong></li>
-                        <li><span className="crash-map-sidebar-totals">Pedestrians</span> <strong>{totals.peds}</strong></li>
-                        <li><span className="crash-map-sidebar-totals">Bicyclists</span> <strong>{totals.bikes}</strong></li>
+                        <li><span className="crash-map-sidebar-totals">Pedestrians Involved</span> <strong>{totals.peds}</strong></li>
+                        <li><span className="crash-map-sidebar-totals">Bicyclists Involved</span> <strong>{totals.bikes}</strong></li>
                     </ul>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Crashes Over Time</h2>

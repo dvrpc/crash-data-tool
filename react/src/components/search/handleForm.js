@@ -1,4 +1,4 @@
-import { counties, munis, states } from './dropdowns.js'
+import { counties, munis, states, philly } from './dropdowns.js'
 
 ////
 // Functions to handle parsed form inputs
@@ -30,8 +30,10 @@ const handleSelect = value => {
             return Object.keys(counties).sort((a, b) => a + b)
         case 'municipality':
             return Object.keys(munis).sort((a, b) => a + b)
-        case 'state':
+        case 'states':
             return states
+        case 'philly':
+            return Object.keys(philly).sort((a, b) => a + b)
         default:
             return false
     }
@@ -66,6 +68,9 @@ const parseSearch = e => {
                         break
                     case 'municipality':
                         output.geoID = munis[input]
+                        break
+                    case 'philly':
+                        output.geoID = philly[input]
                         break
                     default:
                         output.geoID = states[input]
