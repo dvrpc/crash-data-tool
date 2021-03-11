@@ -202,9 +202,12 @@ class Sidebar extends Component {
                 </header>
                 
                 <span id="crash-map-print-sidebar" onClick={this.setSrc}><img id="crash-map-print-icon" src={print} alt="print stats icon" /> print statistics</span>
+                
                 <p className="sidebar-paragraphs first-paragraph">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2018. Five years of data is typically used by local, state, and federal partners in safety analyses.</p>
                 <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong>. You can adjust the range and severity type using the forms below.</p>
-                
+
+                <hr id="sidebar-hr" />
+
                 <form className="crash-map-charts-form" id="crash-map-update-range" onSubmit={this.updateRange}>
                     <fieldset className="crash-map-charts-fieldset" form="crash-map-update-range">
                         <legend>Select Date Range: </legend>
@@ -261,8 +264,6 @@ class Sidebar extends Component {
                     </fieldset>
                 </form>
 
-                <hr id="sidebar-hr" />
-
                 <h2 id="first-subheader" className="centered-text crash-map-sidebar-subheader">Totals</h2>
                     <ul id="crash-map-sidebar-ul">
                         <li><span className="crash-map-sidebar-totals">Crashes</span> <strong>{totals.crashes}</strong></li>
@@ -281,7 +282,7 @@ class Sidebar extends Component {
                     <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in <strong>{area}</strong> by crash severity from <strong>{from}</strong> to <strong>{to}</strong>. Injury severity is divided into seven possible categories, as defined in the "About" section of the information modal. You can access it by clicking on the "info" button next to the DVRPC logo on the navbar.</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Mode</h2>
-                    <Doughnut data={data.modeChart} id="mode-chart" height={chartHeight} />
+                    <Doughnut data={data.modeChart} id="mode-chart" />
                     <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in the <strong>{area}</strong> by mode from <strong>{from}</strong> to <strong>{to}.</strong> Pedestrians and bicyclists are often a focus of transportation safety planning efforts because they are the road users most vulnerable to severe injuries in the event of a crash. This is reflected in data that consistently shows pedestrians account for a disproportionate number of the injuries sustained on the road.</p>
                 
                 <h2 className="centered-text crash-map-sidebar-subheader">Collision Type</h2>

@@ -166,16 +166,13 @@ export const setMapBounding = bounding => dispatch => dispatch(set_map_bounding(
 export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
 
 export const getBoundingBox = id => async dispatch => {
-    // Philly
-    // const philly = [4210160004,4210160003,4210160018,4210160016,4210160007,4210160014,4210160008,4210160005,4210160002,4210160001,4210160009,4210160012,4210160010,4210160013,4210160015,4210160017,4210160011,4210160006]
     const philly = id.toString()
     let featureServer;
     let codeType;
     let query;
 
-    // determine feature server and code type based on query type
+    // select feature server and code type based on query type
     if(philly.substring(0, 6) === '421016') {
-    // if(philly.includes(id)) {
         // api expects geoid +100 for reasons
         id += 100
         query = `https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=geoid='${id}'&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
