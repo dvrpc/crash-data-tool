@@ -111,6 +111,7 @@ const collisionType = rawData => {
         }]
     }
 }
+
 // default call that formats all available years of data
 const hasAllYears = (data, output) => {
     for(var year in data){

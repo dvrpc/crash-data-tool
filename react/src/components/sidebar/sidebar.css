@@ -86,7 +86,7 @@
 
 #crash-map-sidebar-header-main {
     display: block;
-    font-size: 1.25em;
+    font-size: 1.2em;
     text-align: center;
     font-weight: 700;
 }
@@ -127,7 +127,9 @@
 }
 .chartjs-render-monitor {
     background: white;
-    box-shadow: 1px 2px 3px rgba(0,0,0,.4);
+    /* box-shadow: 1px 2px 3px rgba(0,0,0,.4); */
+    /* @TEST */
+    border: 2px inset rgb(203, 203, 203);
     border-radius: 3px;
 }
 /* handle custom padding per chart type */
@@ -237,7 +239,7 @@
         padding: 12px;
     }
     #crash-map-sidebar-header-main {
-        font-size: 1em;
+        font-size: 0.95em;
     }
     #crash-map-sidebar-header-area {
         font-size: 0.65em;

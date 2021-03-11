@@ -27,12 +27,6 @@ const rangeFilter = (from, to) => {
     ]
 }
 
-// lookup
-const phillyLookup = [
-    4210160004
-]
-
-
 /**********************/
 /****** ACTIONS ******/
 const GET_DATA_FROM_KEYWORD = 'GET_DATA_FROM_KEYWORD'
@@ -46,6 +40,7 @@ const SET_POLYGON_BBOX = 'SET_POLYGON_BBOX'
 const SIDEBAR_CRASH_TYPE = 'SIDEBAR_CRASH_TYPE'
 const SIDEBAR_RANGE = 'SIDEBAR_RANGE'
 const SET_SRC = 'SET_SRC'
+const SET_MAP_LOADING = 'SET_MAP_LOADING'
 
 
 /*****************************/
@@ -61,6 +56,7 @@ const set_polygon_bbox = polygonBbox => ({type: SET_POLYGON_BBOX, polygonBbox })
 const sidebar_crash_type = crashType => ({type: SIDEBAR_CRASH_TYPE, crashType})
 const sidebar_range = range => ({type: SIDEBAR_RANGE, range})
 const set_src = src => ({type: SET_SRC, src})
+const set_map_loading = status => ({type: SET_MAP_LOADING, status })
 
 
 /***********************/
@@ -124,6 +120,44 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
         console.error(error)
     }
 }
+export const setMapFilter = filter => dispatch => {
+    // handle boundary, crash type and range
+    let mapFilter = []
+    const boundary = filter.boundary
+    const hasRange = Object.keys(filter.range).length
+    const type = filter.filterType
+    let noFilterCondition = 0
+
+    // check for boundary
+    if(boundary) {
+        const tileType = filter.tileType
+        const id = parseInt(filter.id)
+        mapFilter = ['all', ['==', tileType, id]]
+    }else{
+        mapFilter = ['all']
+        noFilterCondition++
+    }
+
+    // handle range
+    if(hasRange) {
+        const {from, to} = filter.range
+        mapFilter = mapFilter.concat(rangeFilter(from, to))
+    } else {
+        noFilterCondition++
+    }
+
+    // handle crash type
+    if(type === 'KSI'){
+        mapFilter = mapFilter.concat(ksiFilter)
+    }else {
+        noFilterCondition++
+    }
+
+    // if no boundary or range and type all, no filter
+    if(noFilterCondition === 3) mapFilter = 'none'
+
+    dispatch(set_map_filter(mapFilter))
+}
 
 export const setMapCenter = center => dispatch => dispatch(set_map_center(center))
 
@@ -132,12 +166,16 @@ export const setMapBounding = bounding => dispatch => dispatch(set_map_bounding(
 export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
 
 export const getBoundingBox = id => async dispatch => {
+    // Philly
+    // const philly = [4210160004,4210160003,4210160018,4210160016,4210160007,4210160014,4210160008,4210160005,4210160002,4210160001,4210160009,4210160012,4210160010,4210160013,4210160015,4210160017,4210160011,4210160006]
+    const philly = id.toString()
     let featureServer;
     let codeType;
     let query;
 
     // determine feature server and code type based on query type
-    if(phillyLookup.includes(id)) {
+    if(philly.substring(0, 6) === '421016') {
+    // if(philly.includes(id)) {
         // api expects geoid +100 for reasons
         id += 100
         query = `https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=geoid='${id}'&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
@@ -187,47 +225,11 @@ export const setPolygonBbox = formattedBbox => dispatch => dispatch(set_polygon_
 
 export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
 
-// handle boundary, crash type and range
-export const setMapFilter = filter => dispatch => {
-    let mapFilter = []
-    const boundary = filter.boundary
-    const hasRange = Object.keys(filter.range).length
-    const type = filter.filterType
-    let noFilterCondition = 0
-
-    // check for boundary
-    if(boundary) {
-        const tileType = filter.tileType
-        const id = parseInt(filter.id)
-        mapFilter = ['all', ['==', tileType, id]]
-    }else{
-        mapFilter = ['all']
-        noFilterCondition++
-    }
-
-    // handle range
-    if(hasRange) {
-        const {from, to} = filter.range
-        mapFilter = mapFilter.concat(rangeFilter(from, to))
-    } else {
-        noFilterCondition++
-    }
-
-    // handle crash type
-    if(type === 'KSI'){
-        mapFilter = mapFilter.concat(ksiFilter)
-    }else {
-        noFilterCondition++
-    }
-
-    // if no boundary or range and type all, no filter
-    if(noFilterCondition === 3) mapFilter = 'none'
-
-    dispatch(set_map_filter(mapFilter))
-}
-
 
 // SIDEBAR Dispatchers
 export const sidebarCrashType = type => dispatch => dispatch(sidebar_crash_type(type))
 export const sidebarRange = range => dispatch => dispatch(sidebar_range(range))
 export const setSrc = src => dispatch => dispatch(set_src(src))
+
+// Map State
+export const setMapLoading = status => dispatch => dispatch(set_map_loading(status))
