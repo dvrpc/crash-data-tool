@@ -335,7 +335,7 @@ class Map extends Component {
         if(this.props.bbox && prevProps.bbox !== this.props.bbox) {
             if( window.innerWidth > 800 ) {
                 // handle desktop offset
-                const leftPad = (window.innerWidth * 0.35 + 10)
+                const leftPad = (window.innerWidth * 0.33 + 10)
                 const padding = {top: 0, bottom: 0, left: leftPad, right: 0}
 
                 this.map.fitBounds(this.props.bbox, {padding})

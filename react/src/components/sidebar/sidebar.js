@@ -94,7 +94,7 @@ class Sidebar extends Component {
 
             // assign values to geoId and geojson
             if(isCounty) geoID = counties[nameArr[0]]
-            else if(isPPA) geoID = philly[nameArr.join(' ').slice(0, -1)]
+            else if(isPPA) geoID = philly[nameArr.join(' ')]
             else geoID = munis[context]
 
             geojson = bbox
@@ -176,7 +176,7 @@ class Sidebar extends Component {
         let chartsRange = {from, to}
         let data = this.state.data;
         let totals;
-        let chartHeight = window.innerWidth > 800 ? '200px' : "187.5px"
+        let chartHeight = window.innerWidth > 800 ? 200 : 187.5
 
         // populate chart data
         if(data && data !== 'empty'){

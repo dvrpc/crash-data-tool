@@ -46,7 +46,9 @@ class Search extends Component {
                 sidebarName = `${output.name} County`
                 break
             case 'p':
-                sidebarName = `${output.name}, Philadelphia`
+                const h = output.name.split(' ')
+                const j = h[h.length - 1]
+                sidebarName = j === 'Philadelphia' ? output.name : `${output.name} Philadelphia`
                 break
             default:
                 sidebarName = output.name

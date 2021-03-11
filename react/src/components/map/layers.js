@@ -111,7 +111,7 @@ const crashHeat = {
         'heatmap-color': [
             'interpolate', ['linear'], ['heatmap-density'],
             0, 'rgba(0,0,0,0)',
-            0.40, '#e7e7fc',
+            0.40, '#f0eaf5',
             0.50, '#dddefa',
             0.60, '#bbbdf6',
             0.90, '#414770',
