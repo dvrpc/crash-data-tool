@@ -43,7 +43,7 @@ const formatData = (yearData, output) => {
 
         // extract data from years into correct locations
         if(innerKeys.length){
-            Object.keys(innerObj).forEach(innerKey => {
+            innerKeys.forEach(innerKey => {
                 output[key][innerKey] = output[key][innerKey] ? innerObj[innerKey] + output[key][innerKey] : innerObj[innerKey]
             })
         }else {
