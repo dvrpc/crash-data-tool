@@ -90,7 +90,8 @@ const mode = rawData => {
         labels,
         datasets: [{
             data,
-            backgroundColor: ['#6457a6', '#DB7C26','#c6e0ff']
+            backgroundColor: ['#6457a6', '#DB7C26','#c6e0ff'],
+            borderWidth: 0
         }]
     }
 }
@@ -107,7 +108,8 @@ const collisionType = rawData => {
         labels,
         datasets: [{
             data,
-            backgroundColor: ['#8dd3c7','#FFEC81','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9', '#bc80bd']
+            backgroundColor: ['#8dd3c7','#FFEC81','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9', '#bc80bd'],
+            borderWidth: 0
         }]
     }
 }
