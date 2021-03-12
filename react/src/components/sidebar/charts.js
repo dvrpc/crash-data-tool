@@ -2,8 +2,14 @@
 // Functions to process chart data
 ////
 // General chart options
+const addLabelCommas = (tooltipItem, data) => data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toLocaleString()
 const chartOptions = (xlabel, ylabel, customPadding) =>{
     return {
+        tooltips: {
+            callbacks: {
+                label: (tooltipItem, data) => addLabelCommas(tooltipItem, data)
+            }
+        },
         legend: {
             display: false
         },
@@ -23,7 +29,8 @@ const chartOptions = (xlabel, ylabel, customPadding) =>{
                     fontColor: '#0a0908'
                 },
                 ticks: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    userCallback: value => value.toLocaleString()
                 }
             }]
         },
@@ -32,6 +39,16 @@ const chartOptions = (xlabel, ylabel, customPadding) =>{
         }
     }
 }
+const doughnutTooltipOptions = () => {
+    return {
+        tooltips: {
+            callbacks: {
+                label: (tooltipItem, data) => addLabelCommas(tooltipItem, data)
+            }
+        }
+    }
+}
+
 // transform db response into a format the charting functions can consume
 const formatData = (yearData, output) => {
     Object.keys(yearData).forEach(key => {
@@ -43,7 +60,7 @@ const formatData = (yearData, output) => {
 
         // extract data from years into correct locations
         if(innerKeys.length){
-            Object.keys(innerObj).forEach(innerKey => {
+            innerKeys.forEach(innerKey => {
                 output[key][innerKey] = output[key][innerKey] ? innerObj[innerKey] + output[key][innerKey] : innerObj[innerKey]
             })
         }else {
@@ -51,6 +68,8 @@ const formatData = (yearData, output) => {
         }
     })
 }
+
+// make the charts
 const trend = (data, years) => {
     years = formatYears(years)
     return {
@@ -90,7 +109,8 @@ const mode = rawData => {
         labels,
         datasets: [{
             data,
-            backgroundColor: ['#6457a6', '#DB7C26','#c6e0ff']
+            backgroundColor: ['#6457a6', '#DB7C26','#c6e0ff'],
+            borderWidth: 0
         }]
     }
 }
@@ -107,7 +127,8 @@ const collisionType = rawData => {
         labels,
         datasets: [{
             data,
-            backgroundColor: ['#8dd3c7','#FFEC81','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9', '#bc80bd']
+            backgroundColor: ['#8dd3c7','#FFEC81','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9', '#bc80bd'],
+            borderWidth: 0
         }]
     }
 }
@@ -183,4 +204,4 @@ const makeCharts = (data, range) => {
     return { severityChart, modeChart, collisionTypeChart, trendChart }
 }
 
-export { makeCharts, makePlaceholders, chartOptions }
+export { makeCharts, makePlaceholders, chartOptions, doughnutTooltipOptions }
