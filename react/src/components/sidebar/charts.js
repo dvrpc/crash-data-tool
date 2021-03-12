@@ -2,8 +2,14 @@
 // Functions to process chart data
 ////
 // General chart options
+const addLabelCommas = (tooltipItem, data) => data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toLocaleString()
 const chartOptions = (xlabel, ylabel, customPadding) =>{
     return {
+        tooltips: {
+            callbacks: {
+                label: (tooltipItem, data) => addLabelCommas(tooltipItem, data)
+            }
+        },
         legend: {
             display: false
         },
@@ -23,7 +29,8 @@ const chartOptions = (xlabel, ylabel, customPadding) =>{
                     fontColor: '#0a0908'
                 },
                 ticks: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    userCallback: value => value.toLocaleString()
                 }
             }]
         },
@@ -32,6 +39,16 @@ const chartOptions = (xlabel, ylabel, customPadding) =>{
         }
     }
 }
+const doughnutTooltipOptions = () => {
+    return {
+        tooltips: {
+            callbacks: {
+                label: (tooltipItem, data) => addLabelCommas(tooltipItem, data)
+            }
+        }
+    }
+}
+
 // transform db response into a format the charting functions can consume
 const formatData = (yearData, output) => {
     Object.keys(yearData).forEach(key => {
@@ -51,6 +68,8 @@ const formatData = (yearData, output) => {
         }
     })
 }
+
+// make the charts
 const trend = (data, years) => {
     years = formatYears(years)
     return {
@@ -185,4 +204,4 @@ const makeCharts = (data, range) => {
     return { severityChart, modeChart, collisionTypeChart, trendChart }
 }
 
-export { makeCharts, makePlaceholders, chartOptions }
+export { makeCharts, makePlaceholders, chartOptions, doughnutTooltipOptions }

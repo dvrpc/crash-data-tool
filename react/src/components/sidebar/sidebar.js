@@ -191,6 +191,7 @@ class Sidebar extends Component {
 
         const severityOptions = charts.chartOptions('Injury type', 'Number of persons', {bottom: 15})
         const trendOptions = charts.chartOptions('', 'Number of Crashes')
+        const doughnutOptions = charts.doughnutTooltipOptions()
 
         return (
             <div id="sidebar-wrapper">
@@ -282,11 +283,11 @@ class Sidebar extends Component {
                     <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in <strong>{area}</strong> by crash severity from <strong>{from}</strong> to <strong>{to}</strong>. Injury severity is divided into seven possible categories, as defined in the "About" section of the information modal. You can access it by clicking on the "info" button next to the DVRPC logo on the navbar.</p>
 
                 <h2 className="centered-text crash-map-sidebar-subheader">Mode</h2>
-                    <Doughnut data={data.modeChart} id="mode-chart" />
+                    <Doughnut data={data.modeChart} options={doughnutOptions} id="mode-chart" />
                     <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in the <strong>{area}</strong> by mode from <strong>{from}</strong> to <strong>{to}.</strong> Pedestrians and bicyclists are often a focus of transportation safety planning efforts because they are the road users most vulnerable to severe injuries in the event of a crash. This is reflected in data that consistently shows pedestrians account for a disproportionate number of the injuries sustained on the road.</p>
                 
                 <h2 className="centered-text crash-map-sidebar-subheader">Collision Type</h2>
-                    <Doughnut data={data.collisionTypeChart} id="collision-chart" height={chartHeight} />
+                    <Doughnut data={data.collisionTypeChart} options={doughnutOptions} id="collision-chart" height={chartHeight} />
                     <p className="sidebar-paragraphs">This chart shows <strong>{crashType}</strong> <em>crashes</em> in <strong>{area}</strong> by collision type from <strong>{from}</strong> to <strong>{to}</strong>. Collision type data can be especially useful for identifying trends at specific locations or along specific routes.</p>
 
                 <Footer />
