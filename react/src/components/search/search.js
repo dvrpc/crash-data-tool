@@ -41,18 +41,10 @@ class Search extends Component {
         // handle PPA being munis but not munis
         const tileType = output.type[0] === 'p' ? 'm' : output.type[0]
         let sidebarName;
-        switch(output.type[0]) {
-            case 'c':
-                sidebarName = `${output.name} County`
-                break
-            case 'p':
-                const h = output.name.split(' ')
-                const j = h[h.length - 1]
-                sidebarName = output.name
-                break
-            default:
-                sidebarName = output.name
-        }
+        
+        if(tileType === 'c') sidebarName = `${output.name} County`
+        else sidebarName = output.name
+
 
         // create data, filter and boundary objects
         const dataObj = { geoID: output.geoID, isKSI: output.isKSI }
