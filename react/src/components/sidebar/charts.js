@@ -3,6 +3,7 @@
 ////
 // General chart options
 const addLabelCommas = (tooltipItem, data) => data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toLocaleString()
+
 const chartOptions = (xlabel, ylabel, customPadding) =>{
     return {
         tooltips: {
@@ -72,6 +73,7 @@ const formatData = (yearData, output) => {
 // make the charts
 const trend = (data, years) => {
     years = formatYears(years)
+
     return {
         labels: years,
         datasets: [{
@@ -79,6 +81,7 @@ const trend = (data, years) => {
         }]
     }
 }
+
 const severity = rawData => {
     let labels = []
     let data = []
@@ -96,6 +99,7 @@ const severity = rawData => {
         }]
     }
 }
+
 const mode = rawData => {
     let labels = []
     let data = []
@@ -114,6 +118,7 @@ const mode = rawData => {
         }]
     }
 }
+
 const collisionType = rawData => {
     let labels = []
     let data = []
@@ -160,9 +165,11 @@ const formatYears = years => {
     if(years) {
         let {from, to} = years
         to = parseInt(to) + 1
+
         for(var i = from; i < to; i++) {
             yearsFormatted.push(i)
         }
+
     }else{
         yearsFormatted = [2014,2015,2016,2017,2018]
     }
@@ -180,6 +187,7 @@ const makePlaceholders = () => {
     const severityChart = severity({'Fatality':0,'Suspected Serious Injury':0,'Suspected Minor Injury':0,'Possible Injury':0,'Not Injured':0,'Unknown Injury':0,'Unknown if Injured':0})
     const modeChart = mode({Bicyclists: 0,Pedestrians: 0,'Vehicle Occupants':0})
     const trendChart = trend([0,0,0,0,0,0],null)
+    
     return { collisionTypeChart, severityChart, modeChart, trendChart }
 }
 // using the API response to build the actual charts

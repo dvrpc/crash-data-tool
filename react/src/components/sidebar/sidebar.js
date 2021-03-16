@@ -183,6 +183,7 @@ class Sidebar extends Component {
             data = charts.makeCharts(data, chartsRange)
             const dataFormatted = {crashes: data.trendChart.datasets[0].data, severity: data.severityChart.datasets[0].data, mode: data.modeChart.datasets[0].data}
             totals = this.getTotals(dataFormatted)
+            
         }else{
             // handle undefined data (nonexistant or all 0 response both get lumped into here)
             totals = data === 'empty' ? this.getTotals(data) : this.getTotals()
