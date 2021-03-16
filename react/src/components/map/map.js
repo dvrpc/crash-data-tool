@@ -199,11 +199,12 @@ class Map extends Component {
             range: prevRange
         }
 
-        // add crashType filters
+        // add crashType filters & update legend
         if(this.props.crashType !== prevProps.crashType) {
             const crashType = this.props.crashType
             filterObj.filterType = crashType
             makeNewFilter = true
+            this.updateLegend()
         }
 
         // add range filters

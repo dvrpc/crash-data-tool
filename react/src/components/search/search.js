@@ -48,7 +48,7 @@ class Search extends Component {
             case 'p':
                 const h = output.name.split(' ')
                 const j = h[h.length - 1]
-                sidebarName = j === 'Philadelphia' ? output.name : `${output.name} Philadelphia`
+                sidebarName = output.name
                 break
             default:
                 sidebarName = output.name
