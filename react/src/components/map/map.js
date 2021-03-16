@@ -33,7 +33,6 @@ class Map extends Component {
     /**********************/
     // Lifecycle Methods //
     /**********************/
-
     componentDidMount() {
         mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
         const longitudeOffset = window.innerWidth > 800 ? -75.85 : -75.2273
@@ -117,27 +116,7 @@ class Map extends Component {
         
         // update legend depending on zoom level (heatmap vs crash circles)
         this.map.on('zoomend', () => {
-            // @TODO refactor to method & invoke when KSI/All toggle changes (not just zoom)
-            const zoom = this.map.getZoom()
-
-            if(zoom >= 11) {
-                this.legendTitle.textContent = 'Crash Severity'
-
-                if(!this.props.crashType || this.props.crashType === 'KSI') {
-                    this.legendGradient.style.background = 'linear-gradient(to right, #e67e88, #de5260, #c12433)'
-                    this.legendLabel.innerHTML = '<span>Severe Injury</span><span>Fatal</span>'
-
-                }else {
-                    this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #c12433)'
-                    this.legendLabel.innerHTML = '<span>No Injury</span><span>Fatal</span>'
-                }
-                
-            } else {
-                let crashType = this.props.crashType || 'KSI'
-                this.legendTitle.textContent = `Number of Crashes (${crashType})`
-                this.legendGradient.style.background = 'linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248)'
-                this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
-            }
+            // @METHOD GOES HERE
         })
 
         // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
@@ -359,11 +338,10 @@ class Map extends Component {
     /*****************/
     // Class Methods //
     /*****************/
-
     // reset map to default view
     resetControl = () => {
         const longitudeOffset = window.innerWidth > 800 ? -75.85 : -75.2273
-        this.map.flyTo({center: [longitudeOffset, 40.071], zoom: this.state.zoom})
+        this.map.flyTo({center: [longitudeOffset, 40.071], zoom: this.state.zoom, pitch: 0})
     }
 
     // reveal the boundary overlay when a boundary is established
@@ -645,6 +623,29 @@ class Map extends Component {
                 index - 1 < 0 ? index = length - 1 : index -= 1
                 this.handlePopup(crnArray, index, popup)
             }
+        }
+    }
+
+    updateLegend = () => {
+        const zoom = this.map.getZoom()
+
+        if(zoom >= 11) {
+            this.legendTitle.textContent = 'Crash Severity'
+
+            if(!this.props.crashType || this.props.crashType === 'KSI') {
+                this.legendGradient.style.background = 'linear-gradient(to right, #e67e88, #de5260, #c12433)'
+                this.legendLabel.innerHTML = '<span>Severe Injury</span><span>Fatal</span>'
+
+            }else {
+                this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #c12433)'
+                this.legendLabel.innerHTML = '<span>No Injury</span><span>Fatal</span>'
+            }
+
+        } else {
+            let crashType = this.props.crashType || 'KSI'
+            this.legendTitle.textContent = `Number of Crashes (${crashType})`
+            this.legendGradient.style.background = 'linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248)'
+            this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
         }
     }
 
