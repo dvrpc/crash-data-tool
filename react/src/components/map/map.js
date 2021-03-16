@@ -115,9 +115,7 @@ class Map extends Component {
         })
         
         // update legend depending on zoom level (heatmap vs crash circles)
-        this.map.on('zoomend', () => {
-            // @METHOD GOES HERE
-        })
+        this.map.on('zoomend', () => this.updateLegend())
 
         // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
         this.map.on('mousemove', 'crash-circles', e => {
@@ -637,7 +635,7 @@ class Map extends Component {
                 this.legendLabel.innerHTML = '<span>Severe Injury</span><span>Fatal</span>'
 
             }else {
-                this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #c12433)'
+                this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7, #93c7db, #6eb5cf, #4ba3c3, #e67e88, #de5260, #c12433)'
                 this.legendLabel.innerHTML = '<span>No Injury</span><span>Fatal</span>'
             }
 
