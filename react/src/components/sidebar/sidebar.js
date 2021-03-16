@@ -84,17 +84,18 @@ class Sidebar extends Component {
             if(context === 'Philadelphia City') context = 'Philadelphia County'
 
             let nameArr = context.split(' ')
-            const bonusCheck = nameArr.pop()
-            let isCounty = bonusCheck === 'County' ? true : false
-            let isPPA = bonusCheck === 'Philadelphia' ? true : false
+            const lastWord = nameArr.pop()
+            let isCounty = lastWord === 'County' ? true : false
+            let isPPA = lastWord === 'Philadelphia' ? true : false
+            nameArr = nameArr.join(' ')
 
             let geoID;
             let geojson;
             const bbox = this.props.polygonBbox
 
             // assign values to geoId and geojson
-            if(isCounty) geoID = counties[nameArr[0]]
-            else if(isPPA) geoID = philly[nameArr.join(' ')]
+            if(isCounty) geoID = counties[nameArr]
+            else if(isPPA) geoID = philly[nameArr + ' Philadelphia']
             else geoID = munis[context]
 
             geojson = bbox
