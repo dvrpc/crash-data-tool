@@ -117,16 +117,22 @@ class Map extends Component {
         
         // update legend depending on zoom level (heatmap vs crash circles)
         this.map.on('zoomend', () => {
+            // @TODO refactor to method & invoke when KSI/All toggle changes (not just zoom)
             const zoom = this.map.getZoom()
-            const legendTitle = this.legendTitle.textContent
 
-            if(zoom >= 11 && legendTitle[0] !== 'C') {
+            if(zoom >= 11) {
                 this.legendTitle.textContent = 'Crash Severity'
-                this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #c12433)'
-                this.legendLabel.innerHTML = '<span>No Injury</span><span>Fatal</span>'
-            }
 
-            if(zoom < 11 && legendTitle[0] !== 'N'){
+                if(!this.props.crashType || this.props.crashType === 'KSI') {
+                    this.legendGradient.style.background = 'linear-gradient(to right, #e67e88, #de5260, #c12433)'
+                    this.legendLabel.innerHTML = '<span>Severe Injury</span><span>Fatal</span>'
+
+                }else {
+                    this.legendGradient.style.background = 'linear-gradient(to right, #f7f7f7, #4ba3c3, #6eb5cf, #93c7db, #e67e88, #de5260, #c12433)'
+                    this.legendLabel.innerHTML = '<span>No Injury</span><span>Fatal</span>'
+                }
+                
+            } else {
                 let crashType = this.props.crashType || 'KSI'
                 this.legendTitle.textContent = `Number of Crashes (${crashType})`
                 this.legendGradient.style.background = 'linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248)'
