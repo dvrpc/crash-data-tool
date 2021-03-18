@@ -263,10 +263,4 @@
     .sidebar-paragraphs{
         font-size: 0.85rem;
     }
-    #trend-chart, #severity-chart {
-        width: calc(100% - 20px) !important;
-    }
-    #mode-chart, #collision-chart {
-        width: calc(100% - 8px) !important;
-    }
 }
