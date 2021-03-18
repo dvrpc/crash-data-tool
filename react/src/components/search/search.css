@@ -53,4 +53,8 @@
     .search-form-select, #search-form-address{
         width: 65px;
     }
+    .search-form-submit {
+        padding: 0.33rem 0.66rem;
+        
+    }
 }

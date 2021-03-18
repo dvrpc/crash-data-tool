@@ -44,14 +44,17 @@
     #navbar {
         margin-bottom: 0;
         padding: 5px 10px;
-        height: 4vh;
+        height: 3vh;
+    }
+    #navbar select {
+        padding: 0.25rem;
     }
     #crash-nav-logo{
         width: 50px
     }
     .nav-vr{
         margin: 0 5px;
-        padding: 1.8vh 0;
+        padding: 1vh 0;
     }
     #crash-map-nav-info-btn{
         font-size: 0.7rem;

@@ -214,41 +214,53 @@
 @media all and (max-width: 800px) {
     #sidebar-wrapper {
         position: initial;
-        width: calc(100% - 20px);
+        width: 100%;
         height: 45%;
-        padding: 0 10px;
         box-shadow: none;
         border-radius: 0;
         top: 0;
         left: 0;
     }
     #sidebar{
-        padding: 0;
+        padding: 0 10px;
         border-radius: 0;
     }
     #crash-map-sidebar-header {
         height: 80px;
+        height: 40px;
+    }
+    #crash-map-sidebar-header::before,
+    #crash-map-sidebar-header::after {
+        height: 10px;
     }
     #crash-map-sidebar-header::before {
         top: 50px;
     }
+    #crash-map-sidebar-header::after {
+        height: 5px;
+    }
     #crash-map-sidebar-header >div {
         height: 48px;
+        /* @TEST - wobbly */
+        height: 42px;
         padding: 12px;
+        padding-bottom: 0;
+        margin-top: -10px;
+    }
+    #crash-map-print-sidebar {
+        margin-top: 30px;
     }
     #crash-map-sidebar-header-main {
         font-size: 0.95em;
     }
     #crash-map-sidebar-header-area {
         font-size: 0.65em;
+        display: block;
     }
     .crash-map-sidebar-subheader{
         font-size: 1rem;
     }
     .sidebar-paragraphs{
         font-size: 0.85rem;
-    }
-    #trend-chart, #severity-chart {
-        width: calc(100% - 20px) !important;
     }
 }
