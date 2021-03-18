@@ -350,6 +350,7 @@ class Map extends Component {
     setBoundary = boundaryObj => {
         
         // derive layer styles from boundaryObj
+        // @UPDATE: remove filtering and just apply data driven paint properties
         const filter = createBoundaryFilter(boundaryObj)
 
         // set the appropriate filters
@@ -394,9 +395,11 @@ class Map extends Component {
         const filterObj = {filterType: newFilterType, range}
 
         // set store filter state
+        // @UPDATe DONT touch this
         this.props.setMapFilter(filterObj)
 
         // update map
+        // @UPDATE remove map style filtering, just reset to default paint values
         this.map.setFilter(county.layer, county.filter)
         this.map.setFilter(muni.layer, muni.filter)
         this.map.setFilter(philly.layer, philly.filter)
