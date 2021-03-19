@@ -1,16 +1,26 @@
-const createBoundaryFilter = boundingObj => {
+const createBoundaryHighlight = boundingObj => {
     let { type, id } = {...boundingObj}
+    
+    // handle PPA (add 100 because reasons...)
+    if(type === 'philly') id = (parseInt(id) + 100)
+    
     id = id.toString()
 
-    // handle PPA (add 100 because reasons...)
-    if(type === 'philly') id = (parseInt(id) + 100).toString()
-
-    const filter = {
-        layer: `${type}-outline`,
-        filter: ['==', 'geoid', id],
+    const paintProps = { 
+        layer:  `${type}-outline`,
+        width: [
+            'match', ['get', 'geoid'],
+            id, 4,
+            0.5
+        ],
+        color: [
+            'match', ['get', 'geoid'],
+            id, '#f4a22d',
+            '#e3f2fd'
+        ]
     }
 
-    return filter
+    return paintProps
 }
 
 const removeBoundaryFilter = () => {
@@ -42,4 +52,4 @@ const removeBoundaryFilter = () => {
     }
 }
 
-export { createBoundaryFilter, removeBoundaryFilter }
+export { createBoundaryHighlight, removeBoundaryFilter }

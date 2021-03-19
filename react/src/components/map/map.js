@@ -6,7 +6,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 
 import * as layers from './layers.js'
 import * as popups from './popups.js';
-import { createBoundaryFilter, removeBoundaryFilter } from './boundaryFilters.js';
+import { createBoundaryHighlight, removeBoundaryFilter } from './boundaryFilters.js';
 import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter, getPolygonCrashes, setPolygonBbox, removePolyCRNS  } from '../../redux/reducers/mapReducer.js'
 import './map.css';
 
@@ -350,14 +350,11 @@ class Map extends Component {
     setBoundary = boundaryObj => {
         
         // derive layer styles from boundaryObj
-        const filter = createBoundaryFilter(boundaryObj)
-
-        // set the appropriate filters
-        this.map.setFilter(filter.layer, filter.filter)
+        const highlight = createBoundaryHighlight(boundaryObj)
         
         // make the appropraite paint changes
-        this.map.setPaintProperty(filter.layer, 'line-width', 4)
-        this.map.setPaintProperty(filter.layer, 'line-color', '#f4a22d')
+        this.map.setPaintProperty(highlight.layer, 'line-width', highlight.width)
+        this.map.setPaintProperty(highlight.layer, 'line-color', highlight.color)
 
         // remove any existing polygons
         if(this.state.polygon){
@@ -394,9 +391,11 @@ class Map extends Component {
         const filterObj = {filterType: newFilterType, range}
 
         // set store filter state
+        // @UPDATe DONT touch this
         this.props.setMapFilter(filterObj)
 
         // update map
+        // @UPDATE remove map style filtering, just reset to default paint values
         this.map.setFilter(county.layer, county.filter)
         this.map.setFilter(muni.layer, muni.filter)
         this.map.setFilter(philly.layer, philly.filter)
