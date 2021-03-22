@@ -96,7 +96,7 @@ const crashHeat = {
             1, 1.7,
             2, 1,
             3, 0.4,
-            4, 0.1,
+            4, 0.1
         ],
         'heatmap-intensity': [
             'interpolate', ['linear'], ['zoom'],
