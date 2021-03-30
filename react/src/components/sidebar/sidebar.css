@@ -144,7 +144,11 @@
     margin: 2% 0;
 }
 .sidebar-paragraphs {
-    padding: 0 0.75rem 0.75rem 0.75rem;
+    padding-bottom: 0.5rem;
+}
+.sidebar-chart-paragraphs {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
 }
 #crash-map-sidebar-ul{
     margin: 0;
