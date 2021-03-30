@@ -94,7 +94,7 @@
     font-size: 0.8em;
     font-weight: 400;
 }
-#crash-map-sidebar-header, .crash-map-sidebar-subheader{
+#crash-map-sidebar-header {
     color: #40757d;
 }
 
@@ -104,20 +104,31 @@
     height: 0;
     box-sizing: content-box;
     clear: both;
-    margin: 2% 0;
+    margin-bottom: 4%;
 }
 .crash-map-sidebar-subheader{
     font-size: 1.4rem;
-    margin-top: 15%;
+    background-color: #40757d;
+    color: #f7f7f7;
+    padding: 0.25rem 0;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    box-shadow: 1px 0 0px rgba(0,0,0,.3);
+    box-shadow: 1.5px 0 0px rgba(0,0,0,.2);
+
 }
 #first-subheader{
-    margin-top: 3.5%;
+    background: none;
+    color: #40757d;
+    padding: initial;
+    box-shadow: none;
+    border-radius: unset;
 }
 #crash-map-print-sidebar{
     display: flex;
     align-items: center;
     padding: 0 3%;
-    text-decoration: underline;
+    text-decoration: underliEne;
     cursor: pointer;
     color: #40757d;
 }
@@ -127,6 +138,7 @@
 }
 .chart-wrapper {
     background-color: white;
+    margin-top: 15%;
     border-radius: 3px;
     box-shadow: 1px 2px 3px rgba(0,0,0,0.3);
 }
@@ -141,10 +153,14 @@
     padding: 20px 0;
 }
 .first-paragraph{
-    margin: 2% 0;
+    margin-top: 2%;
 }
 .sidebar-paragraphs {
-    padding: 0 0.75rem 0.75rem 0.75rem;
+    padding-bottom: 0.75rem;
+}
+.sidebar-chart-paragraphs {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
 }
 #crash-map-sidebar-ul{
     margin: 0;
@@ -165,7 +181,7 @@
 
 /* Chart Form */
 .crash-map-charts-form{
-    margin-top: 3%;
+    margin-bottom: 3%;
 }
 .crash-map-charts-fieldset{
     background: #fcfcfc;
@@ -242,7 +258,7 @@
         height: 42px;
         padding: 12px;
         padding-bottom: 0;
-        margin-top: -10px;
+        margin-top: -8px;
     }
     #crash-map-print-sidebar {
         margin-top: 30px;
