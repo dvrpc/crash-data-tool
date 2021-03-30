@@ -208,9 +208,7 @@ class Sidebar extends Component {
                 <span id="crash-map-print-sidebar" onClick={this.setSrc}><img id="crash-map-print-icon" src={print} alt="print stats icon" /> print statistics</span>
                 
                 <p className="sidebar-paragraphs first-paragraph">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2018. Five years of data is typically used by local, state, and federal partners in safety analyses.</p>
-                <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong> in <strong>{area}</strong>. You can adjust the range and severity type using the forms below.</p>
-
-                <hr id="sidebar-hr" />
+                <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong> in <strong>{area}</strong>. You can adjust the range and severity type using the forms below:</p>
 
                 <form className="crash-map-charts-form" id="crash-map-update-range" onSubmit={this.updateRange}>
                     <fieldset className="crash-map-charts-fieldset" form="crash-map-update-range">
@@ -267,6 +265,8 @@ class Sidebar extends Component {
                         </div>
                     </fieldset>
                 </form>
+
+                <hr id="sidebar-hr" />
 
                 <h2 id="first-subheader" className="centered-text crash-map-sidebar-subheader">Totals</h2>
                     <ul id="crash-map-sidebar-ul">
