@@ -5,6 +5,7 @@ import PrintTemplate from 'react-print';
 import { setSrc } from '../../redux/reducers/mapReducer.js'
 import * as charts from '../sidebar/charts.js';
 import './printPage.css';
+import logo from '../footer/img/footer-logo.png'
 
 class PrintPage extends Component {
     componentDidUpdate() {
@@ -47,10 +48,12 @@ class PrintPage extends Component {
         return(
             <PrintTemplate>
                 <section id="print-section">
-                    <img id="print-map" alt="map of extent" ref={el => this.mapImg = el} />
+                    {/* <img alt="DVRPC logo" src={logo} id="print-logo" className="print-img print-logo" /> */}
+                    <img id="print-map" alt="map of extent" ref={el => this.mapImg = el} className="print-img" />
                     <h1 className="centered-text print-header">Crash Statistics for {area}</h1>
                     <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2019. Five years of data is typically used by local, state, and federal partners in safety analyses.</p>
                     <p className="sidebar-paragraphs">The following tables are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong>.</p>
+                    <p>Raw crash data tables for this tool were downloaded from the <a href="https://pennshare.maps.arcgis.com/apps/webappviewer/index.html?id=8fdbf046e36e41649bbfd9d7dd7c7e7e" target="_blank" rel="noopener noreferrer">PennDOT Crash Download Map</a> and the <a href="https://www.state.nj.us/transportation/refdata/accident/rawdata01-current.shtm" target="_blank" rel="noopener noreferrer">NJDOT Crash Tables</a> webpage, for Pennsylvania and New Jersey data, respectively.</p>
             
                     <hr />
 
