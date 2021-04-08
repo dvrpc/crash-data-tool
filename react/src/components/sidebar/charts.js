@@ -171,7 +171,7 @@ const formatYears = years => {
         }
 
     }else{
-        yearsFormatted = [2014,2015,2016,2017,2018]
+        yearsFormatted = [2014,2015,2016,2017,2018,2019]
     }
 
     return yearsFormatted
