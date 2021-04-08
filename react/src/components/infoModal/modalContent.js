@@ -38,7 +38,7 @@ export const modalContent = {
           <h4>Filter Crashes</h4>
           <ul>
             <li><em>By crash type:</em> Choose between KSI (killed and severe injury) or All crash types on the sidebar form labeled "Select Severity Type" and press update to apply the filter.</li>
-            <li><em>By date:</em> Select a range between 2014 and 2018 on the sidebar form labeled "Select Date Range" and press update to apply the filter. View a single year of data by setting it to both From and To.</li>
+            <li><em>By date:</em> Select a range between 2014 and 2019 on the sidebar form labeled "Select Date Range" and press update to apply the filter. View a single year of data by setting it to both From and To.</li>
           </ul>
         </li>
         <li>  
