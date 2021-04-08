@@ -5,6 +5,7 @@ import PrintTemplate from 'react-print';
 import { setSrc } from '../../redux/reducers/mapReducer.js'
 import * as charts from '../sidebar/charts.js';
 import './printPage.css';
+import logo from '../footer/img/footer-logo.png'
 
 class PrintPage extends Component {
     componentDidUpdate() {
@@ -47,7 +48,8 @@ class PrintPage extends Component {
         return(
             <PrintTemplate>
                 <section id="print-section">
-                    <img id="print-map" alt="map of extent" ref={el => this.mapImg = el} />
+                    {/* <img alt="DVRPC logo" src={logo} id="print-logo" className="print-img print-logo" /> */}
+                    <img id="print-map" alt="map of extent" ref={el => this.mapImg = el} className="print-img" />
                     <h1 className="centered-text print-header">Crash Statistics for {area}</h1>
                     <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2014 to 2019. Five years of data is typically used by local, state, and federal partners in safety analyses.</p>
                     <p className="sidebar-paragraphs">The following tables are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong>.</p>
