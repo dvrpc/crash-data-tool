@@ -305,7 +305,7 @@ class Sidebar extends Component {
                         <Doughnut data={data.modeChart} options={doughnutOptions} id="mode-chart" />
                         
                         <div className="sidebar-chart-paragraphs">
-                            <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in the <strong>{area}</strong> by mode from <strong>{from}</strong> to <strong>{to}.</strong> Pedestrians and bicyclists are often a focus of transportation safety planning efforts because they are the road users most vulnerable to severe injuries in the event of a crash. This is reflected in data that consistently shows pedestrians account for a disproportionate number of the injuries sustained on the road.</p>
+                            <p className="sidebar-paragraphs">This chart shows <em>people</em> involved in <strong>{crashType}</strong> crashes in <strong>{area}</strong> by mode from <strong>{from}</strong> to <strong>{to}</strong>. Pedestrians and bicyclists are often a focus of transportation safety planning efforts because they are the road users most vulnerable to severe injuries in the event of a crash. This is reflected in data that consistently shows pedestrians account for a disproportionate number of the injuries sustained on the road.</p>
                         </div>
                     </div>
                 
