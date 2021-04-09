@@ -5,7 +5,6 @@ import PrintTemplate from 'react-print';
 import { setSrc } from '../../redux/reducers/mapReducer.js'
 import * as charts from '../sidebar/charts.js';
 import './printPage.css';
-import logo from '../footer/img/footer-logo.png'
 
 class PrintPage extends Component {
     componentDidUpdate() {
