@@ -481,8 +481,11 @@ class Map extends Component {
     // draw a boundary, zoom to, filter crash data and update sidebar on muni click
     clickGeography = e => {
         
-        // short out if the user is drawing polygons
-        if(this.state.polygon) return
+        // short out if an active geom exists
+        if(this.state.polygon || this.state.boundary) return
+
+        // boundary state exists - can short on state.boundary if needed
+        console.log('state ', this.state)
         
         // short out if a user clicks on a crash circle
         const circleTest = this.map.queryRenderedFeatures(e.point)[0]
