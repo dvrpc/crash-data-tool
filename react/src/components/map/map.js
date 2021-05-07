@@ -16,6 +16,7 @@ class Map extends Component {
         this.state = {
             boundary: null,
             polygon: false,
+            popup: false,
             // draw is on local state so that removeBoundary() can access the instance of MapboxDraw to call draw.deleteAll()
             draw: new MapboxDraw({
                 displayControlsDefault: false,
@@ -112,6 +113,11 @@ class Map extends Component {
 
             // create popup and handle pagination if necessary
             this.handlePopup(crnArray, index, popup)
+
+            // put popup state on local state
+            this.setState({popup: true})
+
+            popup.on('close', () => this.setState({popup: false}))
         })
         
         // update legend depending on zoom level (heatmap vs crash circles)
@@ -479,13 +485,9 @@ class Map extends Component {
     }
 
     // draw a boundary, zoom to, filter crash data and update sidebar on muni click
-    clickGeography = e => {
-        
-        // short out if an active geom exists
-        if(this.state.polygon || this.state.boundary) return
-
-        // boundary state exists - can short on state.boundary if needed
-        console.log('state ', this.state)
+    clickGeography = e => {        
+        // short out if an active geom exists @TODO add this.state.popup
+        if(this.state.polygon || this.state.boundary || this.state.popup) return
         
         // short out if a user clicks on a crash circle
         const circleTest = this.map.queryRenderedFeatures(e.point)[0]
