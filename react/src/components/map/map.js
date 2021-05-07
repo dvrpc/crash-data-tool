@@ -486,7 +486,7 @@ class Map extends Component {
 
     // draw a boundary, zoom to, filter crash data and update sidebar on muni click
     clickGeography = e => {        
-        // short out if an active geom exists @TODO add this.state.popup
+        // short out if an active geom exists
         if(this.state.polygon || this.state.boundary || this.state.popup) return
         
         // short out if a user clicks on a crash circle
