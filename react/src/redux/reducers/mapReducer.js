@@ -197,7 +197,7 @@ export const getBoundingBox = id => async dispatch => {
         // ESRI returns the same object regardless of success or fail so check for extent AND contents of extent
         if (!extent || extent.xmin === "NaN") {
             console.log('bbox call returned null extent')
-            alert('Sorry! The automatic pan/zoom feature service is currently unavailable. Please zoom to your selected geography using either your mouse or the +/- overlays on the map. Thank you.')
+            alert('Sorry! The automatic pan/zoom feature service is currently unavailable.\nPlease zoom to your selected geography using either your mouse or the +/- overlays on the map. Thank you.')
             return
         }
         const bbox = [extent.xmax, extent.ymax, extent.xmin, extent.ymin]
@@ -205,7 +205,7 @@ export const getBoundingBox = id => async dispatch => {
         dispatch(get_bounding_box(bbox))
     }else {
         console('esri bbox call failed ', stream)
-        alert('Sorry! The automatic pan/zoom feature service is currently unavailable. Please zoom to your selected geography using either your mouse or the +/- overlays on the map. Thank you.')
+        alert('Sorry! The automatic pan/zoom feature service is currently unavailable.\nPlease zoom to your selected geography using either your mouse or the +/- overlays on the map. Thank you.')
     }
 }
 
