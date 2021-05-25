@@ -20,6 +20,10 @@ class Modal extends Component {
         if (e.target == this.modal) this.hideModal()
     }
 
+    keyDownModal = e => {
+        if( e.code === 'Escape' && this.modal.style.display === 'flex') this.hideModal()
+    }
+
     handleTabs = e => {
         const target = e.target
         const selectedTab = target.id.split('-')[1]
@@ -44,7 +48,7 @@ class Modal extends Component {
             <div className="no-print">
                 <button id="crash-map-nav-info-btn" type="button" onClick={this.showModal}>about</button>
                 
-                <div role="dialog" id="crash-map-modal" aria-modal="true" aria-labelledby="crash-map-nav-info-btn" ref={el => this.modal = el} onClick={this.clickModal}>
+                <div role="dialog" id="crash-map-modal" aria-modal="true" aria-labelledby="crash-map-nav-info-btn" ref={el => this.modal = el} onClick={this.clickModal} onKeyDown={this.keyDownModal}>
                     
                     <div id="modal-content">
                         <button type="button" className="crash-map-close-modal" id="crash-map-modal-x" onClick={this.hideModal}>X</button>
