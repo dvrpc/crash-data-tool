@@ -4,6 +4,14 @@ import { modalContent } from './modalContent.js'
 import './infoModal.css';
 
 class Modal extends Component {
+    componentDidMount() {
+        document.onkeydown = e => this.keyDownModal(e)
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.keyDownModal, false)
+    }
+
     showModal = () => {
         this.modal.style.display = 'flex'
         this.modal.style.justifyContent = 'center'
@@ -17,7 +25,7 @@ class Modal extends Component {
     }
 
     clickModal = e => {
-        if (e.target == this.modal) this.hideModal()
+        if (e.target === this.modal) this.hideModal()
     }
 
     keyDownModal = e => {
@@ -34,14 +42,14 @@ class Modal extends Component {
         
         // reset all tabs to default
         for(var i=0; i<length;i++) {
-          allTabs[i].classList.remove('crash-map-modal-active-tab')
+            allTabs[i].classList.remove('crash-map-modal-active-tab')
         }
         
         // set active tab + pull in content
         target.classList.add('crash-map-modal-active-tab')
         while(contentDiv.firstChild) contentDiv.removeChild(contentDiv.firstChild)
         contentDiv.insertAdjacentHTML('afterbegin', modalContent[selectedTab])
-      }
+    }
 
     render() {
         return (
