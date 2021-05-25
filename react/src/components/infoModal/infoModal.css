@@ -1,21 +1,20 @@
 #crash-map-modal{
-    position: absolute;
-    z-index: 15;
-    overflow-x: auto;
-    height: 90vh;
-    width: 800px;
-    top: 5vh;
-    left: 50%;
-    right: auto;
-    margin-left: -400px;
-    padding: 0;
-    z-index: 5;
-    background-color: #f7f7f7;
-    box-shadow: 0 0 100vh 100vh rgba(0,0,0,0.6);
-    border: 3px solid #40757d;
-    border-radius: 3px;
+    position: fixed;
     display: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
     font-size: 1rem;
+}
+#modal-content{
+    overflow: auto;
+    background: #f7f7f7;
+    width: 800px;
+    height: 92.5%;
+    border: 3px solid #40757d;
+    border-radius: 4px;
 }
 #crash-map-modal a{
     color: #40757d;
@@ -95,12 +94,8 @@
 
 /* Media Queries */
 @media all and (max-width: 900px) {
-    #crash-map-modal{
-        width: 100%;
-        height: 100vh;
-        top: 0;
-        right: 0;
-        left: auto;
+    #modal-content {
+        height: 100%;
     }
     #crash-map-modal-content, #crash-map-modal-tabs{
         width: 88%;
