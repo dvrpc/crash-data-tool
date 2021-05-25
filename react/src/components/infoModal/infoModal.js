@@ -5,7 +5,9 @@ import './infoModal.css';
 
 class Modal extends Component {
     showModal = () => {
-        this.modal.style.display = 'block'
+        this.modal.style.display = 'flex'
+        this.modal.style.justifyContent = 'center'
+        this.modal.style.alignItems = 'center'
         this.modal.setAttribute('aria-hidden', 'false')
     }
 
@@ -17,16 +19,6 @@ class Modal extends Component {
     clickModal = e => {
         if (e.target == this.modal) this.hideModal()
     }
-
-    keyModal = () => {
-        document.onkeydown = e => {
-            // only hide open modals 
-            if( e.code === 'Escape' && this.modal.style.display === 'block'){
-              this.hideModal()
-            }
-          }
-    }
-
 
     handleTabs = e => {
         const target = e.target
@@ -53,9 +45,9 @@ class Modal extends Component {
                 <button id="crash-map-nav-info-btn" type="button" onClick={this.showModal}>about</button>
                 
                 <div role="dialog" id="crash-map-modal" aria-modal="true" aria-labelledby="crash-map-nav-info-btn" ref={el => this.modal = el} onClick={this.clickModal}>
-                    <button type="button" className="crash-map-close-modal" id="crash-map-modal-x" onClick={this.hideModal}>X</button>
                     
                     <div id="modal-content">
+                        <button type="button" className="crash-map-close-modal" id="crash-map-modal-x" onClick={this.hideModal}>X</button>
                         <h2>DVRPC Crash Data Viewer</h2>
 
                         <div id="crash-map-modal-tabs" onClick={this.handleTabs}>
