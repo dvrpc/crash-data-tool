@@ -1,6 +1,6 @@
 {
   "name": "crash-data-tool",
-  "homepage": "/review/crash-data/",
+  "homepage": "/webmaps/crash-data/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
