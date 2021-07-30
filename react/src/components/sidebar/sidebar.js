@@ -18,7 +18,7 @@ class Sidebar extends Component {
             data: 'default',
             context: 'the DVRPC region',
             crashType: 'KSI',
-            from: 2014,
+            from: 2015,
             to: 2019,
             loading: this.props.mapLoading
         }
