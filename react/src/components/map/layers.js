@@ -85,9 +85,11 @@ const crashHeat = {
     source: 'Crashes',
     'source-layer': 'crash',
     maxzoom: 11,
-    filter: ['any', 
-        ['==', ['get', 'max_sever'], 0],
-        ['==', ['get', 'max_sever'], 1],
+    filter: ['all',
+        ['>', 'max_sever', -1],
+        ['<', 'max_sever', 2],
+        ['>=', 'year', 2015],
+        ['<=', 'year', 2019]
     ],
     paint: {
         'heatmap-weight': [
@@ -126,9 +128,11 @@ const crashCircles = {
     source: 'Crashes',
     'source-layer': 'crash',
     minzoom: 11,
-    filter: ['any',
-        ['==', ['get', 'max_sever'], 0],
-        ['==', ['get', 'max_sever'], 1],
+    filter: ['all',
+        ['>', 'max_sever', -1],
+        ['<', 'max_sever', 2],
+        ['>=', 'year', 2015],
+        ['<=', 'year', 2019]
     ],
     layout: {
     },
