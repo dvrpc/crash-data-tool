@@ -218,9 +218,9 @@ class Sidebar extends Component {
                             <div className="crash-map-label-subgroup">
                                 <label>
                                     From: 
-                                    <select id="crash-select-from" name="from" className="crash-map-first-input hover-btn">
+                                    <select id="crash-select-from" name="from" className="crash-map-first-input hover-btn" defaultValue="2015">
                                         <option value="2014">2014</option>
-                                        <option value="2015" selected>2015</option>
+                                        <option value="2015">2015</option>
                                         <option value="2016">2016</option>
                                         <option value="2017">2017</option>
                                         <option value="2018">2018</option>
