@@ -9,7 +9,7 @@ The forthcoming Crash Data Tool is a public resource of general information. The
 ## Development
 * The front end of this app is built with <a href="https://reactjs.org/">React</a>. <a href="https://docs.mapbox.com/mapbox-gl-js/api/">Mapboxgl JS</a> is used for the mapping component and <a href="">Chart JS</a> is used for the data visualizations. State is managed with <a href="https://redux.js.org/">Redux</a>.
 
-* A Python API was built for this app using <a href="https://fastapi.tiangolo.com/">FastAPI</a>, you can view the <a href="https://alpha.dvrpc.org/api/crash-data/v1/docs">documentation here</a>. Data is stored in a <a href="https://www.postgresql.org/">PostgreSQL</a> database. Vector tiles and other mapping information were created in house and are hosted on a <a href="https://www.digitalocean.com/">Digital Ocean Droplet</a>.
+* A Python API was built for this app using <a href="https://fastapi.tiangolo.com/">FastAPI</a>, you can view the <a href="https://cloud.dvrpc.org/api/crash-data/v1/docs">documentation here</a>. Data is stored in a <a href="https://www.postgresql.org/">PostgreSQL</a> database. Vector tiles and other mapping information were created in house and are hosted on a <a href="https://www.digitalocean.com/">Digital Ocean Droplet</a>.
 
 ## Installment steps
 * cd to the parent directory for the project and then `git clone https://github.com/dvrpc/crash-data-tool.git`
