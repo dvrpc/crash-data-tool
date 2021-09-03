@@ -110,7 +110,7 @@ export const getDataFromKeyword = boundaryObj => async dispatch => {
     
     // handle geography & polygon queries    
     const query = geojson === undefined ? `geoid=${geoID}&ksi_only=${isKSI}` : `geojson=${geojson}&ksi_only=${isKSI}`
-    const api = `https://alpha.dvrpc.org/api/crash-data/v1/summary?${query}`  
+    const api = `https://cloud.dvrpc.org/api/crash-data/v1/summary?${query}`  
 
     try{
         const stream = await fetch(api, getOptions)
@@ -214,7 +214,7 @@ export const getBoundingBox = id => async dispatch => {
 
 export const getPolygonCrashes = bbox => async dispatch => {
     try{
-        const api = `https://alpha.dvrpc.org/api/crash-data/v1/crash-ids?geojson=${bbox}`
+        const api = `https://cloud.dvrpc.org/api/crash-data/v1/crash-ids?geojson=${bbox}`
         const stream = await fetch(api, getOptions)
         const response = await stream.json()
         dispatch(get_polygon_crns(response))
