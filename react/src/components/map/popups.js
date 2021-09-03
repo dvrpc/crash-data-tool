@@ -15,7 +15,7 @@ const getPopupInfo = async crash => {
         severity,
     }
 
-    const stream = await fetch(`https://alpha.dvrpc.org/api/crash-data/v1/crashes/${crn}`, options)
+    const stream = await fetch(`https://cloud.dvrpc.org/api/crash-data/v1/crashes/${crn}`, options)
     
     // return an error message if the fetch fails
     if(!stream.ok) return {fail: stream.statusText, crn}
