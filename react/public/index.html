@@ -14,24 +14,30 @@
     <meta name="copyright" content="1995-2020 all rights reserved" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="theme-color" content="#000000" />
+    
     <meta property="og:title" content="DVRPC Crash Data Viewer" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.dvrpc.org/review/crash-data/" />
-    <meta property="og:image" content="https://www.dvrpc.org/review/crash-data/og-crash-img.png" />
+    <meta property="og:url" content="https://www.dvrpc.org/webmaps/crash-data/" />
+    <meta property="og:image" content="https://www.dvrpc.org/webmaps/crash-data/og-crash-img.png" />
     <meta property="og:description" content="View crash data statistics in the DVRPC region. This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as 'KSI') for 2014 to 2019. Crash type, range and geography can all be toggled for detailed view on crash statistics within the DVRPC region. Five years of data is typically used by local, state, and federal partners in safety analyses." />
+    
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css' rel='stylesheet' />
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css' type='text/css' />
-    <!-- analytics -->
-    <script>
-      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-      ga('create', 'UA-9825778-1', 'auto');
-      ga('send', 'pageview');
-    </script> 
     
-    <script async src="//www.google-analytics.com/ga.js"></script>
+    <!-- Analytics -->
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-9825778-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-9825778-1');
+    </script>
   </head>
   <body>
     <noscript>
