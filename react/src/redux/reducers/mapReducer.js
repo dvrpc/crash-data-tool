@@ -157,7 +157,6 @@ export const setMapFilter = filter => dispatch => {
     // if no boundary or range and type all, no filter
     if(noFilterCondition === 3) mapFilter = 'none'
 
-    console.log('mapFilter is ', mapFilter)
     dispatch(set_map_filter(mapFilter))
 }
 

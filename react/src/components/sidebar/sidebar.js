@@ -18,8 +18,8 @@ class Sidebar extends Component {
             data: 'default',
             context: 'the DVRPC region',
             crashType: 'KSI',
-            from: 2015,
-            to: 2019,
+            from: 2016,
+            to: 2020,
             loading: this.props.mapLoading
         }
 
@@ -207,7 +207,7 @@ class Sidebar extends Component {
                 
                 <span id="crash-map-print-sidebar" onClick={this.setSrc}><img id="crash-map-print-icon" src={print} alt="print stats icon" /> print statistics</span>
                 
-                <p className="sidebar-paragraphs first-paragraph">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2015 to 2019. Five years of data is typically used by local, state, and federal partners in safety analyses.</p>
+                <p className="sidebar-paragraphs first-paragraph">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2016 to 2020. Five years of data is typically used by local, state, and federal partners in safety analyses.</p>
                 <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong> in <strong>{area}</strong>. You can adjust the range and severity type using the forms below:</p>
 
                 <form className="crash-map-charts-form" id="crash-map-update-range" onSubmit={this.updateRange}>
@@ -218,19 +218,21 @@ class Sidebar extends Component {
                             <div className="crash-map-label-subgroup">
                                 <label>
                                     From: 
-                                    <select id="crash-select-from" name="from" className="crash-map-first-input hover-btn" defaultValue="2015">
+                                    <select id="crash-select-from" name="from" className="crash-map-first-input hover-btn" defaultValue="2016">
                                         <option value="2014">2014</option>
                                         <option value="2015">2015</option>
                                         <option value="2016">2016</option>
                                         <option value="2017">2017</option>
                                         <option value="2018">2018</option>
                                         <option value="2019">2019</option>
+                                        <option value="2020">2020</option>
                                     </select>
                                 </label>
 
                                 <label>
                                     To:
                                     <select name="to" className="hover-btn">
+                                        <option value="2020">2020</option>
                                         <option value="2019">2019</option>
                                         <option value="2018">2018</option>
                                         <option value="2017">2017</option>
