@@ -43,7 +43,7 @@ class Map extends Component {
             style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
             center: [longitudeOffset, 40.071],
             zoom: this.state.zoom,
-            //@Note: this is a performance hit but necessary to export the map canvas
+            //@Note: this is a performance hit but necessary to export the map canvas for printing
             preserveDrawingBuffer: true
         })
 

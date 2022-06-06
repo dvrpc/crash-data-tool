@@ -88,8 +88,8 @@ const crashHeat = {
     filter: ['all',
         ['>', 'max_sever', -1],
         ['<', 'max_sever', 2],
-        ['>=', 'year', 2015],
-        ['<=', 'year', 2019]
+        ['>=', 'year', 2016],
+        ['<=', 'year', 2020]
     ],
     paint: {
         'heatmap-weight': [
@@ -131,8 +131,8 @@ const crashCircles = {
     filter: ['all',
         ['>', 'max_sever', -1],
         ['<', 'max_sever', 2],
-        ['>=', 'year', 2015],
-        ['<=', 'year', 2019]
+        ['>=', 'year', 2016],
+        ['<=', 'year', 2020]
     ],
     layout: {
     },

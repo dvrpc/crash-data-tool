@@ -21,3 +21,7 @@ This repo is for the front end of the project. The back end repo is found [here]
 * `cd react`
 * `npm run build`
 * copy the files from the build folder into the staging folder
+
+## Updating Crash Years
+* Update default range and dropdown in sidebar/sidebar.js
+* update default filter range in map/layers.js
