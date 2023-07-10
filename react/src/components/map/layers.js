@@ -5,7 +5,7 @@ const countyOutline = {
     'source-layer': 'county',
     paint: {
         'line-width': 2.5,
-        'line-color': '#fafafa'
+        'line-color': '#474350'
     },
     filter: [
         '==',
@@ -45,7 +45,7 @@ const municipalityOutline = {
     minzoom: 8.4,
     paint: {
         'line-width': 0.5,
-        'line-color': '#e3f2fd'
+        'line-color': '#474350'
     }
 }
 
@@ -113,11 +113,26 @@ const crashHeat = {
         'heatmap-color': [
             'interpolate', ['linear'], ['heatmap-density'],
             0, 'rgba(0,0,0,0)',
-            0.40, '#e7e7fc',
-            0.50, '#dddefa',
-            0.60, '#bbbdf6',
-            0.90, '#414770',
-            1, '#372248'
+            // 0.40, '#e7e7fc',
+            // 0.50, '#dddefa',
+            // 0.60, '#bbbdf6',
+            // 0.90, '#414770',
+            // 1, '#372248'
+
+            
+            // 0.40, '#1b7837',
+            // 0.50, '#7fbf7b',
+            // 0.60, '#e7d4e8',
+            // 0.90, '#c2a5cf',
+            // 1, '#7b3294'
+
+
+            0.40, '#feebe2',
+            0.50, '#fbb4b9',
+            0.60, '#f768a1',
+            0.90, '#c51b8a',
+            1, '#7a0177'
+
         ]
     }
 }

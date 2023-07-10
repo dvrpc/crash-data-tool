@@ -37,6 +37,8 @@ class Map extends Component {
     componentDidMount() {
         // mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
         mapboxgl.accessToken = 'pk.eyJ1IjoibW1vbHRhIiwiYSI6ImNqZDBkMDZhYjJ6YzczNHJ4cno5eTcydnMifQ.RJNJ7s7hBfrJITOBZBdcOA'
+        
+        // @NOTE: do not delete this comment:
         // eslint-disable-next-line import/no-webpack-loader-syntax
         mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default //fix bable transpiling issues
         
@@ -45,8 +47,9 @@ class Map extends Component {
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
+            // style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
             // style: 'mapbox://styles/mmolta/cljx4mx8k000401no7stq18ca?optimize=true',
+            style: 'mapbox://styles/mapbox/streets-v12',
             center: [longitudeOffset, 40.071],
             zoom: this.state.zoom,
             //@Note: this is a performance hit but necessary to export the map canvas for printing
@@ -75,6 +78,16 @@ class Map extends Component {
                 data: 'https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=co_name%3D%27Philadelphia%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=geoid&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=&resultRecordCount=&returnTrueCurves=false&returnExceededLimitFeatures=false&quantizationParameters=&returnCentroid=false&sqlFormat=none&resultType=&featureEncoding=esriDefault&datumTransformation=&f=geojson'
             })
 
+            const allLayers = this.map.getStyle().layers
+            let firstSymbolId
+            
+            for (const layer of allLayers) {
+                if (layer.source === 'place_label') {
+                    firstSymbolId = layer.id;
+                    break;
+                }
+            }
+
             // add county boundaries
             this.map.addLayer(layers.countyOutline)
             this.map.addLayer(layers.countyFill)
@@ -87,8 +100,8 @@ class Map extends Component {
             this.map.addLayer(layers.phillyOutline)
 
             // add crash data layers
-            this.map.addLayer(layers.crashHeat)
-            this.map.addLayer(layers.crashCircles)
+            this.map.addLayer(layers.crashHeat, firstSymbolId)
+            this.map.addLayer(layers.crashCircles, firstSymbolId)
         })
 
         // variables for hover state
