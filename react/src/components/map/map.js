@@ -35,12 +35,14 @@ class Map extends Component {
     // Lifecycle Methods //
     /**********************/
     componentDidMount() {
-        mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
+        // mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
+        mapboxgl.accessToken = 'pk.eyJ1IjoibW1vbHRhIiwiYSI6ImNqZDBkMDZhYjJ6YzczNHJ4cno5eTcydnMifQ.RJNJ7s7hBfrJITOBZBdcOA'
         const longitudeOffset = window.innerWidth > 800 ? -75.85 : -75.2273
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
+            // style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
+            style: 'mapbox://styles/mmolta/cljx4mx8k000401no7stq18ca?optimize=true',
             center: [longitudeOffset, 40.071],
             zoom: this.state.zoom,
             //@Note: this is a performance hit but necessary to export the map canvas for printing
