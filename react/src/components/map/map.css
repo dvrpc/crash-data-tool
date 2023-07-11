@@ -28,7 +28,7 @@
     display: block;
     height: 20px;
     margin-top: 10px;
-    background: linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248);
+    background: linear-gradient(to right, #feebe2, #fcc5c0, #c51b8a, #7a0177);
 }
 #legend-text{
     display: flex;

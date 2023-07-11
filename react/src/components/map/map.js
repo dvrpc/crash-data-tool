@@ -665,7 +665,7 @@ class Map extends Component {
         } else {
             let crashType = this.props.crashType || 'KSI'
             this.legendTitle.textContent = `Number of Crashes (${crashType})`
-            this.legendGradient.style.background = 'linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248)'
+            this.legendGradient.style.background = 'linear-gradient(to right, #feebe2, #fcc5c0, #c51b8a, #7a0177)'
             this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
         }
     }
