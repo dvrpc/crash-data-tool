@@ -87,18 +87,18 @@ class Map extends Component {
                 }
             }
 
-            // add county boundaries
-            this.map.addLayer(layers.countyOutline, firstSymbolId)
+            // add county boundaries beneath road labels in streets v-12 spec
+            this.map.addLayer(layers.countyOutline, 'settlement-subdivision-label')
             this.map.addLayer(layers.countyFill)
 
-            // add municipal boundaries
-            this.map.addLayer(layers.municipalityOutline, firstSymbolId)
+            // add municipal boundaries beneath road labels in streets-v12 spec
+            this.map.addLayer(layers.municipalityOutline, 'settlement-subdivision-label')
             this.map.addLayer(layers.municipalityFill)
 
             // add PPA's
             this.map.addLayer(layers.phillyOutline)
 
-            // add crash data layers beneath relevant layers in streets-v12 style spec
+            // add crash data layers beneath relevant layers in streets-v12 spec
             this.map.addLayer(layers.crashHeat, 'settlement-subdivision-label')
             this.map.addLayer(layers.crashCircles, 'level-crossing')
         })
