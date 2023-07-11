@@ -77,20 +77,31 @@ class Map extends Component {
                 data: 'https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=co_name%3D%27Philadelphia%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=geoid&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=&resultRecordCount=&returnTrueCurves=false&returnExceededLimitFeatures=false&quantizationParameters=&returnCentroid=false&sqlFormat=none&resultType=&featureEncoding=esriDefault&datumTransformation=&f=geojson'
             })
 
+            // Find the index of the first symbol layer in the map style. (from mapbox docs)
+            const mapLayers = this.map.getStyle().layers;
+            let firstSymbolId;
+
+            for (const layer of mapLayers) {
+                if (layer.type === 'symbol') {
+                    firstSymbolId = layer.id;
+                    break;
+                }
+            }
+
             // add county boundaries beneath road labels in streets v-12 spec
             this.map.addLayer(layers.countyOutline, 'settlement-subdivision-label')
-            this.map.addLayer(layers.countyFill)
+            this.map.addLayer(layers.countyFill, firstSymbolId)
 
             // add municipal boundaries beneath road labels in streets-v12 spec
             this.map.addLayer(layers.municipalityOutline, 'settlement-subdivision-label')
-            this.map.addLayer(layers.municipalityFill)
+            this.map.addLayer(layers.municipalityFill, firstSymbolId)
 
             // add PPA's
-            this.map.addLayer(layers.phillyOutline)
+            this.map.addLayer(layers.phillyOutline, 'settlement-subdivision-label')
 
             // add crash data layers beneath relevant layers in streets-v12 spec
             this.map.addLayer(layers.crashHeat, 'settlement-subdivision-label')
-            this.map.addLayer(layers.crashCircles, 'level-crossing')
+            this.map.addLayer(layers.crashCircles, 'settlement-subdivision-label')
         })
 
         // variables for hover state
@@ -123,9 +134,7 @@ class Map extends Component {
             this.handlePopup(crnArray, index, popup)
 
             // put popup state on local state
-            this.setState({popup: true})
-
-            popup.on('close', () => this.setState({popup: false}))
+            this.setState({popup: popup})
         })
         
         // update legend depending on zoom level (heatmap vs crash circles)
@@ -494,10 +503,16 @@ class Map extends Component {
 
     // draw a boundary, zoom to, filter crash data and update sidebar on muni click
     clickGeography = e => {        
-        // short out if an active geom exists
-        if(this.state.polygon || this.state.boundary || this.state.popup) return
+        // exit if an active geom exists
+        if(this.state.polygon || this.state.boundary) return
+
+        // exit & update state if popup exists b/c this will also close the popup
+        if(this.state.popup) {
+            this.setState({popup: false})
+            return
+        }
         
-        // short out if a user clicks on a crash circle
+        // short out if a user clicks on a crash circle 
         const circleTest = this.map.queryRenderedFeatures(e.point)[0]
         if(circleTest.source === 'Crashes') return
         
