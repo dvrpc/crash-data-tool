@@ -26,7 +26,7 @@ class Map extends Component {
                     trash: false
                 }
             }),
-            zoom: window.innerWidth <= 420 ? 7.3 : 8.2
+            zoom: window.innerWidth <= 420 ? 7.3 : 8.3
         }
     }
     
@@ -42,13 +42,12 @@ class Map extends Component {
         // eslint-disable-next-line import/no-webpack-loader-syntax
         mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default //fix bable transpiling issues
         
-        const longitudeOffset = window.innerWidth > 800 ? -75.85 : -75.2273
+        const longitudeOffset = window.innerWidth > 800 ? -75.83 : -75.2273
         
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            // style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
-            // style: 'mapbox://styles/mmolta/cljx4mx8k000401no7stq18ca?optimize=true',
+            // style: 'mapbox://styles/mapbox/navigation-day-v1',
             style: 'mapbox://styles/mapbox/streets-v12',
             center: [longitudeOffset, 40.071],
             zoom: this.state.zoom,
@@ -82,26 +81,26 @@ class Map extends Component {
             let firstSymbolId
             
             for (const layer of allLayers) {
-                if (layer.source === 'place_label') {
+                if (layer.type === 'symbol') {
                     firstSymbolId = layer.id;
                     break;
                 }
             }
 
             // add county boundaries
-            this.map.addLayer(layers.countyOutline)
+            this.map.addLayer(layers.countyOutline, firstSymbolId)
             this.map.addLayer(layers.countyFill)
 
             // add municipal boundaries
-            this.map.addLayer(layers.municipalityOutline)
+            this.map.addLayer(layers.municipalityOutline, firstSymbolId)
             this.map.addLayer(layers.municipalityFill)
 
             // add PPA's
             this.map.addLayer(layers.phillyOutline)
 
-            // add crash data layers
-            this.map.addLayer(layers.crashHeat, firstSymbolId)
-            this.map.addLayer(layers.crashCircles, firstSymbolId)
+            // add crash data layers beneath relevant layers in streets-v12 style spec
+            this.map.addLayer(layers.crashHeat, 'settlement-subdivision-label')
+            this.map.addLayer(layers.crashCircles, 'level-crossing')
         })
 
         // variables for hover state
