@@ -77,16 +77,6 @@ class Map extends Component {
                 data: 'https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=co_name%3D%27Philadelphia%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=geoid&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=&resultRecordCount=&returnTrueCurves=false&returnExceededLimitFeatures=false&quantizationParameters=&returnCentroid=false&sqlFormat=none&resultType=&featureEncoding=esriDefault&datumTransformation=&f=geojson'
             })
 
-            const allLayers = this.map.getStyle().layers
-            let firstSymbolId
-            
-            for (const layer of allLayers) {
-                if (layer.type === 'symbol') {
-                    firstSymbolId = layer.id;
-                    break;
-                }
-            }
-
             // add county boundaries beneath road labels in streets v-12 spec
             this.map.addLayer(layers.countyOutline, 'settlement-subdivision-label')
             this.map.addLayer(layers.countyFill)
