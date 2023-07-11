@@ -123,8 +123,6 @@ const crashHeat = {
     }
 }
 
-// @TODO: featureState to give circles an outline + increase radius
-// @TODO: featureState to give clicked circles the hover state
 const crashCircles = {
     id: 'crash-circles',
     type: 'circle',
@@ -154,6 +152,13 @@ const crashCircles = {
             'interpolate', ['linear'], ['zoom'],
             11, 2.6,
             16, 8,
+        ],
+        'circle-stroke-color': '#969696',
+        'circle-stroke-width': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            2,
+            0
         ]
     }
 }

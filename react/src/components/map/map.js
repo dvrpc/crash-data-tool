@@ -69,7 +69,8 @@ class Map extends Component {
 
             this.map.addSource("Crashes", {
                 type: 'vector',
-                url: 'https://tiles.dvrpc.org/data/crash.json'
+                url: 'https://tiles.dvrpc.org/data/crash.json',
+                promoteId: 'id'
             })
 
             this.map.addSource("PPA", {
@@ -140,43 +141,42 @@ class Map extends Component {
         // update legend depending on zoom level (heatmap vs crash circles)
         this.map.on('zoomend', () => this.updateLegend())
 
-        // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
         this.map.on('mousemove', 'crash-circles', e => {
             this.map.getCanvas().style.cursor = 'pointer'
 
             if(hoveredCircle){
-                this.map.removeFeatureState({
-                    source: 'Crashes',
-                    sourceLayer: 'crash-circles',
-                    id: hoveredCircle
-                })
+                this.map.setFeatureState(
+                    {
+                        source: 'Crashes',
+                        sourceLayer: 'crash',
+                        id: hoveredCircle
+                    },
+                    {
+                        hover: false
+                    }
+                )
             }
             
-            // @TODO: e.features[0].id does not exist. add this back in when circles lack of feature id is solved
-            // rn it looks like this won't work b/c our ID's have to be strings that are prepended with PA/NJ and therefore don't fit into the schema ugh
-            // worst case create a hover layer and activate that on hover but that's sub-optimal
-            // if(e.features.length > 0) {
-            //     hoveredCircle = e.features[0].id
-            //     this.map.setFeatureState(
-            //         {
-            //             source: 'Crashes',
-            //             sourceLayer: 'crash-circles',
-            //             id: hoveredCircle
-            //         },
-            //         {
-            //             hover: true
-            //         }
-            //     )
-            // }
+            hoveredCircle = e.features[0].id
+            
+            this.map.setFeatureState(
+                {
+                    source: 'Crashes',
+                    sourceLayer: 'crash',
+                    id: hoveredCircle
+                },
+                {
+                    hover: true
+                }
+            )
         })
 
-        // @TODO: remove hover effect from old target
         this.map.on('mouseleave', 'crash-circles', () => {
             if (hoveredCircle) {
                 this.map.setFeatureState(
                     {
                         source: 'Crashes',
-                        sourceLayer: 'crash-circles',
+                        sourceLayer: 'crash',
                         id: hoveredCircle
                     },
                     {
@@ -446,8 +446,6 @@ class Map extends Component {
         let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
         let features = e.features
 
-        this.map.getCanvas().style.cursor = 'pointer'
-
         if(features.length > 0 ) {
             features = features[0]
             const name =  sourceLayer === 'county' ? features.properties.name + ' County' : features.properties.name
@@ -483,8 +481,6 @@ class Map extends Component {
 
         // escape if zoom level isn't right @TODO make this a county or zoom level decision
         let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
-
-        this.map.getCanvas().style.cursor = ''
 
         if(hoveredGeom) {
             this.map.setFeatureState({source: 'Boundaries', sourceLayer: `${sourceLayer}-fill`, id: hoveredGeom},
