@@ -30,7 +30,7 @@ const removeBoundaryFilter = () => {
             filter: ['==', 'dvrpc', 'Yes'],
             paint: {
                 width: 2.5,
-                color: '#fafafa'
+                color: '#969696'
             }
         },
         muni: {
@@ -38,7 +38,7 @@ const removeBoundaryFilter = () => {
             filter: null,
             paint: {
                 width: 0.5,
-                color: '#e3f2fd'
+                color: '#636363'
             }
         },
         philly: {

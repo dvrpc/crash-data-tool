@@ -5,7 +5,7 @@ const countyOutline = {
     'source-layer': 'county',
     paint: {
         'line-width': 2.5,
-        'line-color': '#fafafa'
+        'line-color': '#969696'
     },
     filter: [
         '==',
@@ -45,7 +45,7 @@ const municipalityOutline = {
     minzoom: 8.4,
     paint: {
         'line-width': 0.5,
-        'line-color': '#e3f2fd'
+        'line-color': '#636363'
     }
 }
 
@@ -102,22 +102,23 @@ const crashHeat = {
         ],
         'heatmap-intensity': [
             'interpolate', ['linear'], ['zoom'],
-            8.2, 1,
+            8.3, 1,
             11, 1.5
         ],
         'heatmap-radius': [
             'interpolate', ['linear'], ['zoom'],
-            8.2, 1.7,
+            8.3, 1.7,
             10, 2.5
         ],
         'heatmap-color': [
             'interpolate', ['linear'], ['heatmap-density'],
             0, 'rgba(0,0,0,0)',
-            0.40, '#e7e7fc',
-            0.50, '#dddefa',
-            0.60, '#bbbdf6',
-            0.90, '#414770',
-            1, '#372248'
+            0.15, '#feebe2',
+            0.30, '#fcc5c0',
+            0.45, '#fa9fb5',
+            0.60, '#f768a1',
+            0.80, '#c51b8a',
+            1, '#7a0177'
         ]
     }
 }
@@ -151,6 +152,13 @@ const crashCircles = {
             'interpolate', ['linear'], ['zoom'],
             11, 2.6,
             16, 8,
+        ],
+        'circle-stroke-color': '#636363',
+        'circle-stroke-width': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            2.5,
+            0
         ]
     }
 }

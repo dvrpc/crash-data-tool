@@ -26,7 +26,7 @@ class Map extends Component {
                     trash: false
                 }
             }),
-            zoom: window.innerWidth <= 420 ? 7.3 : 8.2
+            zoom: window.innerWidth <= 420 ? 7.3 : 8.3
         }
     }
     
@@ -35,12 +35,20 @@ class Map extends Component {
     // Lifecycle Methods //
     /**********************/
     componentDidMount() {
-        mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
-        const longitudeOffset = window.innerWidth > 800 ? -75.85 : -75.2273
+        // mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
+        mapboxgl.accessToken = 'pk.eyJ1IjoibW1vbHRhIiwiYSI6ImNqZDBkMDZhYjJ6YzczNHJ4cno5eTcydnMifQ.RJNJ7s7hBfrJITOBZBdcOA'
+        
+        // @NOTE: do not delete this comment:
+        // eslint-disable-next-line import/no-webpack-loader-syntax
+        mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default //fix bable transpiling issues
+        
+        const longitudeOffset = window.innerWidth > 800 ? -75.83 : -75.2273
+        
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            style: 'mapbox://styles/mmolta/cjwapx1gx0f9t1cqllpjlxqjo?optimize=true',
+            // style: 'mapbox://styles/mapbox/navigation-day-v1',
+            style: 'mapbox://styles/mapbox/streets-v12',
             center: [longitudeOffset, 40.071],
             zoom: this.state.zoom,
             //@Note: this is a performance hit but necessary to export the map canvas for printing
@@ -61,7 +69,8 @@ class Map extends Component {
 
             this.map.addSource("Crashes", {
                 type: 'vector',
-                url: 'https://tiles.dvrpc.org/data/crash.json'
+                url: 'https://tiles.dvrpc.org/data/crash.json',
+                promoteId: 'id'
             })
 
             this.map.addSource("PPA", {
@@ -69,20 +78,31 @@ class Map extends Component {
                 data: 'https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=co_name%3D%27Philadelphia%27&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=geoid&returnGeometry=true&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=&resultRecordCount=&returnTrueCurves=false&returnExceededLimitFeatures=false&quantizationParameters=&returnCentroid=false&sqlFormat=none&resultType=&featureEncoding=esriDefault&datumTransformation=&f=geojson'
             })
 
-            // add county boundaries
-            this.map.addLayer(layers.countyOutline)
-            this.map.addLayer(layers.countyFill)
+            // Find the index of the first symbol layer in the map style. (from mapbox docs)
+            const mapLayers = this.map.getStyle().layers;
+            let firstSymbolId;
 
-            // add municipal boundaries
-            this.map.addLayer(layers.municipalityOutline)
-            this.map.addLayer(layers.municipalityFill)
+            for (const layer of mapLayers) {
+                if (layer.type === 'symbol') {
+                    firstSymbolId = layer.id;
+                    break;
+                }
+            }
+
+            // add county boundaries beneath road labels in streets v-12 spec
+            this.map.addLayer(layers.countyOutline, 'settlement-subdivision-label')
+            this.map.addLayer(layers.countyFill, firstSymbolId)
+
+            // add municipal boundaries beneath road labels in streets-v12 spec
+            this.map.addLayer(layers.municipalityOutline, 'settlement-subdivision-label')
+            this.map.addLayer(layers.municipalityFill, firstSymbolId)
 
             // add PPA's
-            this.map.addLayer(layers.phillyOutline)
+            this.map.addLayer(layers.phillyOutline, 'settlement-subdivision-label')
 
-            // add crash data layers
-            this.map.addLayer(layers.crashHeat)
-            this.map.addLayer(layers.crashCircles)
+            // add crash data layers beneath relevant layers in streets-v12 spec
+            this.map.addLayer(layers.crashHeat, 'settlement-subdivision-label')
+            this.map.addLayer(layers.crashCircles, 'settlement-subdivision-label')
         })
 
         // variables for hover state
@@ -115,51 +135,48 @@ class Map extends Component {
             this.handlePopup(crnArray, index, popup)
 
             // put popup state on local state
-            this.setState({popup: true})
-
-            popup.on('close', () => this.setState({popup: false}))
+            this.setState({popup: popup})
         })
         
         // update legend depending on zoom level (heatmap vs crash circles)
         this.map.on('zoomend', () => this.updateLegend())
 
-        // hovering over a circle changes pointer & bumps the radius to let users know they're interactive
         this.map.on('mousemove', 'crash-circles', e => {
             this.map.getCanvas().style.cursor = 'pointer'
 
             if(hoveredCircle){
-                this.map.removeFeatureState({
-                    source: 'Crashes',
-                    sourceLayer: 'crash-circles',
-                    id: hoveredCircle
-                })
+                this.map.setFeatureState(
+                    {
+                        source: 'Crashes',
+                        sourceLayer: 'crash',
+                        id: hoveredCircle
+                    },
+                    {
+                        hover: false
+                    }
+                )
             }
             
-            // @TODO: e.features[0].id does not exist. add this back in when circles lack of feature id is solved
-            // rn it looks like this won't work b/c our ID's have to be strings that are prepended with PA/NJ and therefore don't fit into the schema ugh
-            // worst case create a hover layer and activate that on hover but that's sub-optimal
-            // if(e.features.length > 0) {
-            //     hoveredCircle = e.features[0].id
-            //     this.map.setFeatureState(
-            //         {
-            //             source: 'Crashes',
-            //             sourceLayer: 'crash-circles',
-            //             id: hoveredCircle
-            //         },
-            //         {
-            //             hover: true
-            //         }
-            //     )
-            // }
+            hoveredCircle = e.features[0].id
+            
+            this.map.setFeatureState(
+                {
+                    source: 'Crashes',
+                    sourceLayer: 'crash',
+                    id: hoveredCircle
+                },
+                {
+                    hover: true
+                }
+            )
         })
 
-        // @TODO: remove hover effect from old target
         this.map.on('mouseleave', 'crash-circles', () => {
             if (hoveredCircle) {
                 this.map.setFeatureState(
                     {
                         source: 'Crashes',
-                        sourceLayer: 'crash-circles',
+                        sourceLayer: 'crash',
                         id: hoveredCircle
                     },
                     {
@@ -429,8 +446,6 @@ class Map extends Component {
         let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
         let features = e.features
 
-        this.map.getCanvas().style.cursor = 'pointer'
-
         if(features.length > 0 ) {
             features = features[0]
             const name =  sourceLayer === 'county' ? features.properties.name + ' County' : features.properties.name
@@ -467,8 +482,6 @@ class Map extends Component {
         // escape if zoom level isn't right @TODO make this a county or zoom level decision
         let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
 
-        this.map.getCanvas().style.cursor = ''
-
         if(hoveredGeom) {
             this.map.setFeatureState({source: 'Boundaries', sourceLayer: `${sourceLayer}-fill`, id: hoveredGeom},
             {hover: false})
@@ -486,10 +499,16 @@ class Map extends Component {
 
     // draw a boundary, zoom to, filter crash data and update sidebar on muni click
     clickGeography = e => {        
-        // short out if an active geom exists
-        if(this.state.polygon || this.state.boundary || this.state.popup) return
+        // exit if an active geom exists
+        if(this.state.polygon || this.state.boundary) return
+
+        // exit & update state if popup exists b/c this will also close the popup
+        if(this.state.popup) {
+            this.setState({popup: false})
+            return
+        }
         
-        // short out if a user clicks on a crash circle
+        // short out if a user clicks on a crash circle 
         const circleTest = this.map.queryRenderedFeatures(e.point)[0]
         if(circleTest.source === 'Crashes') return
         
@@ -647,7 +666,7 @@ class Map extends Component {
         } else {
             let crashType = this.props.crashType || 'KSI'
             this.legendTitle.textContent = `Number of Crashes (${crashType})`
-            this.legendGradient.style.background = 'linear-gradient(to right, #f8f8fe, #bbbdf6, #414770, #372248)'
+            this.legendGradient.style.background = 'linear-gradient(to right, #feebe2, #fcc5c0, #c51b8a, #7a0177)'
             this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
         }
     }
