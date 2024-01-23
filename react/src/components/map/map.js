@@ -47,8 +47,7 @@ class Map extends Component {
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            // style: 'mapbox://styles/mapbox/navigation-day-v1',
-            style: 'mapbox://styles/mapbox/streets-v12',
+            style: 'mapbox://styles/mapbox/dark-v11',
             center: [longitudeOffset, 40.071],
             zoom: this.state.zoom,
             //@Note: this is a performance hit but necessary to export the map canvas for printing
