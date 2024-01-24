@@ -3,7 +3,7 @@
     position: absolute;
     padding: 1px 1px 0 0;
     font-size: 14px;
-    width: 30vw;
+    width: 31vw;
     height: calc(93vh - 20px);
     border-radius: 4px;
     z-index: 4;
@@ -94,9 +94,6 @@
     font-size: 0.8em;
     font-weight: 400;
 }
-#crash-map-sidebar-header {
-    color: #40757d;
-}
 
 #sidebar-hr{
     border: 0;
@@ -182,7 +179,6 @@
 }
 .crash-map-charts-fieldset{
     background: #fcfcfc;
-    border: 2px solid #f4a22d;
     border-radius: 4px;
 }
 .crash-map-fieldset-subgroup{
@@ -190,6 +186,7 @@
     justify-content: space-between;
     align-items: center;
     font-weight: 700;
+    padding: 2px 0;
 }
 .crash-map-label-subgroup{
     width: 80%;
@@ -202,12 +199,11 @@
 }
 .crash-sidebar-toggle-button{
     float: right;
-    border: none;
+    border: 1px solid #40757d;
     border-radius: 4px;
-    background: #f7f7f7;
-    color: #40757d;
+    color: #f7f7f7;
+    background-color: #40757d;
     padding: 8px 16px;
-    margin-top: -7px;
     cursor: pointer;
     box-shadow: 0.5px 1px 1.5px rgba(0,0,0,.3);
 }

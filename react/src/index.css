@@ -19,7 +19,10 @@ select, input {
   border: none;
 }
 select {
-  padding: 6px 3px;
+  padding: 8px;
+  background-color: white;
+  border: 1px solid #171a21;
+  margin-left: 8px;
 }
 p{
   max-width: 75ch;
