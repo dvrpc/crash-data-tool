@@ -36,7 +36,7 @@ class Map extends Component {
     /**********************/
     componentDidMount() {
         // mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
-        mapboxgl.accessToken = 'pk.eyJ1IjoibW1vbHRhIiwiYSI6ImNqZDBkMDZhYjJ6YzczNHJ4cno5eTcydnMifQ.RJNJ7s7hBfrJITOBZBdcOA'
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY3J2YW5wb2xsYXJkIiwiYSI6Ii00ZklVS28ifQ.Ht4KwAM3ZUjo1dT2Erskgg'
         
         // @NOTE: do not delete this comment:
         // eslint-disable-next-line import/no-webpack-loader-syntax

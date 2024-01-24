@@ -7,7 +7,7 @@ body {
   padding: 0;
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
-  color: #171a21;
+  color: #1C1018;
   line-height: 1.45;
   text-rendering: optimizeLegibility;
 }
@@ -21,7 +21,7 @@ select, input {
 select {
   padding: 8px;
   background-color: white;
-  border: 1px solid #171a21;
+  border: 1px solid #1C1018;
   margin-left: 8px;
 }
 p{
