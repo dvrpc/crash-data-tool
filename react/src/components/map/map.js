@@ -42,7 +42,7 @@ class Map extends Component {
         // eslint-disable-next-line import/no-webpack-loader-syntax
         mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default //fix bable transpiling issues
         
-        const longitudeOffset = window.innerWidth > 800 ? -75.83 : -75.2273
+        const longitudeOffset = window.innerWidth > 800 ? -75.80 : -75.2273
         
         // initialize the map
         this.map = new mapboxgl.Map({
@@ -361,7 +361,7 @@ class Map extends Component {
     /*****************/
     // reset map to default view
     resetControl = () => {
-        const longitudeOffset = window.innerWidth > 800 ? -75.85 : -75.2273
+        const longitudeOffset = window.innerWidth > 800 ? -75.80 : -75.2273
         this.map.flyTo({center: [longitudeOffset, 40.071], zoom: this.state.zoom, pitch: 0})
     }
 

@@ -3,9 +3,9 @@
     position: absolute;
     padding: 1px 1px 0 0;
     font-size: 14px;
-    width: 33vw;
+    width: 30vw;
     height: calc(93vh - 20px);
-    border-radius: 3px;
+    border-radius: 4px;
     z-index: 4;
     top: 10px;
     left: 10px;
@@ -13,8 +13,8 @@
     box-shadow: 1px 2px 3px rgba(0,0,0,0.4);
 }
 #sidebar{
-    padding: 0 20px;
-    border-bottom-left-radius: 3px;
+    padding: 0 16px;
+    border-radius: 4px;
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
@@ -127,10 +127,10 @@
 #crash-map-print-sidebar{
     display: flex;
     align-items: center;
-    padding: 0 3%;
     text-decoration: underliEne;
     cursor: pointer;
     color: #40757d;
+    margin-bottom: 0.75rem;
 }
 #crash-map-print-icon {
     height: 16px;
@@ -139,7 +139,7 @@
 .chart-wrapper {
     background-color: white;
     margin-top: 15%;
-    border-radius: 3px;
+    border-radius: 4px;
     box-shadow: 1px 2px 3px rgba(0,0,0,0.3);
 }
 #trend-chart, #severity-chart {
@@ -152,11 +152,8 @@
 #mode-chart, #collision-chart {
     padding: 20px 0;
 }
-.first-paragraph{
-    margin-top: 2%;
-}
 .sidebar-paragraphs {
-    padding-bottom: 0.75rem;
+    padding-bottom: 1rem;
 }
 .sidebar-chart-paragraphs {
     padding-left: 0.75rem;
@@ -186,7 +183,7 @@
 .crash-map-charts-fieldset{
     background: #fcfcfc;
     border: 2px solid #f4a22d;
-    border-radius: 3px;
+    border-radius: 4px;
 }
 .crash-map-fieldset-subgroup{
     display: flex;
@@ -206,7 +203,7 @@
 .crash-sidebar-toggle-button{
     float: right;
     border: none;
-    border-radius: 3px;
+    border-radius: 4px;
     background: #f7f7f7;
     color: #40757d;
     padding: 8px 16px;

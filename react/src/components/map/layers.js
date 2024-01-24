@@ -89,7 +89,7 @@ const crashHeat = {
         ['>', 'max_sever', -1],
         ['<', 'max_sever', 2],
         ['>=', 'year', 2016],
-        ['<=', 'year', 2020]
+        ['<=', 'year', 2021]
     ],
     paint: {
         'heatmap-weight': [
@@ -133,7 +133,7 @@ const crashCircles = {
         ['>', 'max_sever', -1],
         ['<', 'max_sever', 2],
         ['>=', 'year', 2016],
-        ['<=', 'year', 2020]
+        ['<=', 'year', 2021]
     ],
     layout: {
     },
