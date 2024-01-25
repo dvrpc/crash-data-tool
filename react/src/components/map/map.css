@@ -97,8 +97,8 @@
 	padding: 24px 12px 10px 12px;
 	background: #40757d;
 	color: #f7f7f7;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
 }
 #crash-popup-ul{
     list-style-type: none;
