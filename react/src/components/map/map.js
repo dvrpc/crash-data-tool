@@ -488,9 +488,9 @@ class Map extends Component {
             this.map.setFeatureState({source: 'Boundaries', sourceLayer, id: hoveredGeom},
             {hover: false})
 
-            this.hoveredArea.style.visibility = 'hidden'
         }
-
+        
+        this.hoveredArea.style.visibility = 'hidden'
         hoveredGeom = null
 
         return hoveredGeom

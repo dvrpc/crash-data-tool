@@ -88,7 +88,8 @@ const crashHeat = {
     filter: ['all',
         ['>', 'max_sever', -1],
         ['<', 'max_sever', 2],
-        ['>=', 'year', 2016],
+        // @UPDATE: start and end year 
+        ['>=', 'year', 2017],
         ['<=', 'year', 2021]
     ],
     paint: {
@@ -133,7 +134,8 @@ const crashCircles = {
     filter: ['all',
         ['>', 'max_sever', -1],
         ['<', 'max_sever', 2],
-        ['>=', 'year', 2016],
+        // @UPDATE: start and end year 
+        ['>=', 'year', 2017],
         ['<=', 'year', 2021]
     ],
     layout: {

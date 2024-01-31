@@ -18,6 +18,7 @@ class Sidebar extends Component {
             data: 'default',
             context: 'the DVRPC region',
             crashType: 'KSI',
+            // @UPDATE: start and end year 
             from: 2017,
             to: 2021,
             loading: this.props.mapLoading
@@ -68,6 +69,7 @@ class Sidebar extends Component {
 
         // update data and set crashType state
         if (selected !== this.state.crashType) {
+
             let context = this.props.context || this.state.context
             let isKSI = selected === 'KSI' ? 'yes' : 'no'
 
