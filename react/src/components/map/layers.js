@@ -134,7 +134,7 @@ const crashCircles = {
     filter: ['all',
         ['>', 'max_sever', -1],
         ['<', 'max_sever', 2],
-        // @UPDATE: start and end year 
+        // @UPDATE: start and end year
         ['>=', 'year', 2017],
         ['<=', 'year', 2021]
     ],

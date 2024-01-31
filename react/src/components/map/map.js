@@ -210,7 +210,8 @@ class Map extends Component {
     componentDidUpdate(prevProps) {
         // set form filters (crash type and range) to prevProps or default value to hold on to state if a recalculation doesn't occur
         const prevType = prevProps.crashType || 'KSI'
-        const prevRange = prevProps.range || {}
+        // @UPDATE: start and end year
+        const prevRange = prevProps.range || {to: "2021", from: "2017"}
         let makeNewFilter = false
 
         const filterObj = {
