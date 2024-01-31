@@ -156,7 +156,7 @@ const crashCircles = {
             11, 2.6,
             16, 8,
         ],
-        'circle-stroke-color': '#636363',
+        'circle-stroke-color': '#e1e1e1',
         'circle-stroke-width': [
             'case',
             ['boolean', ['feature-state', 'hover'], false],
