@@ -94,11 +94,12 @@ const crashHeat = {
     paint: {
         'heatmap-weight': [
             'interpolate', ['linear'], ['get', 'max_sever'],
-            0, 2,
-            1, 1.7,
-            2, 1,
-            3, 0.4,
-            4, 0.1
+            0, 3,
+            1, 2.5,
+            2, 1.5,
+            3, 1,
+            4, 0.5,
+            5, 0.25
         ],
         'heatmap-intensity': [
             'interpolate', ['linear'], ['zoom'],
@@ -107,8 +108,8 @@ const crashHeat = {
         ],
         'heatmap-radius': [
             'interpolate', ['linear'], ['zoom'],
-            8.3, 1.7,
-            10, 2.5
+            8.3, 1,
+            10, 2.7
         ],
         'heatmap-color': [
             'interpolate', ['linear'], ['heatmap-density'],
