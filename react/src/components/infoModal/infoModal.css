@@ -68,8 +68,8 @@
     border-right: 1px solid #424b54;
     border-top: 2px solid #424b54;
     border-bottom: none !important;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
 }
 #crash-map-modal-tabs h3{
     width: 33.33%;

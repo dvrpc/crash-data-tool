@@ -7,7 +7,7 @@ body {
   padding: 0;
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
-  color: #171a21;
+  color: #1C1018;
   line-height: 1.45;
   text-rendering: optimizeLegibility;
 }
@@ -15,11 +15,14 @@ summary, select, input{
   cursor: pointer
 }
 select, input {
-  border-radius: 3px;
+  border-radius: 4px;
   border: none;
 }
 select {
-  padding: 6px 3px;
+  padding: 8px;
+  background-color: white;
+  border: 1px solid #1C1018;
+  margin-left: 8px;
 }
 p{
   max-width: 75ch;

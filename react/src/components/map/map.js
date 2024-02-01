@@ -36,19 +36,18 @@ class Map extends Component {
     /**********************/
     componentDidMount() {
         // mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
-        mapboxgl.accessToken = 'pk.eyJ1IjoibW1vbHRhIiwiYSI6ImNqZDBkMDZhYjJ6YzczNHJ4cno5eTcydnMifQ.RJNJ7s7hBfrJITOBZBdcOA'
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY3J2YW5wb2xsYXJkIiwiYSI6Ii00ZklVS28ifQ.Ht4KwAM3ZUjo1dT2Erskgg'
         
         // @NOTE: do not delete this comment:
         // eslint-disable-next-line import/no-webpack-loader-syntax
         mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default //fix bable transpiling issues
         
-        const longitudeOffset = window.innerWidth > 800 ? -75.83 : -75.2273
+        const longitudeOffset = window.innerWidth > 800 ? -75.80 : -75.2273
         
         // initialize the map
         this.map = new mapboxgl.Map({
             container: this.crashMap,
-            // style: 'mapbox://styles/mapbox/navigation-day-v1',
-            style: 'mapbox://styles/mapbox/streets-v12',
+            style: 'mapbox://styles/mapbox/dark-v11',
             center: [longitudeOffset, 40.071],
             zoom: this.state.zoom,
             //@Note: this is a performance hit but necessary to export the map canvas for printing
@@ -211,7 +210,8 @@ class Map extends Component {
     componentDidUpdate(prevProps) {
         // set form filters (crash type and range) to prevProps or default value to hold on to state if a recalculation doesn't occur
         const prevType = prevProps.crashType || 'KSI'
-        const prevRange = prevProps.range || {}
+        // @UPDATE: start and end year
+        const prevRange = prevProps.range || {to: "2021", from: "2017"}
         let makeNewFilter = false
 
         const filterObj = {
@@ -362,7 +362,7 @@ class Map extends Component {
     /*****************/
     // reset map to default view
     resetControl = () => {
-        const longitudeOffset = window.innerWidth > 800 ? -75.85 : -75.2273
+        const longitudeOffset = window.innerWidth > 800 ? -75.80 : -75.2273
         this.map.flyTo({center: [longitudeOffset, 40.071], zoom: this.state.zoom, pitch: 0})
     }
 
@@ -489,9 +489,9 @@ class Map extends Component {
             this.map.setFeatureState({source: 'Boundaries', sourceLayer, id: hoveredGeom},
             {hover: false})
 
-            this.hoveredArea.style.visibility = 'hidden'
         }
-
+        
+        this.hoveredArea.style.visibility = 'hidden'
         hoveredGeom = null
 
         return hoveredGeom

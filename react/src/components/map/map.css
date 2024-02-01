@@ -10,16 +10,16 @@
     z-index: 2;
     position: absolute;
     background: #f7f7f7;
-    border-radius: 3px;
+    border-radius: 4px;
 }
 
 
 /* Legend */
 #legend{
-    min-width: 10%;
+    min-width: 12%;
     margin: 10px;
     padding: 8px;
-    left: calc(33vw + 10px);
+    left: calc(31vw + 12px);
 }
 .legend-header{
     margin: 0;
@@ -50,7 +50,7 @@
 #default-extent-btn{
     height: 20px;
     width: 20px;
-    margin: 150px 10px 0 0;
+    margin: 145px 10px 0 0;
     right: 0;
     padding: 5px;
     cursor: pointer;
@@ -97,8 +97,8 @@
 	padding: 24px 12px 10px 12px;
 	background: #40757d;
 	color: #f7f7f7;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
 }
 #crash-popup-ul{
     list-style-type: none;
@@ -118,7 +118,7 @@
 	margin: 0px -12px -20px;
 	padding: 10px 12px;
 	border-top: 3px solid #f7f7f7;
-	color: #171a21;
+	color: #1C1018;
 }
 #crash-popup-pagination button {
 	border: none;
@@ -127,7 +127,7 @@
 	cursor: pointer;
 	padding: 2px 12px 4px 12px;
 	background: #f4a22d;
-	border-radius: 3px;
+	border-radius: 4px;
 	color: #f7f7f7;
 }
 

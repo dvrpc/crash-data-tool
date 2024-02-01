@@ -22,13 +22,14 @@
     padding: 0;
 }
 .search-form-submit{
-    background: #f6efee;
-    border-radius: 3px;
+    background-color: white;
+    border-radius: 4px;
     border: none;
     color: #477076;
-    padding: 7px 14px;
+    padding: 8px 16px;
     cursor: pointer;
     letter-spacing: 1px;
+    box-shadow: 0.5px 1px 1.5px rgba(0,0,0,.3);
 }
 .search-form-submit:hover {
     filter: brightness(110%);
@@ -54,7 +55,6 @@
         width: 65px;
     }
     .search-form-submit {
-        padding: 0.33rem 0.66rem;
-        
+        padding: 0.33rem 0.66rem;   
     }
 }
