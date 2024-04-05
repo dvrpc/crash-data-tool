@@ -17,20 +17,24 @@ class PrintPage extends Component {
     }
 
     render() {
+        const defaultRange = this.props.getDefaultRange()
+        
         // set dynamic text
         let area = this.props.area || 'the DVRPC Region'
         let crashType = this.props.crashType || 'KSI'
         let from, to;
 
+        const defaultFrom = defaultRange.range.from
+        const defaultTo = defaultRange.range.to
+
         if(this.props.range) {
             from = this.props.range.from
             to = this.props.range.to
         } else {
-            const defaultRange = this.props.getDefaultRange()
-            from = defaultRange.range.from
-            to = defaultRange.range.to
+            from = defaultFrom
+            to = defaultTo
         }
-
+        
         let chartsRange = {from, to}
 
         // get and organize data
@@ -54,27 +58,26 @@ class PrintPage extends Component {
 
         return(
             <PrintTemplate pageStyle={'margin-top: 5px;'}>
-                <section id="print-section">
+                <section id="print-section" className="print-section">
                     <div className="print-img-wrapper">
                         <img alt="DVRPC logo" src='https://www.dvrpc.org/PhotosAndLogos/img/dvrpc_logo_white.png' className="print-logo" />
                         <img alt="map of extent" ref={el => this.mapImg = el} className="print-map" />
                     </div>
 
-                    <h1 className="centered-text print-header">Crash Statistics for {area}</h1>
+                    <h1 className="print-header">Crash Statistics for {area}</h1>
 
-
-                    <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for {from} to {to}. Five years of data is typically used by local, state, and federal partners in safety analyses.</p>
+                    <p className="sidebar-paragraphs">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for {defaultFrom} to {defaultTo}. Five years of data is typically used by local, state, and federal partners in safety analyses.</p>
                     <p className="sidebar-paragraphs">The following tables are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong>.</p>
-                    <p>Raw crash data tables for this tool were downloaded from the <a href="https://pennshare.maps.arcgis.com/apps/webappviewer/index.html?id=8fdbf046e36e41649bbfd9d7dd7c7e7e" target="_blank" rel="noopener noreferrer">PennDOT Crash Download Map</a> and the <a href="https://www.state.nj.us/transportation/refdata/accident/rawdata01-current.shtm" target="_blank" rel="noopener noreferrer">NJDOT Crash Tables</a> webpage, for Pennsylvania and New Jersey data, respectively.</p>
+                    <p className="sidebar-paragraphs">Raw crash data tables for this tool were downloaded from the <a href="https://pennshare.maps.arcgis.com/apps/webappviewer/index.html?id=8fdbf046e36e41649bbfd9d7dd7c7e7e" target="_blank" rel="noopener noreferrer">PennDOT Crash Download Map</a> and the <a href="https://www.state.nj.us/transportation/refdata/accident/rawdata01-current.shtm" target="_blank" rel="noopener noreferrer">NJDOT Crash Tables</a> webpage, for Pennsylvania and New Jersey data, respectively.</p>
             
                     <hr />
 
-                    <h2 className="centered-text crash-map-sidebar-subheader">Crashes over Time</h2>
-                        <table>
+                    <h2 className="print-subheader">Crashes over Time</h2>
+                        <table className="print-section-table">
                             <thead>
                                 <tr>
-                                    <th>Year: </th>
-                                    <th>Number of Crashes: </th>
+                                    <th>Year</th>
+                                    <th>Number of Crashes</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -90,8 +93,8 @@ class PrintPage extends Component {
                         </table>
                         <p className="sidebar-paragraphs">This table shows <strong>{crashType}</strong> crashes in <strong>{area}</strong> by crash severity from <strong>{from}</strong> to <strong>{to}</strong>. Crash trends can be useful for identifying if the frequency of crashes is increasing or decreasing over time, but it is important not to infer patterns from single-year spikes or drops in crashes or in datasets with limited data points.</p>
 
-                    <h2 className="centered-text crash-map-sidebar-subheader">Crash Severity</h2>
-                        <table>
+                    <h2 className="print-subheader">Crash Severity</h2>
+                        <table className="print-section-table print-section-table-full">
                             <thead>
                                 <tr>
                                     {severityLabels.map((data => <th key={data}>{data}</th>))}
@@ -105,8 +108,8 @@ class PrintPage extends Component {
                         </table>
                         <p className="sidebar-paragraphs">This table shows <em>people</em> involved in <strong>{crashType}</strong> crashes in <strong>{area}</strong> by crash severity from <strong>{from}</strong> to <strong>{to}</strong>. Injury severity is divided into seven possible categories, as defined in the "About" section of the information modal.</p>
 
-                    <h2 className="centered-text crash-map-sidebar-subheader">Mode</h2>
-                        <table>
+                    <h2 className="print-subheader">Mode</h2>
+                        <table className="print-section-table">
                             <thead>
                                 <tr>
                                     {modeLabels.map((data => <th key={data}>{data}</th>))}
@@ -120,8 +123,8 @@ class PrintPage extends Component {
                         </table>
                         <p className="sidebar-paragraphs">This table shows <em>people</em> involved in <strong>{crashType}</strong> crashes in the <strong>{area}</strong> by mode from <strong>{from}</strong> to <strong>{to}.</strong> Pedestrians and bicyclists are often a focus of transportation safety planning efforts because they are the road users most vulnerable to sever injuries in the event of a crash. This is reflected in data that consistently shows pedestrians account for a disproportionate number of the injuries sustained on the road.</p>
                     
-                    <h2 className="centered-text crash-map-sidebar-subheader">Collision Type</h2>
-                        <table>
+                    <h2 className="print-subheader">Collision Type</h2>
+                        <table className="print-section-table print-section-table-full">
                             <thead>
                                 <tr>
                                     {collissionTypeLabels.map((data => <th key={data}>{data}</th>))}
