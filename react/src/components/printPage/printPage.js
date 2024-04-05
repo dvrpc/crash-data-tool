@@ -58,6 +58,7 @@ class PrintPage extends Component {
 
         return(
             <PrintTemplate pageStyle={'margin-top: 5px;'}>
+                <title>DVRPC Crash Data for {area}</title>
                 <section id="print-section" className="print-section">
                     <div className="print-img-wrapper">
                         <img alt="DVRPC logo" src='https://www.dvrpc.org/PhotosAndLogos/img/dvrpc_logo_white.png' className="print-logo" />
