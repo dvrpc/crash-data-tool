@@ -15,14 +15,14 @@ class Sidebar extends Component {
         super(props)
 
         console.log('props at sidebar ', props.getDefaultRange())
+        const defaultRange = props.getDefaultRange()
 
         this.state = {
             data: 'default',
             context: 'the DVRPC region',
             crashType: 'KSI',
-            // @UPDATE: start and end year 
-            from: 2017,
-            to: 2021,
+            from: defaultRange.range.from,
+            to: defaultRange.range.to,
             loading: this.props.mapLoading
         }
 
@@ -222,7 +222,7 @@ class Sidebar extends Component {
                                 <div className="crash-map-label-subgroup">
                                     <label>
                                         From:
-                                        <select id="crash-select-from" name="from" className="crash-map-first-input hover-btn" defaultValue="2017">
+                                        <select id="crash-select-from" name="from" className="crash-map-first-input hover-btn" defaultValue={from}>
                                             <option value="2014">2014</option>
                                             <option value="2015">2015</option>
                                             <option value="2016">2016</option>
