@@ -14,7 +14,6 @@ class Sidebar extends Component {
     constructor(props) {
         super(props)
 
-        console.log('props at sidebar ', props.getDefaultRange())
         const defaultRange = props.getDefaultRange()
 
         this.state = {
@@ -236,7 +235,7 @@ class Sidebar extends Component {
 
                                     <label>
                                         To:
-                                        <select name="to" className="hover-btn">
+                                        <select name="to" className="hover-btn" defaultValue={to}>
                                             <option value="2021">2021</option>
                                             <option value="2020">2020</option>
                                             <option value="2019">2019</option>

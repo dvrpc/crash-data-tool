@@ -28,7 +28,7 @@ const rangeFilter = (from, to) => {
 }
 
 // default map range
-// @YEARLY UPDATES: edit this propagates default to map & print page
+// @DATA UPDATES: edit this obj to propagate changes to map, sidebar, and print
 const defaultRange = {
     from: 2017,
     to: 2021
@@ -245,6 +245,7 @@ export const getDefaultRange = () => dispatch => dispatch(default_range(defaultR
 export const sidebarCrashType = type => dispatch => dispatch(sidebar_crash_type(type))
 export const sidebarRange = range => dispatch => dispatch(sidebar_range(range))
 export const setSrc = src => dispatch => dispatch(set_src(src))
+export { defaultRange } // export just the obj for layers b/c it's not a connected component
 
 // Map State
 export const setMapLoading = status => dispatch => dispatch(set_map_loading(status))
