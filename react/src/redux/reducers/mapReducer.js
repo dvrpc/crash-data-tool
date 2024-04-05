@@ -27,6 +27,13 @@ const rangeFilter = (from, to) => {
     ]
 }
 
+// default map range
+// @YEARLY UPDATES: edit this propagates default to map & print page
+const defaultRange = {
+    from: 2017,
+    to: 2021
+}
+
 /**********************/
 /****** ACTIONS ******/
 const GET_DATA_FROM_KEYWORD = 'GET_DATA_FROM_KEYWORD'
@@ -39,6 +46,7 @@ const GET_POLYGON_CRNS = 'GET_POLYGON_CRNS'
 const SET_POLYGON_BBOX = 'SET_POLYGON_BBOX'
 const SIDEBAR_CRASH_TYPE = 'SIDEBAR_CRASH_TYPE'
 const SIDEBAR_RANGE = 'SIDEBAR_RANGE'
+const DEFAULT_RANGE = 'DEFAULT_RANGE'
 const SET_SRC = 'SET_SRC'
 const SET_MAP_LOADING = 'SET_MAP_LOADING'
 
@@ -55,6 +63,7 @@ const get_polygon_crns = polyCRNS => ({ type: GET_POLYGON_CRNS, polyCRNS })
 const set_polygon_bbox = polygonBbox => ({type: SET_POLYGON_BBOX, polygonBbox })
 const sidebar_crash_type = crashType => ({type: SIDEBAR_CRASH_TYPE, crashType})
 const sidebar_range = range => ({type: SIDEBAR_RANGE, range})
+const default_range = range => ({type: DEFAULT_RANGE, range})
 const set_src = src => ({type: SET_SRC, src})
 const set_map_loading = status => ({type: SET_MAP_LOADING, status })
 
@@ -93,6 +102,9 @@ export default function mapReducer(state = [], action) {
         case SIDEBAR_RANGE:
             const range = action.range
             return Object.assign({}, state, { range })
+        case DEFAULT_RANGE:
+            const bruh = action.range
+            return Object.assign({}, state, { bruh })
         case SET_SRC:
             const src = action.src
             return Object.assign({}, state, { src })
@@ -229,6 +241,7 @@ export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
 
 
 // SIDEBAR Dispatchers
+export const getDefaultRange = () => dispatch => dispatch(default_range(defaultRange))
 export const sidebarCrashType = type => dispatch => dispatch(sidebar_crash_type(type))
 export const sidebarRange = range => dispatch => dispatch(sidebar_range(range))
 export const setSrc = src => dispatch => dispatch(set_src(src))
