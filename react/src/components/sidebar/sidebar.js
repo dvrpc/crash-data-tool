@@ -6,7 +6,7 @@ import { counties, munis, philly } from '../search/dropdowns'
 import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
 import print from './print.png'
-import { getDataFromKeyword, sidebarCrashType, sidebarRange, setSrc, setMapLoading } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, sidebarCrashType, sidebarRange, setSrc, setMapLoading, getDefaultRange } from '../../redux/reducers/mapReducer.js'
 import './sidebar.css';
 
 
@@ -14,13 +14,14 @@ class Sidebar extends Component {
     constructor(props) {
         super(props)
 
+        const defaultRange = props.getDefaultRange()
+
         this.state = {
             data: 'default',
             context: 'the DVRPC region',
             crashType: 'KSI',
-            // @UPDATE: start and end year 
-            from: 2017,
-            to: 2021,
+            from: defaultRange.range.from,
+            to: defaultRange.range.to,
             loading: this.props.mapLoading
         }
 
@@ -220,7 +221,7 @@ class Sidebar extends Component {
                                 <div className="crash-map-label-subgroup">
                                     <label>
                                         From:
-                                        <select id="crash-select-from" name="from" className="crash-map-first-input hover-btn" defaultValue="2017">
+                                        <select id="crash-select-from" name="from" className="crash-map-first-input hover-btn" defaultValue={from}>
                                             <option value="2014">2014</option>
                                             <option value="2015">2015</option>
                                             <option value="2016">2016</option>
@@ -234,7 +235,7 @@ class Sidebar extends Component {
 
                                     <label>
                                         To:
-                                        <select name="to" className="hover-btn">
+                                        <select name="to" className="hover-btn" defaultValue={to}>
                                             <option value="2021">2021</option>
                                             <option value="2020">2020</option>
                                             <option value="2019">2019</option>
@@ -336,13 +337,14 @@ const mapStateToProps = state => {
     return {
         data: state.data,
         context: state.area,
-        polygonBbox: state.polygonBbox,
+        polygonBbox: state.polygonBbox
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         getCrashData: region => dispatch(getDataFromKeyword(region)),
+        getDefaultRange: () => dispatch(getDefaultRange()),
         setCrashTypeFilter: filter => dispatch(sidebarCrashType(filter)),
         setCrashRange: range => dispatch(sidebarRange(range)),
         setSrc: src => dispatch(setSrc(src)),

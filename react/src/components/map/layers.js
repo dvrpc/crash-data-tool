@@ -1,3 +1,5 @@
+import { defaultRange } from "../../redux/reducers/mapReducer"
+
 const countyOutline = {
     id: 'county-outline',
     type: 'line',
@@ -89,8 +91,8 @@ const crashHeat = {
         ['>', 'max_sever', -1],
         ['<', 'max_sever', 2],
         // @UPDATE: start and end year 
-        ['>=', 'year', 2017],
-        ['<=', 'year', 2021]
+        ['>=', 'year', defaultRange.from],
+        ['<=', 'year', defaultRange.to]
     ],
     paint: {
         'heatmap-weight': [
@@ -135,8 +137,8 @@ const crashCircles = {
         ['>', 'max_sever', -1],
         ['<', 'max_sever', 2],
         // @UPDATE: start and end year
-        ['>=', 'year', 2017],
-        ['<=', 'year', 2021]
+        ['>=', 'year', defaultRange.from],
+        ['<=', 'year', defaultRange.to]
     ],
     layout: {
     },

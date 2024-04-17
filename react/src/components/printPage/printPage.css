@@ -1,13 +1,12 @@
 .print-img-wrapper {
     position: relative;
-    width: 400px;
-    height: 200px;
-    margin: 2% auto;
-    border: 2px solid #40757d;
+    width: 100%;
+    height: 325px;
+    margin-bottom: 3%;
 }
 .print-logo {
     position: absolute;
-    top: 80px;
+    top: 145px;
     left: 45px;
     width: 100px;
     filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.3));
@@ -16,16 +15,35 @@
     width: 100%;
     height: 100%;
 }
-#print-section table{
-    display: table;
-    table-layout: fixed;
-    border-collapse: collapse;
-    width: 100%;
-    text-align: center;
-}
-#print-section p {
-    margin: 1% auto;
-}
 .print-header{
     color: #40757d;
-}   
+    font-size: 2.25em;
+    margin-bottom: 3%;
+} 
+.print-section hr {
+    margin-top: 2.5%;
+}
+.print-subheader {
+    margin: 5% 0 2.5% 0;
+}
+.print-section-table {
+    display: table;
+    table-layout: fixed;
+    /* border-collapse: collapse; */
+    margin-bottom: 2.5%;
+}
+.print-section-table-full {
+    width: 100%;
+}
+.print-section-table th {
+    text-align: left;
+    padding: 0 16px 4px 0;
+    font-weight: 600;
+    vertical-align: bottom;
+}
+.print-section-table tr {
+    padding: 4px 0;
+}
+.print-section p {
+    max-width: unset;
+}
