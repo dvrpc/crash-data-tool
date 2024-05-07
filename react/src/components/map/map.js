@@ -27,7 +27,7 @@ class Map extends Component {
                 }
             }),
             zoom: window.innerWidth <= 420 ? 7.3 : 8.3,
-            route: new URL(window.location.href).searchParams.get('geom')
+            route: new URL(window.location.href)
         }
     }
     
@@ -104,9 +104,9 @@ class Map extends Component {
             this.map.addLayer(layers.crashHeat, 'settlement-subdivision-label')
             this.map.addLayer(layers.crashCircles, 'settlement-subdivision-label')
 
-            // @UPDATE
             // listen for routing on load
-            if(this.state.route) this.handleRoute()
+            const params = this.state.route.searchParams.get('geom')
+            if(params) this.handleRoute(params)
         })
 
         // variables for hover state
@@ -215,7 +215,6 @@ class Map extends Component {
     componentDidUpdate(prevProps) {
         // set form filters (crash type and range) to prevProps or default value to hold on to state if a recalculation doesn't occur
         const prevType = prevProps.crashType || 'KSI'
-        // @UPDATE: start and end year
         const prevRange = prevProps.range || {to: "2021", from: "2017"}
         let makeNewFilter = false
 
@@ -440,6 +439,10 @@ class Map extends Component {
             boundary: null,
             polygon: false
         })
+
+        // remove route
+        this.state.route.searchParams.delete('geom')
+        window.history.replaceState(null, null, '/')
     }
 
     // add fill effect when hovering over a geography type (county or municipality)
@@ -556,10 +559,6 @@ class Map extends Component {
         const boundaryObj = { type: sourceLayer, id: geoID }
         const filterObj = {filterType: newFilterType, tileType, id: geoID, range, boundary: true}
 
-        console.log('dataobj at click ', dataObj)
-        console.log('boundaryObj at click ', boundaryObj)
-        console.log('filterObj at click ', filterObj)
-
         // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
         this.props.setSidebarHeaderContext(countyName || name)
         this.props.getData(dataObj)
@@ -576,9 +575,7 @@ class Map extends Component {
         // update boundary state to prevent hover effects when boundaries are present & so the ksi/all toggle can stay within the set bounds
         this.setState({boundary: filterObj})
 
-        // @UPDATE:
-        // update URL state
-        // geoid + sourcelayer (later + ksi?)
+        // set URL state
         window.history.replaceState(null, null, `?geom=${geoID},${sourceLayer},${name},${newFilterType}`)
     }
 
@@ -685,16 +682,18 @@ class Map extends Component {
         }
     }
 
-    // @UPDATE: set map state if/when loading from URL
-    handleRoute = () => {
+    handleRoute = params => {
         // route[0] = geoid, route[1] = sourceLayer, route[2] = name, route[3] = filter type
-        const route = this.state.route.split(',')
+        const route = params.split(',')
         
         // get feature properties
         let tileType;
         let countyName;
         let geoID = route[0]
         let sourceLayer = route[1]
+
+        // @UPDATE:
+        // @TODO: encode and decode space in name
         const name = route[2]
         const newFilterType = route[3]
         // @UPDATE: not baking range into URL atm
