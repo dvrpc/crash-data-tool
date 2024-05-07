@@ -26,7 +26,8 @@ class Map extends Component {
                     trash: false
                 }
             }),
-            zoom: window.innerWidth <= 420 ? 7.3 : 8.3
+            zoom: window.innerWidth <= 420 ? 7.3 : 8.3,
+            route: new URL(window.location.href).searchParams.get('geom')
         }
     }
     
@@ -102,6 +103,10 @@ class Map extends Component {
             // add crash data layers beneath relevant layers in streets-v12 spec
             this.map.addLayer(layers.crashHeat, 'settlement-subdivision-label')
             this.map.addLayer(layers.crashCircles, 'settlement-subdivision-label')
+
+            // @UPDATE
+            // listen for routing on load
+            if(this.state.route) this.handleRoute()
         })
 
         // variables for hover state
@@ -551,6 +556,10 @@ class Map extends Component {
         const boundaryObj = { type: sourceLayer, id: geoID }
         const filterObj = {filterType: newFilterType, tileType, id: geoID, range, boundary: true}
 
+        console.log('dataobj at click ', dataObj)
+        console.log('boundaryObj at click ', boundaryObj)
+        console.log('filterObj at click ', filterObj)
+
         // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
         this.props.setSidebarHeaderContext(countyName || name)
         this.props.getData(dataObj)
@@ -566,6 +575,11 @@ class Map extends Component {
 
         // update boundary state to prevent hover effects when boundaries are present & so the ksi/all toggle can stay within the set bounds
         this.setState({boundary: filterObj})
+
+        // @UPDATE:
+        // update URL state
+        // geoid + sourcelayer (later + ksi?)
+        window.history.replaceState(null, null, `?geom=${geoID},${sourceLayer},${name},${newFilterType}`)
     }
 
     // create bbox object from polygon & hit endpoints w/it
@@ -669,6 +683,54 @@ class Map extends Component {
             this.legendGradient.style.background = 'linear-gradient(to right, #feebe2, #fcc5c0, #c51b8a, #7a0177)'
             this.legendLabel.innerHTML = '<span>1</span><span>4</span><span>8+</span>'
         }
+    }
+
+    // @UPDATE: set map state if/when loading from URL
+    handleRoute = () => {
+        // route[0] = geoid, route[1] = sourceLayer, route[2] = name, route[3] = filter type
+        const route = this.state.route.split(',')
+        
+        // get feature properties
+        let tileType;
+        let countyName;
+        let geoID = route[0]
+        let sourceLayer = route[1]
+        const name = route[2]
+        const newFilterType = route[3]
+        // @UPDATE: not baking range into URL atm
+        // const range = this.route[4] || {}
+        const range = {}
+        let isKSI = newFilterType === 'KSI' ? 'yes' : 'no'
+
+        if(sourceLayer === 'county'){
+            tileType = 'c'
+            countyName = `${name} County`
+        }else {
+            tileType = 'm'
+        }
+
+        // handle philly edge case
+        const phillyTest = name.substring(0, 5)
+        if(phillyTest === 'Phila') {
+            geoID = 42101
+            tileType = 'c'
+            sourceLayer = 'county'
+        }
+        
+        // create data, filter and boundary objects
+        const dataObj = { geoID, isKSI }
+        const boundaryObj = { type: sourceLayer, id: geoID }
+        const filterObj = {filterType: newFilterType, tileType, id: geoID, range, boundary: true}
+
+        // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
+        this.props.setSidebarHeaderContext(countyName || name)
+        this.props.getData(dataObj)
+        this.props.setMapBounding(boundaryObj)
+        this.props.getBoundingBox(geoID)
+        this.props.setMapFilter(filterObj)
+
+        // update boundary state to prevent hover effects when boundaries are present & so the ksi/all toggle can stay within the set bounds
+        this.setState({boundary: filterObj})
     }
 
     render() {
