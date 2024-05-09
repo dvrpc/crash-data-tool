@@ -64,7 +64,8 @@ class Map extends Component {
         this.map.on('load', () => {
             this.map.addSource("Boundaries" , {
                 type: 'vector',
-                url: 'https://tiles.dvrpc.org/data/dvrpc-municipal.json'
+                url: 'https://tiles.dvrpc.org/data/dvrpc-municipal.json',
+                promoteId: 'geoid'
             })
 
             this.map.addSource("Crashes", {
@@ -110,14 +111,13 @@ class Map extends Component {
         })
 
         // variables for hover state
-        let hoveredGeom = null
         let hoveredCircle = null
         
         // add hover effect to geographies
-        this.map.on('mousemove', 'municipality-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
-        this.map.on('mouseleave', 'municipality-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
-        this.map.on('mousemove', 'county-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
-        this.map.on('mouseleave', 'county-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
+        this.map.on('mousemove', 'municipality-fill', e => this.hoverGeographyFill(e))
+        this.map.on('mouseleave', 'municipality-fill', () => this.removeGeographyFill())
+        this.map.on('mousemove', 'county-fill', e => this.hoverGeographyFill(e))
+        this.map.on('mouseleave', 'county-fill', () => this.removeGeographyFill())
 
         // handle click events
         this.map.on('click', 'municipality-fill', e => this.clickGeography(e))
@@ -149,16 +149,11 @@ class Map extends Component {
             this.map.getCanvas().style.cursor = 'pointer'
 
             if(hoveredCircle){
-                this.map.setFeatureState(
-                    {
-                        source: 'Crashes',
-                        sourceLayer: 'crash',
-                        id: hoveredCircle
-                    },
-                    {
-                        hover: false
-                    }
-                )
+                this.map.removeFeatureState({
+                    source: 'Crashes',
+                    sourceLayer: 'crash',
+                    id: hoveredCircle
+                })
             }
             
             hoveredCircle = e.features[0].id
@@ -177,16 +172,12 @@ class Map extends Component {
 
         this.map.on('mouseleave', 'crash-circles', () => {
             if (hoveredCircle) {
-                this.map.setFeatureState(
-                    {
-                        source: 'Crashes',
-                        sourceLayer: 'crash',
-                        id: hoveredCircle
-                    },
-                    {
-                        hover: false
-                    }
-            )}
+                this.map.removeFeatureState({
+                    source: 'Crashes',
+                    sourceLayer: 'crash',
+                    id: hoveredCircle
+                })
+            }
             
             hoveredCircle = null;
 
@@ -422,11 +413,6 @@ class Map extends Component {
         this.props.setMapFilter(filterObj)
 
         // update map
-        // @UPDATE remove map style filtering, just reset to default paint values
-        this.map.setFilter(county.layer, county.filter)
-        this.map.setFilter(muni.layer, muni.filter)
-        this.map.setFilter(philly.layer, philly.filter)
-
         this.map.setPaintProperty(county.layer, 'line-width', county.paint.width)
         this.map.setPaintProperty(county.layer, 'line-color', county.paint.color)
         this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
@@ -446,63 +432,45 @@ class Map extends Component {
     }
 
     // add fill effect when hovering over a geography type (county or municipality)
-    hoverGeographyFill = (e, hoveredGeom) => {
-
+    hoverGeographyFill = (e) => {
         // escape if a boundary is set or if the user is drawing a polygon
         if(this.state.boundary || this.state.polygon) return
-
-        let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
+        
         let features = e.features
-
+        
         if(features.length > 0 ) {
             features = features[0]
+            const sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
             const name =  sourceLayer === 'county' ? features.properties.name + ' County' : features.properties.name
-            // remove old hover state
-            if(hoveredGeom) {
-                this.map.setFeatureState(
-                    {source: 'Boundaries', sourceLayer, id: hoveredGeom},
-                    {hover: false}
-                )
-            }
 
-            // update hover layer
-            hoveredGeom = features.id
+            // clear hover state
+            this.map.removeFeatureState({
+                source: 'Boundaries',
+                sourceLayer
+            })
             
-            // handle edge cases where hoveredGeom is null or NaN (I think this check is only necessary right now b/c it sometimes serves the old VT's and sometimes doesn't. Can be removed eventually)
-            if(hoveredGeom) {
-                this.map.setFeatureState(
-                    {source: 'Boundaries', sourceLayer, id: hoveredGeom},
-                    {hover: true}
-                )
-            }
+            // update hover state
+            this.map.setFeatureState(
+                {source: 'Boundaries', sourceLayer, id: features.id},
+                {hover: true}
+            )
 
-            // update the overlay text (and visibility if necessary)
+            // update the overlay text
             this.hoveredArea.style.visibility = 'visible'
             this.hoveredArea.children[0].textContent = name
         }
-
-        return hoveredGeom
     }
 
-    // remove fill effect when hovering over a new municipality or leaving the region
-    removeGeographyFill = hoveredGeom => {
-
-        // escape if zoom level isn't right @TODO make this a county or zoom level decision
+    // remove fill effect when exiting the layer
+    removeGeographyFill = () => {
         let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
 
-        if(hoveredGeom) {
-            this.map.setFeatureState({source: 'Boundaries', sourceLayer: `${sourceLayer}-fill`, id: hoveredGeom},
-            {hover: false})
-
-            this.map.setFeatureState({source: 'Boundaries', sourceLayer, id: hoveredGeom},
-            {hover: false})
-
-        }
+        this.map.removeFeatureState({
+            source: 'Boundaries',
+            sourceLayer
+        })
         
         this.hoveredArea.style.visibility = 'hidden'
-        hoveredGeom = null
-
-        return hoveredGeom
     }
 
     // draw a boundary, zoom to, filter crash data and update sidebar on muni click
@@ -726,6 +694,10 @@ class Map extends Component {
         this.props.setMapBounding(boundaryObj)
         this.props.getBoundingBox(geoID)
         this.props.setMapFilter(filterObj)
+
+        // @TODO: dispatch additional sidebar context:
+            // KSI filter state
+            // dynamic text state
 
         // update boundary state to prevent hover effects when boundaries are present & so the ksi/all toggle can stay within the set bounds
         this.setState({boundary: filterObj})

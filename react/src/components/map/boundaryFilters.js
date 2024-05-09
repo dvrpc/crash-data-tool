@@ -16,7 +16,7 @@ const createBoundaryHighlight = boundingObj => {
         color: [
             'match', ['get', 'geoid'],
             id, '#f4a22d',
-            '#e3f2fd'
+            '#969696'
         ]
     }
 
@@ -29,7 +29,7 @@ const removeBoundaryFilter = () => {
             layer: 'county-outline',
             filter: ['==', 'dvrpc', 'Yes'],
             paint: {
-                width: 2.5,
+                width: 1.5,
                 color: '#969696'
             }
         },
@@ -38,7 +38,7 @@ const removeBoundaryFilter = () => {
             filter: null,
             paint: {
                 width: 0.5,
-                color: '#636363'
+                color: '#969696'
             }
         },
         philly: {
@@ -46,7 +46,7 @@ const removeBoundaryFilter = () => {
             filter: null,
             paint: {
                 width: 0.5,
-                color: '#e3f2fd'
+                color: '#969696'
             }
         }
     }
