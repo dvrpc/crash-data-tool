@@ -90,7 +90,6 @@ const crashHeat = {
     filter: ['all',
         ['>', 'max_sever', -1],
         ['<', 'max_sever', 2],
-        // @UPDATE: start and end year 
         ['>=', 'year', defaultRange.from],
         ['<=', 'year', defaultRange.to]
     ],
@@ -136,7 +135,6 @@ const crashCircles = {
     filter: ['all',
         ['>', 'max_sever', -1],
         ['<', 'max_sever', 2],
-        // @UPDATE: start and end year
         ['>=', 'year', defaultRange.from],
         ['<=', 'year', defaultRange.to]
     ],

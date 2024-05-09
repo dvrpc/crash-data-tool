@@ -576,7 +576,7 @@ class Map extends Component {
         this.setState({boundary: filterObj})
 
         // set URL state
-        window.history.replaceState(null, null, `?geom=${geoID},${sourceLayer},${name},${newFilterType}`)
+        window.history.replaceState(null, null, `?geom=${geoID},${sourceLayer},${encodeURIComponent(name)},${newFilterType}`)
     }
 
     // create bbox object from polygon & hit endpoints w/it
@@ -693,8 +693,7 @@ class Map extends Component {
         let sourceLayer = route[1]
 
         // @UPDATE:
-        // @TODO: encode and decode space in name
-        const name = route[2]
+        const name = decodeURIComponent(route[2])
         const newFilterType = route[3]
         // @UPDATE: not baking range into URL atm
         // const range = this.route[4] || {}
