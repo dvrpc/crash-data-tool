@@ -27,6 +27,7 @@ class Map extends Component {
                 }
             }),
             zoom: window.innerWidth <= 420 ? 7.3 : 8.3,
+            // @UPDATE: put route on the store so that sidebar, map, and search can share it
             route: new URL(window.location.href)
         }
     }
@@ -106,8 +107,10 @@ class Map extends Component {
             this.map.addLayer(layers.crashCircles, 'settlement-subdivision-label')
 
             // listen for routing on load
-            const params = this.state.route.searchParams.get('geom')
-            if(params) this.handleRoute(params)
+            const geoParams = this.state.route.searchParams.get('geom')
+            const filterParams = this.state.route.searchParams.get('filter')
+
+            if(geoParams) this.handleRoute({geoParams, filterParams})
         })
 
         // variables for hover state
@@ -544,7 +547,12 @@ class Map extends Component {
         this.setState({boundary: filterObj})
 
         // set URL state
-        window.history.replaceState(null, null, `?geom=${geoID},${sourceLayer},${encodeURIComponent(name)},${newFilterType}`)
+        this.state.route.searchParams.set('filter', newFilterType)
+        this.state.route.searchParams.set('geom', `${geoID},${sourceLayer},${encodeURI(name)}`)
+        
+        window.history.replaceState(null, null, `?geom=${geoID},${sourceLayer},${encodeURI(name)}&filter=${newFilterType}`)
+
+        console.log('geopram at clickGeography ', this.state.route.searchParams.get('geom'))
     }
 
     // create bbox object from polygon & hit endpoints w/it
@@ -651,18 +659,23 @@ class Map extends Component {
     }
 
     handleRoute = params => {
-        // route[0] = geoid, route[1] = sourceLayer, route[2] = name, route[3] = filter type
-        const route = params.split(',')
+        /* @params:
+            {
+                geoParams: geoid,sourceLayer,name,
+                filterParams: filter
+            }
+        */
+        const geo = params.geoParams.split(',')
         
         // get feature properties
         let tileType;
         let countyName;
-        let geoID = route[0]
-        let sourceLayer = route[1]
+        let geoID = geo[0]
+        let sourceLayer = geo[1]
 
         // @UPDATE:
-        const name = decodeURIComponent(route[2])
-        const newFilterType = route[3]
+        const name = decodeURIComponent(geo[2])
+        const newFilterType = params.filterParams
         // @UPDATE: not baking range into URL atm
         // const range = this.route[4] || {}
         const range = {}

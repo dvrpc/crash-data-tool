@@ -22,7 +22,9 @@ class Sidebar extends Component {
             crashType: 'KSI',
             from: defaultRange.range.from,
             to: defaultRange.range.to,
-            loading: this.props.mapLoading
+            loading: this.props.mapLoading,
+            // @UPDATE: put route on the store so that sidebar, map, and search can share it
+            route: new URL(window.location.href)
         }
 
         this.props.getCrashData({ geoID: '', isKSI: 'yes' })
@@ -56,6 +58,7 @@ class Sidebar extends Component {
 
     updateCrashType = e => {
         e.preventDefault()
+
         const form = e.target
         const data = new FormData(form)
         let selected;
@@ -106,6 +109,15 @@ class Sidebar extends Component {
             // update data and local state
             this.setState({ crashType: selected, data: 'calc' })
             this.props.getCrashData({ geoID, geojson, isKSI })
+
+            this.state.route.searchParams.set('filter', selected)
+
+            const geoParam = this.state.route.searchParams.get('geom')
+
+            console.log('geoparam at sidebar ', geoParam)
+            console.log('route ', this.state.route)
+            
+            window.history.replaceState(null, null, `?geom=${geoParam}&filter=${selected}`)
         }
     }
 
@@ -149,12 +161,23 @@ class Sidebar extends Component {
         return true
     }
 
+    // data is already rendered, just need to update crashType + form state
+    handleRoute = params => {
+        this.setState({ crashType: params })
+    }
+
+    componentDidMount() {
+        // listen for routing on load
+        const filterParams = this.state.route.searchParams.get('filter')
+        if(filterParams) this.handleRoute(filterParams)
+    }
+
     componentDidUpdate(prevProps) {
         let checkOld = prevProps.data && prevProps.data.message ? false : prevProps.data
 
         // @REMINDER: this is a workaround to the API handling all 0's as a null response instead of a possible outcome
         // 'empty' state is to differentiate between no response (intial render) and empty response (no crashes in selected area)
-        let checkNew = this.props.data.message ? false : this.props.data
+        let checkNew = this.props.data && this.props.data.message ? false : this.props.data
         const current = this.state.data
 
         // handle default state

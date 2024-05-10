@@ -21,6 +21,8 @@ class Search extends Component {
         this.setState({selectedSearch})
     }
 
+    // @UPDATE: update URL route here 
+        // replaceState + update searchParams obj state
     submitSearch = e => {
         const output = form.parseSearch(e)
 
