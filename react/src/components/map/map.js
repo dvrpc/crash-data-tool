@@ -397,7 +397,14 @@ class Map extends Component {
         }
 
         // update sidebar information
-        let newFilterType = this.state.route.searchParams.get('filter')
+        let newFilterType;
+        
+        if(this.state.polygon) {
+            newFilterType = this.props.crashType || 'KSI'
+        } else {
+            newFilterType = this.state.route.searchParams.get('filter')
+        }
+
         let isKSI = newFilterType === 'KSI' ? 'yes' : 'no'
 
         const regionalStats = {geoID: '', isKSI}

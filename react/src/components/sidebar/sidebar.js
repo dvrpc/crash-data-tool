@@ -107,10 +107,13 @@ class Sidebar extends Component {
             this.setState({ crashType: selected, data: 'calc' })
             this.props.getCrashData({ geoID, geojson, isKSI })
 
-            this.state.route.searchParams.set('filter', selected)
-            const geoParam = this.state.route.searchParams.get('geom')
-            
-            window.history.replaceState(null, null, `?geom=${geoParam}&filter=${selected}`)
+            // ignore polygons when updating URL
+            if(!geojson) {
+                this.state.route.searchParams.set('filter', selected)
+                const geoParam = this.state.route.searchParams.get('geom')
+                
+                window.history.replaceState(null, null, `?geom=${geoParam}&filter=${selected}`)
+            }
         }
     }
 
