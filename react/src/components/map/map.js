@@ -397,10 +397,11 @@ class Map extends Component {
         }
 
         // update sidebar information
-        let newFilterType = this.props.crashType || 'KSI'
+        let newFilterType = this.state.route.searchParams.get('filter')
         let isKSI = newFilterType === 'KSI' ? 'yes' : 'no'
 
         const regionalStats = {geoID: '', isKSI}
+
         this.props.setDefaultState(regionalStats)
         this.props.setSidebarHeaderContext('the DVRPC region')
 
