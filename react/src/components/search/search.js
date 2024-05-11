@@ -63,8 +63,7 @@ class Search extends Component {
         this.props.getBoundingBox(output.geoID)
 
         // update URL
-        // @TODO: skip if doing a PPA?
-        const geoParam = `${output.geoID},${tileType === 'm' ? 'municipality' : 'county'},${encodeURI(output.name)}`
+        const geoParam = `${output.geoID},${output.type},${encodeURI(output.name)}`
         
         this.state.route.searchParams.set('geom', geoParam)
         this.state.route.searchParams.set('filter', ksiCheck)

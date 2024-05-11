@@ -185,7 +185,8 @@ export const getBoundingBox = id => async dispatch => {
     // select feature server and code type based on query type
     if(philly.substring(0, 6) === '421016') {
         // api expects geoid +100 for reasons
-        id += 100
+        id = parseInt(id) + 100
+        
         query = `https://arcgis.dvrpc.org/portal/rest/services/Boundaries/DVRPC_MCD_PhiCPA/FeatureServer/0/query?where=geoid='${id}'&geometryType=esriGeometryEnvelope&outSR=4326&returnExtentOnly=true&f=json`
     }else {
         if(id.toString().length > 5 ) {
