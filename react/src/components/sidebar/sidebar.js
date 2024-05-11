@@ -81,8 +81,6 @@ class Sidebar extends Component {
                 this.setState({ crashType: selected, data: 'calc' })
                 this.props.getCrashData({ geoID: '', isKSI })
                 return
-            } else {
-
             }
 
             // handle  Philly being both a county and muni
