@@ -156,9 +156,12 @@ class Sidebar extends Component {
         return true
     }
 
-    // data is already rendered, just need to update crashType + form state
+    // update dynamic text + form state
     handleRoute = params => {
         this.setState({ crashType: params })
+
+        if(params === 'All') this.allRadio.checked = true
+        else this.ksiRadio.checked = true
     }
 
     componentDidMount() {
@@ -279,12 +282,12 @@ class Sidebar extends Component {
                                 <div className="crash-map-label-subgroup">
                                     <label>
                                         KSI
-                                        <input type="radio" value="KSI" name="crashType" className="crash-map-first-input hover-btn crash-map-input"></input>
+                                        <input type="radio" value="KSI" name="crashType" className="crash-map-first-input hover-btn crash-map-input" defaultChecked ref={ref => this.ksiRadio = ref}></input>
                                     </label>
 
                                     <label>
                                         All
-                                        <input type="radio" value="All" name="crashType" className="hover-btn crash-map-input"></input>
+                                        <input type="radio" value="All" name="crashType" className="hover-btn crash-map-input" ref={ref => this.allRadio = ref}></input>
                                     </label>
                                 </div>
 
