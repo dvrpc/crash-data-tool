@@ -7,7 +7,8 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import * as layers from './layers.js'
 import * as popups from './popups.js';
 import { createBoundaryHighlight, removeBoundaryFilter } from './boundaryFilters.js';
-import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter, getPolygonCrashes, setPolygonBbox, removePolyCRNS  } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter, getPolygonCrashes, setPolygonBbox, removePolyCRNS, urlRoute, defaultRange } from '../../redux/reducers/mapReducer.js'
+
 import './map.css';
 
 class Map extends Component {
@@ -27,8 +28,7 @@ class Map extends Component {
                 }
             }),
             zoom: window.innerWidth <= 420 ? 7.3 : 8.3,
-            // @UPDATE: put route on the store so that sidebar, map, and search can share it
-            route: new URL(window.location.href)
+            route: urlRoute
         }
     }
     
@@ -209,7 +209,7 @@ class Map extends Component {
     componentDidUpdate(prevProps) {
         // set form filters (crash type and range) to prevProps or default value to hold on to state if a recalculation doesn't occur
         const prevType = prevProps.crashType || 'KSI'
-        const prevRange = prevProps.range || {to: "2021", from: "2017"}
+        const prevRange = prevProps.range || defaultRange
         let makeNewFilter = false
 
         const filterObj = {
@@ -551,8 +551,6 @@ class Map extends Component {
         this.state.route.searchParams.set('geom', `${geoID},${sourceLayer},${encodeURI(name)}`)
         
         window.history.replaceState(null, null, `?geom=${geoID},${sourceLayer},${encodeURI(name)}&filter=${newFilterType}`)
-
-        console.log('geopram at clickGeography ', this.state.route.searchParams.get('geom'))
     }
 
     // create bbox object from polygon & hit endpoints w/it
@@ -769,7 +767,7 @@ const mapDispatchToProps = dispatch => {
         setMapFilter: filter => dispatch(setMapFilter(filter)),
         getPolygonCrashes: bbox => dispatch(getPolygonCrashes(bbox)),
         setPolygonBbox: formattedBbox => dispatch(setPolygonBbox(formattedBbox)),
-        removePolyCRNS: () => dispatch(removePolyCRNS())
+        removePolyCRNS: () => dispatch(removePolyCRNS()),
     }
 }
 

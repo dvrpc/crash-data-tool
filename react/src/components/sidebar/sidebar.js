@@ -6,7 +6,7 @@ import { counties, munis, philly } from '../search/dropdowns'
 import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
 import print from './print.png'
-import { getDataFromKeyword, sidebarCrashType, sidebarRange, setSrc, setMapLoading, getDefaultRange } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, sidebarCrashType, sidebarRange, setSrc, setMapLoading, getDefaultRange, urlRoute } from '../../redux/reducers/mapReducer.js'
 import './sidebar.css';
 
 
@@ -23,8 +23,7 @@ class Sidebar extends Component {
             from: defaultRange.range.from,
             to: defaultRange.range.to,
             loading: this.props.mapLoading,
-            // @UPDATE: put route on the store so that sidebar, map, and search can share it
-            route: new URL(window.location.href)
+            route: urlRoute
         }
 
         this.props.getCrashData({ geoID: '', isKSI: 'yes' })
@@ -111,11 +110,7 @@ class Sidebar extends Component {
             this.props.getCrashData({ geoID, geojson, isKSI })
 
             this.state.route.searchParams.set('filter', selected)
-
             const geoParam = this.state.route.searchParams.get('geom')
-
-            console.log('geoparam at sidebar ', geoParam)
-            console.log('route ', this.state.route)
             
             window.history.replaceState(null, null, `?geom=${geoParam}&filter=${selected}`)
         }
@@ -284,7 +279,7 @@ class Sidebar extends Component {
                                 <div className="crash-map-label-subgroup">
                                     <label>
                                         KSI
-                                        <input type="radio" value="KSI" name="crashType" className="crash-map-first-input hover-btn crash-map-input" defaultChecked></input>
+                                        <input type="radio" value="KSI" name="crashType" className="crash-map-first-input hover-btn crash-map-input"></input>
                                     </label>
 
                                     <label>

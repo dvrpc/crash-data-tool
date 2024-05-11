@@ -33,6 +33,7 @@ const defaultRange = {
     from: 2017,
     to: 2021
 }
+const urlRoute = new URL(window.location.href)
 
 /**********************/
 /****** ACTIONS ******/
@@ -103,8 +104,8 @@ export default function mapReducer(state = [], action) {
             const range = action.range
             return Object.assign({}, state, { range })
         case DEFAULT_RANGE:
-            const bruh = action.range
-            return Object.assign({}, state, { bruh })
+            const defaultRange = action.range
+            return Object.assign({}, state, { defaultRange })
         case SET_SRC:
             const src = action.src
             return Object.assign({}, state, { src })
@@ -173,11 +174,8 @@ export const setMapFilter = filter => dispatch => {
 }
 
 export const setMapCenter = center => dispatch => dispatch(set_map_center(center))
-
 export const setMapBounding = bounding => dispatch => dispatch(set_map_bounding(bounding))
-
 export const setSidebarHeaderContext = area => dispatch => dispatch(set_sidebar_header_context(area))
-
 export const getBoundingBox = id => async dispatch => {
     const philly = id.toString()
     let featureServer;
@@ -222,7 +220,6 @@ export const getBoundingBox = id => async dispatch => {
         return
     }
 }
-
 export const getPolygonCrashes = bbox => async dispatch => {
     try{
         const api = `https://cloud.dvrpc.org/api/crash-data/v1/crash-ids?geojson=${bbox}`
@@ -234,9 +231,7 @@ export const getPolygonCrashes = bbox => async dispatch => {
         alert(`Sorry! Data could not be fetched at this moment. Please try again later.`)
     }
 }
-
 export const setPolygonBbox = formattedBbox => dispatch => dispatch(set_polygon_bbox(formattedBbox))
-
 export const removePolyCRNS = () => dispatch => dispatch(get_polygon_crns(null))
 
 
@@ -245,7 +240,9 @@ export const getDefaultRange = () => dispatch => dispatch(default_range(defaultR
 export const sidebarCrashType = type => dispatch => dispatch(sidebar_crash_type(type))
 export const sidebarRange = range => dispatch => dispatch(sidebar_range(range))
 export const setSrc = src => dispatch => dispatch(set_src(src))
-export { defaultRange } // export just the obj for layers b/c it's not a connected component
 
 // Map State
 export const setMapLoading = status => dispatch => dispatch(set_map_loading(status))
+
+// plain exports
+export { defaultRange, urlRoute } // export the obj for layers.js b/c it's not a connected component
