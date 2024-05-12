@@ -679,11 +679,8 @@ class Map extends Component {
         let geoID = geo[0]
         let sourceLayer = geo[1]
 
-        // @UPDATE:
         const name = decodeURIComponent(geo[2])
         const newFilterType = params.filterParams
-        // @UPDATE: not baking range into URL atm
-        // const range = this.route[4] || {}
         const range = {}
         let isKSI = newFilterType === 'KSI' ? 'yes' : 'no'
 

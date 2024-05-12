@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-// @UPDATE: import urlRoute
 import { getDataFromKeyword, setMapCenter, setMapBounding, setSidebarHeaderContext, getBoundingBox, urlRoute } from '../../redux/reducers/mapReducer.js'
 import * as form from './handleForm.js'
 
@@ -11,7 +10,6 @@ class Search extends Component {
     constructor(props){
         super(props)
 
-        // @UPDATE: put urlRoute on state
         this.state = {
             selectedSearch: ['Bucks','Chester','Delaware','Montgomery','Philadelphia','Gloucester','Camden','Burlington','Mercer'],
             route: urlRoute
@@ -25,8 +23,6 @@ class Search extends Component {
         this.setState({selectedSearch})
     }
 
-    // @UPDATE: update URL route here 
-        // replaceState + update searchParams obj state
     submitSearch = e => {
         const output = form.parseSearch(e)
 
