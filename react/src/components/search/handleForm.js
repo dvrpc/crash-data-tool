@@ -6,7 +6,7 @@ import { counties, munis, states, philly } from './dropdowns.js'
 // runs the mapboxgl geocoder to turn address or boundary into coordinates
 // API reference: https://docs.mapbox.com/api/search/#mapboxplaces
 const geocode = async query => {
-    const token = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
+    const token = 'pk.eyJ1IjoibW1vbHRhIiwiYSI6ImNqZDBkMDZhYjJ6YzczNHJ4cno5eTcydnMifQ.RJNJ7s7hBfrJITOBZBdcOA'
     const api = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${token}&autocomplete=true&bbox=-76.09405517578125,39.49211914385648,-74.32525634765625,40.614734298694216`
     
     try {
