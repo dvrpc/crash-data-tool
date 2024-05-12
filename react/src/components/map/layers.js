@@ -59,7 +59,7 @@ const municipalityFill = {
     paint: {
         'fill-color': ['case',
             ['boolean', ['feature-state', 'hover'], false],
-            'rgba(244,162,45,0.25)',
+            'rgba(244,162,45,0.12)',
             'rgba(0,0,0,0)'
         ]
     }

@@ -340,8 +340,8 @@ class Map extends Component {
         if(this.props.bbox && prevProps.bbox !== this.props.bbox) {
             if( window.innerWidth > 800 ) {
                 // handle desktop offset
-                const leftPad = (window.innerWidth * 0.33 + 10)
-                const padding = {top: 0, bottom: 0, left: leftPad, right: 0}
+                const leftPad = (window.innerWidth * 0.33 + 30)
+                const padding = {top: 30, bottom: 30, left: leftPad, right: 30}
 
                 this.map.fitBounds(this.props.bbox, {padding})
             } else {
@@ -713,10 +713,6 @@ class Map extends Component {
         this.props.setMapBounding(boundaryObj)
         this.props.getBoundingBox(geoID)
         this.props.setMapFilter(filterObj)
-
-        // @TODO: dispatch additional sidebar context:
-            // KSI filter state
-            // dynamic text state
 
         // update boundary state to prevent hover effects when boundaries are present & so the ksi/all toggle can stay within the set bounds
         this.setState({boundary: filterObj})
