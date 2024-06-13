@@ -7,12 +7,14 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import * as layers from './layers.js'
 import * as popups from './popups.js';
 import { createBoundaryHighlight, removeBoundaryFilter } from './boundaryFilters.js';
-import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter, getPolygonCrashes, setPolygonBbox, removePolyCRNS  } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setSidebarHeaderContext, getBoundingBox, setMapBounding, setMapFilter, getPolygonCrashes, setPolygonBbox, removePolyCRNS, urlRoute, defaultRange } from '../../redux/reducers/mapReducer.js'
+
 import './map.css';
 
 class Map extends Component {
     constructor(props) {
         super(props)
+
         this.state = {
             boundary: null,
             polygon: false,
@@ -26,7 +28,8 @@ class Map extends Component {
                     trash: false
                 }
             }),
-            zoom: window.innerWidth <= 420 ? 7.3 : 8.3
+            zoom: window.innerWidth <= 420 ? 7.3 : 8.3,
+            route: urlRoute
         }
     }
     
@@ -63,7 +66,8 @@ class Map extends Component {
         this.map.on('load', () => {
             this.map.addSource("Boundaries" , {
                 type: 'vector',
-                url: 'https://tiles.dvrpc.org/data/dvrpc-municipal.json'
+                url: 'https://tiles.dvrpc.org/data/dvrpc-municipal.json',
+                promoteId: 'geoid'
             })
 
             this.map.addSource("Crashes", {
@@ -102,17 +106,22 @@ class Map extends Component {
             // add crash data layers beneath relevant layers in streets-v12 spec
             this.map.addLayer(layers.crashHeat, 'settlement-subdivision-label')
             this.map.addLayer(layers.crashCircles, 'settlement-subdivision-label')
+
+            // listen for routing on load
+            const geoParams = this.state.route.searchParams.get('geom')
+            const filterParams = this.state.route.searchParams.get('filter')
+
+            if(geoParams) this.handleRoute({geoParams, filterParams})
         })
 
         // variables for hover state
-        let hoveredGeom = null
         let hoveredCircle = null
         
         // add hover effect to geographies
-        this.map.on('mousemove', 'municipality-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
-        this.map.on('mouseleave', 'municipality-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
-        this.map.on('mousemove', 'county-fill', e => hoveredGeom = this.hoverGeographyFill(e, hoveredGeom))
-        this.map.on('mouseleave', 'county-fill', () => hoveredGeom = this.removeGeographyFill(hoveredGeom))
+        this.map.on('mousemove', 'municipality-fill', e => this.hoverGeographyFill(e))
+        this.map.on('mouseleave', 'municipality-fill', () => this.removeGeographyFill())
+        this.map.on('mousemove', 'county-fill', e => this.hoverGeographyFill(e))
+        this.map.on('mouseleave', 'county-fill', () => this.removeGeographyFill())
 
         // handle click events
         this.map.on('click', 'municipality-fill', e => this.clickGeography(e))
@@ -144,16 +153,11 @@ class Map extends Component {
             this.map.getCanvas().style.cursor = 'pointer'
 
             if(hoveredCircle){
-                this.map.setFeatureState(
-                    {
-                        source: 'Crashes',
-                        sourceLayer: 'crash',
-                        id: hoveredCircle
-                    },
-                    {
-                        hover: false
-                    }
-                )
+                this.map.removeFeatureState({
+                    source: 'Crashes',
+                    sourceLayer: 'crash',
+                    id: hoveredCircle
+                })
             }
             
             hoveredCircle = e.features[0].id
@@ -172,16 +176,12 @@ class Map extends Component {
 
         this.map.on('mouseleave', 'crash-circles', () => {
             if (hoveredCircle) {
-                this.map.setFeatureState(
-                    {
-                        source: 'Crashes',
-                        sourceLayer: 'crash',
-                        id: hoveredCircle
-                    },
-                    {
-                        hover: false
-                    }
-            )}
+                this.map.removeFeatureState({
+                    source: 'Crashes',
+                    sourceLayer: 'crash',
+                    id: hoveredCircle
+                })
+            }
             
             hoveredCircle = null;
 
@@ -210,8 +210,7 @@ class Map extends Component {
     componentDidUpdate(prevProps) {
         // set form filters (crash type and range) to prevProps or default value to hold on to state if a recalculation doesn't occur
         const prevType = prevProps.crashType || 'KSI'
-        // @UPDATE: start and end year
-        const prevRange = prevProps.range || {to: "2021", from: "2017"}
+        const prevRange = prevProps.range || defaultRange
         let makeNewFilter = false
 
         const filterObj = {
@@ -302,7 +301,7 @@ class Map extends Component {
         if(this.props.polyCRNS) {
             const fail = this.props.polyCRNS.message
             let crashType = this.props.crashType || 'KSI'
-            let range = this.props.range
+            let range = this.props.range || defaultRange
             let polygonFilter = fail ? ['all', ['in', 'id', '' ]] : ['all', ['in', 'id', ...this.props.polyCRNS]]
 
             // add range
@@ -342,8 +341,8 @@ class Map extends Component {
         if(this.props.bbox && prevProps.bbox !== this.props.bbox) {
             if( window.innerWidth > 800 ) {
                 // handle desktop offset
-                const leftPad = (window.innerWidth * 0.33 + 10)
-                const padding = {top: 0, bottom: 0, left: leftPad, right: 0}
+                const leftPad = (window.innerWidth * 0.33 + 30)
+                const padding = {top: 30, bottom: 30, left: leftPad, right: 30}
 
                 this.map.fitBounds(this.props.bbox, {padding})
             } else {
@@ -399,10 +398,18 @@ class Map extends Component {
         }
 
         // update sidebar information
-        let newFilterType = this.props.crashType || 'KSI'
+        let newFilterType;
+        
+        if(this.state.polygon) {
+            newFilterType = this.props.crashType || 'KSI'
+        } else {
+            newFilterType = this.state.route.searchParams.get('filter')
+        }
+
         let isKSI = newFilterType === 'KSI' ? 'yes' : 'no'
 
         const regionalStats = {geoID: '', isKSI}
+
         this.props.setDefaultState(regionalStats)
         this.props.setSidebarHeaderContext('the DVRPC region')
 
@@ -410,7 +417,7 @@ class Map extends Component {
         const { county, muni, philly } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
-        let range = this.props.range || {}
+        const range = this.props.range || defaultRange
         const filterObj = {filterType: newFilterType, range}
 
         // set store filter state
@@ -418,11 +425,6 @@ class Map extends Component {
         this.props.setMapFilter(filterObj)
 
         // update map
-        // @UPDATE remove map style filtering, just reset to default paint values
-        this.map.setFilter(county.layer, county.filter)
-        this.map.setFilter(muni.layer, muni.filter)
-        this.map.setFilter(philly.layer, philly.filter)
-
         this.map.setPaintProperty(county.layer, 'line-width', county.paint.width)
         this.map.setPaintProperty(county.layer, 'line-color', county.paint.color)
         this.map.setPaintProperty(muni.layer, 'line-width', muni.paint.width)
@@ -435,66 +437,52 @@ class Map extends Component {
             boundary: null,
             polygon: false
         })
+
+        // remove route
+        this.state.route.searchParams.delete('geom')
+        window.history.replaceState(null, null, '/')
     }
 
     // add fill effect when hovering over a geography type (county or municipality)
-    hoverGeographyFill = (e, hoveredGeom) => {
-
+    hoverGeographyFill = (e) => {
         // escape if a boundary is set or if the user is drawing a polygon
         if(this.state.boundary || this.state.polygon) return
-
-        let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
+        
         let features = e.features
-
+        
         if(features.length > 0 ) {
             features = features[0]
+            const sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
             const name =  sourceLayer === 'county' ? features.properties.name + ' County' : features.properties.name
-            // remove old hover state
-            if(hoveredGeom) {
-                this.map.setFeatureState(
-                    {source: 'Boundaries', sourceLayer, id: hoveredGeom},
-                    {hover: false}
-                )
-            }
 
-            // update hover layer
-            hoveredGeom = features.id
+            // clear hover state
+            this.map.removeFeatureState({
+                source: 'Boundaries',
+                sourceLayer
+            })
             
-            // handle edge cases where hoveredGeom is null or NaN (I think this check is only necessary right now b/c it sometimes serves the old VT's and sometimes doesn't. Can be removed eventually)
-            if(hoveredGeom) {
-                this.map.setFeatureState(
-                    {source: 'Boundaries', sourceLayer, id: hoveredGeom},
-                    {hover: true}
-                )
-            }
+            // update hover state
+            this.map.setFeatureState(
+                {source: 'Boundaries', sourceLayer, id: features.id},
+                {hover: true}
+            )
 
-            // update the overlay text (and visibility if necessary)
+            // update the overlay text
             this.hoveredArea.style.visibility = 'visible'
             this.hoveredArea.children[0].textContent = name
         }
-
-        return hoveredGeom
     }
 
-    // remove fill effect when hovering over a new municipality or leaving the region
-    removeGeographyFill = hoveredGeom => {
-
-        // escape if zoom level isn't right @TODO make this a county or zoom level decision
+    // remove fill effect when exiting the layer
+    removeGeographyFill = () => {
         let sourceLayer = this.map.getZoom() < 8.4 ? 'county' : 'municipalities'
 
-        if(hoveredGeom) {
-            this.map.setFeatureState({source: 'Boundaries', sourceLayer: `${sourceLayer}-fill`, id: hoveredGeom},
-            {hover: false})
-
-            this.map.setFeatureState({source: 'Boundaries', sourceLayer, id: hoveredGeom},
-            {hover: false})
-
-        }
+        this.map.removeFeatureState({
+            source: 'Boundaries',
+            sourceLayer
+        })
         
         this.hoveredArea.style.visibility = 'hidden'
-        hoveredGeom = null
-
-        return hoveredGeom
     }
 
     // draw a boundary, zoom to, filter crash data and update sidebar on muni click
@@ -524,7 +512,7 @@ class Map extends Component {
         let geoID = features.properties.geoid
 
         // get KSI and range state from store
-        const range = this.props.range || {}
+        const range = this.props.range || defaultRange
         const newFilterType = this.props.crashType || 'KSI'
         let isKSI = newFilterType === 'KSI' ? 'yes' : 'no'
 
@@ -566,6 +554,12 @@ class Map extends Component {
 
         // update boundary state to prevent hover effects when boundaries are present & so the ksi/all toggle can stay within the set bounds
         this.setState({boundary: filterObj})
+
+        // set URL state
+        this.state.route.searchParams.set('filter', newFilterType)
+        this.state.route.searchParams.set('geom', `${geoID},${sourceLayer},${encodeURI(name)}`)
+        
+        window.history.replaceState(null, null, `?geom=${geoID},${sourceLayer},${encodeURI(name)}&filter=${newFilterType}`)
     }
 
     // create bbox object from polygon & hit endpoints w/it
@@ -671,6 +665,57 @@ class Map extends Component {
         }
     }
 
+    handleRoute = params => {
+        /* @params:
+            {
+                geoParams: geoid,sourceLayer,name,
+                filterParams: filter
+            }
+        */
+        const geo = params.geoParams.split(',')
+        
+        // get feature properties
+        let tileType;
+        let countyName;
+        let geoID = geo[0]
+        let sourceLayer = geo[1]
+
+        const name = decodeURIComponent(geo[2])
+        const newFilterType = params.filterParams
+        const range = defaultRange
+        let isKSI = newFilterType === 'KSI' ? 'yes' : 'no'
+
+        if(sourceLayer === 'county'){
+            tileType = 'c'
+            countyName = `${name} County`
+        }else {
+            tileType = 'm'
+        }
+
+        // handle philly edge case
+        const phillyTest = name.substring(0, 5)
+        if(phillyTest === 'Phila') {
+            geoID = 42101
+            tileType = 'c'
+            sourceLayer = 'county'
+        }
+        
+        // create data, filter and boundary objects
+        const dataObj = { geoID, isKSI }
+        const boundaryObj = { type: sourceLayer, id: geoID }
+        const filterObj = {filterType: newFilterType, tileType, id: geoID, range, boundary: true}
+
+        // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
+        this.props.setSidebarHeaderContext(countyName || name)
+        this.props.getData(dataObj)
+        this.props.setMapBounding(boundaryObj)
+        this.props.getBoundingBox(geoID)
+        this.props.setMapFilter(filterObj)
+
+        // update boundary state to prevent hover effects when boundaries are present & so the ksi/all toggle can stay within the set bounds
+        this.setState({boundary: filterObj})
+    }
+
     render() {
         let crashType = this.props.crashType || 'KSI'
         
@@ -724,7 +769,7 @@ const mapDispatchToProps = dispatch => {
         setMapFilter: filter => dispatch(setMapFilter(filter)),
         getPolygonCrashes: bbox => dispatch(getPolygonCrashes(bbox)),
         setPolygonBbox: formattedBbox => dispatch(setPolygonBbox(formattedBbox)),
-        removePolyCRNS: () => dispatch(removePolyCRNS())
+        removePolyCRNS: () => dispatch(removePolyCRNS()),
     }
 }
 

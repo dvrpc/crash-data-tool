@@ -6,7 +6,7 @@ const countyOutline = {
     source: 'Boundaries',
     'source-layer': 'county',
     paint: {
-        'line-width': 2.5,
+        'line-width': 1.5,
         'line-color': '#969696'
     },
     filter: [
@@ -22,15 +22,13 @@ const countyFill = {
     source: 'Boundaries',
     'source-layer': 'county',
     layout: {},
-    maxzoom: 8.4,
+    maxzoom: 8.39,
     paint: {
-        'fill-outline-color': '#f7c59f',
-        'fill-opacity': ['case',
+        'fill-color': ['case',
             ['boolean', ['feature-state', 'hover'], false],
-            1,
-            0
-        ],
-        'fill-color': 'rgba(0,0,0,0.1)'
+            'rgba(244,162,45,0.25)',
+            'rgba(0,0,0,0)'
+        ]
     },
     filter: [
         '==',
@@ -47,7 +45,7 @@ const municipalityOutline = {
     minzoom: 8.4,
     paint: {
         'line-width': 0.5,
-        'line-color': '#636363'
+        'line-color': '#969696'
     }
 }
 
@@ -59,13 +57,11 @@ const municipalityFill = {
     layout: {},
     minzoom: 8.4,
     paint: {
-        'fill-outline-color': '#f7c59f',
-        'fill-opacity': ['case',
+        'fill-color': ['case',
             ['boolean', ['feature-state', 'hover'], false],
-            1,
-            0
-        ],
-        'fill-color': 'rgba(0,0,0,0.1)'
+            'rgba(244,162,45,0.12)',
+            'rgba(0,0,0,0)'
+        ]
     }
 }
 
@@ -77,7 +73,7 @@ const phillyOutline = {
     minzoom: 8.4,
     paint: {
         'line-width': 0.5,
-        'line-color': '#e3f2fd'
+        'line-color': '#969696'
     }
 }
 
@@ -90,7 +86,6 @@ const crashHeat = {
     filter: ['all',
         ['>', 'max_sever', -1],
         ['<', 'max_sever', 2],
-        // @UPDATE: start and end year 
         ['>=', 'year', defaultRange.from],
         ['<=', 'year', defaultRange.to]
     ],
@@ -136,7 +131,6 @@ const crashCircles = {
     filter: ['all',
         ['>', 'max_sever', -1],
         ['<', 'max_sever', 2],
-        // @UPDATE: start and end year
         ['>=', 'year', defaultRange.from],
         ['<=', 'year', defaultRange.to]
     ],

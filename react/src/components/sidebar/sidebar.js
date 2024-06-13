@@ -6,7 +6,8 @@ import { counties, munis, philly } from '../search/dropdowns'
 import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
 import print from './print.png'
-import { getDataFromKeyword, sidebarCrashType, sidebarRange, setSrc, setMapLoading, getDefaultRange } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, sidebarCrashType, sidebarRange, setSrc, setMapLoading, urlRoute, defaultRange } from '../../redux/reducers/mapReducer.js'
+
 import './sidebar.css';
 
 
@@ -14,15 +15,14 @@ class Sidebar extends Component {
     constructor(props) {
         super(props)
 
-        const defaultRange = props.getDefaultRange()
-
         this.state = {
             data: 'default',
             context: 'the DVRPC region',
             crashType: 'KSI',
-            from: defaultRange.range.from,
-            to: defaultRange.range.to,
-            loading: this.props.mapLoading
+            from: defaultRange.from,
+            to: defaultRange.to,
+            loading: this.props.mapLoading,
+            route: urlRoute
         }
 
         this.props.getCrashData({ geoID: '', isKSI: 'yes' })
@@ -56,6 +56,7 @@ class Sidebar extends Component {
 
     updateCrashType = e => {
         e.preventDefault()
+
         const form = e.target
         const data = new FormData(form)
         let selected;
@@ -79,8 +80,6 @@ class Sidebar extends Component {
                 this.setState({ crashType: selected, data: 'calc' })
                 this.props.getCrashData({ geoID: '', isKSI })
                 return
-            } else {
-
             }
 
             // handle  Philly being both a county and muni
@@ -106,6 +105,14 @@ class Sidebar extends Component {
             // update data and local state
             this.setState({ crashType: selected, data: 'calc' })
             this.props.getCrashData({ geoID, geojson, isKSI })
+
+            // ignore polygons when updating URL
+            if(!geojson) {
+                this.state.route.searchParams.set('filter', selected)
+                const geoParam = this.state.route.searchParams.get('geom')
+                
+                window.history.replaceState(null, null, `?geom=${geoParam}&filter=${selected}`)
+            }
         }
     }
 
@@ -149,12 +156,26 @@ class Sidebar extends Component {
         return true
     }
 
+    // update dynamic text + form state
+    handleRoute = params => {
+        this.setState({ crashType: params })
+
+        if(params === 'All') this.allRadio.checked = true
+        else this.ksiRadio.checked = true
+    }
+
+    componentDidMount() {
+        // listen for routing on load
+        const filterParams = this.state.route.searchParams.get('filter')
+        if(filterParams) this.handleRoute(filterParams)
+    }
+
     componentDidUpdate(prevProps) {
         let checkOld = prevProps.data && prevProps.data.message ? false : prevProps.data
 
         // @REMINDER: this is a workaround to the API handling all 0's as a null response instead of a possible outcome
         // 'empty' state is to differentiate between no response (intial render) and empty response (no crashes in selected area)
-        let checkNew = this.props.data.message ? false : this.props.data
+        let checkNew = this.props.data && this.props.data.message ? false : this.props.data
         const current = this.state.data
 
         // handle default state
@@ -208,7 +229,7 @@ class Sidebar extends Component {
                         </div>
                     </header>
 
-                    <span id="crash-map-print-sidebar" onClick={this.setSrc}><img id="crash-map-print-icon" src={print} alt="print stats icon" /> print statistics</span>
+                    <span id="crash-map-print-sidebar" onClick={this.setSrc}><img id="crash-map-print-icon" src={print} alt="print stats icon" /> <span className="crash-map-print-text">print statistics</span></span>
 
                     <p className="sidebar-paragraphs first-paragraph">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2017 to 2021. Five years of data is typically used by local, state, and federal partners in safety analyses.</p>
                     <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong> in <strong>{area}</strong>. You can adjust the range and severity type using the forms below:</p>
@@ -261,12 +282,12 @@ class Sidebar extends Component {
                                 <div className="crash-map-label-subgroup">
                                     <label>
                                         KSI
-                                        <input type="radio" value="KSI" name="crashType" className="crash-map-first-input hover-btn crash-map-input" defaultChecked></input>
+                                        <input type="radio" value="KSI" name="crashType" className="crash-map-first-input hover-btn crash-map-input" defaultChecked ref={ref => this.ksiRadio = ref}></input>
                                     </label>
 
                                     <label>
                                         All
-                                        <input type="radio" value="All" name="crashType" className="hover-btn crash-map-input"></input>
+                                        <input type="radio" value="All" name="crashType" className="hover-btn crash-map-input" ref={ref => this.allRadio = ref}></input>
                                     </label>
                                 </div>
 
@@ -344,7 +365,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         getCrashData: region => dispatch(getDataFromKeyword(region)),
-        getDefaultRange: () => dispatch(getDefaultRange()),
+        // getDefaultRange: () => dispatch(getDefaultRange()),
         setCrashTypeFilter: filter => dispatch(sidebarCrashType(filter)),
         setCrashRange: range => dispatch(sidebarRange(range)),
         setSrc: src => dispatch(setSrc(src)),

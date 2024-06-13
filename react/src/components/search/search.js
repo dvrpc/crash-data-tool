@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { getDataFromKeyword, setMapCenter, setMapBounding, setSidebarHeaderContext, getBoundingBox } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setMapCenter, setMapBounding, setSidebarHeaderContext, getBoundingBox, urlRoute, defaultRange } from '../../redux/reducers/mapReducer.js'
 import * as form from './handleForm.js'
 
 import './search.css'
@@ -9,8 +9,10 @@ import './search.css'
 class Search extends Component {
     constructor(props){
         super(props)
+
         this.state = {
-            selectedSearch: ['Bucks','Chester','Delaware','Montgomery','Philadelphia','Gloucester','Camden','Burlington','Mercer']
+            selectedSearch: ['Bucks','Chester','Delaware','Montgomery','Philadelphia','Gloucester','Camden','Burlington','Mercer'],
+            route: urlRoute
         }
     }
     
@@ -34,7 +36,7 @@ class Search extends Component {
         }
 
         // get KSI and range state from store
-        const range = this.props.range || {}
+        const range = this.props.range || defaultRange
         const ksiCheck = this.props.crashType || 'KSI'
         output.isKSI = ksiCheck === 'KSI' ? 'yes' : 'no'
 
@@ -45,17 +47,24 @@ class Search extends Component {
         if(tileType === 'c') sidebarName = `${output.name} County`
         else sidebarName = output.name
 
-
         // create data, filter and boundary objects
         const dataObj = { geoID: output.geoID, isKSI: output.isKSI }
         const filterObj = {filterType: ksiCheck, tileType, id: output.geoID, range, boundary: true}
         const boundaryObj = { type: output.type, id: output.geoID, filter: filterObj }
         
-        // // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
+        // dispatch actions to: set sidebar header, fetch the data and create a bounding box for the selected area
         this.props.setSidebarHeaderContext(sidebarName)
         this.props.getData(dataObj)
         this.props.setMapBounding(boundaryObj)
         this.props.getBoundingBox(output.geoID)
+
+        // update URL
+        const geoParam = `${output.geoID},${output.type},${encodeURI(output.name)}`
+        
+        this.state.route.searchParams.set('geom', geoParam)
+        this.state.route.searchParams.set('filter', ksiCheck)
+        
+        window.history.replaceState(null, null, `?geom=${geoParam}&filter=${ksiCheck}`)
     }
 
     render() {
