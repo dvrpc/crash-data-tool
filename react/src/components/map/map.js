@@ -301,7 +301,7 @@ class Map extends Component {
         if(this.props.polyCRNS) {
             const fail = this.props.polyCRNS.message
             let crashType = this.props.crashType || 'KSI'
-            let range = this.props.range
+            let range = this.props.range || defaultRange
             let polygonFilter = fail ? ['all', ['in', 'id', '' ]] : ['all', ['in', 'id', ...this.props.polyCRNS]]
 
             // add range
@@ -563,6 +563,7 @@ class Map extends Component {
     }
 
     // create bbox object from polygon & hit endpoints w/it
+    // @TODO: fix range bug for bbox creation
     handleBbox = bbox => {
         const bboxFormatted = encodeURIComponent(JSON.stringify(
             {
