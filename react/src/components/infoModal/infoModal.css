@@ -5,7 +5,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.72);
     font-size: 1rem;
 }
 #modal-content{
@@ -25,7 +25,7 @@
     font-size: 1rem;
 }
 .crash-map-modal-category-list{
-    margin-top: 1%;
+    margin: 1em 0;
 }
 #crash-map-modal-x{
     font-size: 1.2rem;
@@ -80,12 +80,12 @@
     overflow-y: auto;
     width: 90%;
     height: calc(75% - 32px);
-    max-width: 77ch;
+    max-width: 80ch;
     margin: 0 auto;
-    padding: 16px 0;
+    padding: 16px 8px;
 }
-#crash-map-modal-content p{
-    margin-bottom: 1%;
+#crash-map-modal-content p {
+    margin-bottom: 1em;
 }
 #crash-map-modal-hr{
     margin: 2% 0;
