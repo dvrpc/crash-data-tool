@@ -4,7 +4,7 @@
 }
 .mapboxgl-ctrl-group{
     background: #f7f7f7;
-    box-shadow: 1px 2px 3px rgba(0,0,0,0.4) !important; /* override mapbox shadow */
+    box-shadow: 2.4px 2.4px 3.2px rgba(0, 0, 0, 0.15) !important; /* override mapbox shadow */
 }
 .overlays{
     z-index: 2;
@@ -37,7 +37,7 @@
 
 
 /* Hovered Geography Overlay */
-#hoveredArea{
+#hoveredArea {
     visibility: hidden;
     margin: 10px auto 0 50%;
     padding: 6px 8px;
@@ -47,45 +47,47 @@
 }
 
 /* Default Extent Control Overlay */
-#default-extent-btn{
+#default-extent-btn {
     height: 20px;
     width: 20px;
     margin: 145px 10px 0 0;
     right: 0;
     padding: 5px;
     cursor: pointer;
+    box-shadow: 2.4px 2.4px 3.2px rgba(0, 0, 0, 0.15);
 }
-#default-extent-img{
+#default-extent-img {
     height: 100%;
 }
 
 
 /* Remove Boundary Overlay */
-#remove-boundary-btn{
+#remove-boundary-btn {
     font-weight: 500;
     top: 10px;
     padding: 10px;
     border: none;
     cursor: pointer;
 }
-#remove-boundary-x{
+#remove-boundary-x {
     font-weight: 800;
-    color: #f4a22d;
+    color: #FAA82D;
     margin-left: 3px;
 }
 
 /* Popups */
-.mapboxgl-popup{
+.mapboxgl-popup {
     max-width: 45%;
     z-index: 2;
 }
-.mapboxgl-popup-content{
+.mapboxgl-popup-content {
     font-size: 0.88rem;
     padding: 20px 12px;
-    box-shadow: 1px 2px 3px rgba(0,0,0,0.4);
+    box-shadow: 2.4px 2.4px 3.2px rgba(0, 0, 0, 0.15);
     min-width: 275px;
+    border-radius: 4px;
 }
-.mapboxgl-popup-close-button{
+.mapboxgl-popup-close-button {
     font-size: 1.2rem;
     font-weight: 800;
     color: #f7f7f7;
@@ -95,12 +97,12 @@
 	text-align: center;
 	margin: -20px -12px 5px -12px;
 	padding: 24px 12px 10px 12px;
-	background: #40757d;
+	background: #307f88;
 	color: #f7f7f7;
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
 }
-#crash-popup-ul{
+#crash-popup-ul {
     list-style-type: none;
     padding: 4px 0;
 }
@@ -118,7 +120,7 @@
 	margin: 0px -12px -20px;
 	padding: 10px 12px;
 	border-top: 3px solid #f7f7f7;
-	color: #1C1018;
+	color: #0b1415;
 }
 #crash-popup-pagination button {
 	border: none;
@@ -126,9 +128,10 @@
 	font-size: 0.9rem;
 	cursor: pointer;
 	padding: 2px 12px 4px 12px;
-	background: #f4a22d;
+	background: #FAA82D;
 	border-radius: 4px;
 	color: #f7f7f7;
+    font-weight: 700;
 }
 
 /* Media Queries */

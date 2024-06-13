@@ -10,9 +10,9 @@
     top: 10px;
     left: 10px;
     background: #f7f7f7;
-    box-shadow: 1px 2px 3px rgba(0,0,0,0.4);
+    box-shadow: 2.4px 2.4px 3.2px rgba(0, 0, 0, 0.15);
 }
-#sidebar{
+#sidebar {
     padding: 0 16px;
     border-radius: 4px;
     height: 100%;
@@ -20,7 +20,10 @@
     overflow-y: auto;
 }
 #sidebar strong {
-    color: #40757d;
+    color: #307f88;
+}
+#sidebar select {
+    border: 2px solid #cbcbcf;
 }
 
 /* Modified with credit to: https://stijndewitt.com/2018/06/12/pure-css-drop-shadow-on-scroll/*/
@@ -53,7 +56,7 @@
 /* SHADOW */
 #crash-map-sidebar-header::before {
     top: 58px; /* shadow is at bottom of element, so at 58 + 16 = 74px */
-    box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
+    box-shadow: 2.4px 2.4px 3.2px rgba(0, 0, 0, 0.15);
 }
 /* COVER */
 #crash-map-sidebar-header::after {
@@ -93,7 +96,7 @@
 #crash-map-sidebar-header-area {
     font-size: 0.8em;
     font-weight: 400;
-    color: #40757d;
+    color: #307f88;
 }
 
 #sidebar-hr{
@@ -106,18 +109,16 @@
 }
 .crash-map-sidebar-subheader{
     font-size: 1.4rem;
-    background-color: #40757d;
+    background-color: #307f88;
     color: #f7f7f7;
-    padding: 0.25rem 0;
+    padding: 8px 0;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
-    box-shadow: 1px 0 0px rgba(0,0,0,.3);
-    box-shadow: 1.5px 0 0px rgba(0,0,0,.2);
-
+    width: calc(100% + 1px);
 }
 #first-subheader{
     background: none;
-    color: #40757d;
+    color: initial;
     padding: initial;
     box-shadow: none;
     border-radius: unset;
@@ -125,20 +126,22 @@
 #crash-map-print-sidebar{
     display: flex;
     align-items: center;
-    text-decoration: underliEne;
+    width: max-content;
     cursor: pointer;
-    color: #40757d;
-    margin-bottom: 0.75rem;
+    margin-bottom: 12px;
 }
 #crash-map-print-icon {
     height: 16px;
     margin-right: 6px;
 }
+.crash-map-print-text {
+    border-bottom: 2px solid #FAA82D;
+}
 .chart-wrapper {
     background-color: white;
     margin-top: 15%;
     border-radius: 4px;
-    box-shadow: 1px 2px 3px rgba(0,0,0,0.3);
+    box-shadow: 2.4px 2.4px 3.2px rgba(0, 0, 0, 0.15);
 }
 #trend-chart, #severity-chart {
     width: calc(100% - 12px) !important;
@@ -200,17 +203,17 @@
 }
 .crash-sidebar-toggle-button{
     float: right;
-    border: 1px solid #40757d;
+    border: 1px solid #307f88;
     border-radius: 4px;
     color: #f7f7f7;
-    background-color: #40757d;
+    background-color: #307f88;
     padding: 8px 16px;
     cursor: pointer;
-    box-shadow: 0.5px 1px 1.5px rgba(0,0,0,.3);
+    box-shadow: 1.2px 1.2px 1.6px rgba(0, 0, 0, 0.075);
 }
 .crash-sidebar-toggle-button:hover {
     filter: brightness(110%);
-    box-shadow: 1px 2px 3px rgba(0,0,0,0.3);
+    box-shadow: 2.4px 2.4px 3.2px rgba(0, 0, 0, 0.15);
 }
 .crash-sidebar-toggle-button:active {
     box-shadow: none;

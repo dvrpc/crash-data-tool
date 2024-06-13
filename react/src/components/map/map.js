@@ -563,7 +563,6 @@ class Map extends Component {
     }
 
     // create bbox object from polygon & hit endpoints w/it
-    // @TODO: fix range bug for bbox creation
     handleBbox = bbox => {
         const bboxFormatted = encodeURIComponent(JSON.stringify(
             {

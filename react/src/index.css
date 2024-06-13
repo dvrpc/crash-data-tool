@@ -7,7 +7,7 @@ body {
   padding: 0;
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
-  color: #1C1018;
+  color: #0b1415;
   line-height: 1.45;
   text-rendering: optimizeLegibility;
 }
@@ -21,7 +21,6 @@ select, input {
 select {
   padding: 8px;
   background-color: white;
-  border: 1px solid #1C1018;
   margin-left: 8px;
 }
 p{
@@ -34,13 +33,13 @@ p{
   text-align: center;
 }
 .shadow{
-  box-shadow: 1px 2px 3px rgba(0,0,0,0.4);
+  box-shadow: 2.4px 2.4px 3.2px rgba(0, 0, 0, 0.15);
 }
 .hidden{
   display: none;
 }
 .hover-btn:hover{
-  box-shadow: 0.5px 1px 1.5px rgba(0,0,0,0.2);
+  box-shadow: 1.2px 1.2px 1.6px rgba(0, 0, 0, 0.075);
 }
 
 

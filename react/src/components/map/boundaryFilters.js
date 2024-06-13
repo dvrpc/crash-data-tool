@@ -15,7 +15,7 @@ const createBoundaryHighlight = boundingObj => {
         ],
         color: [
             'match', ['get', 'geoid'],
-            id, '#f4a22d',
+            id, '#FAA82D',
             '#969696'
         ]
     }

@@ -229,7 +229,7 @@ class Sidebar extends Component {
                         </div>
                     </header>
 
-                    <span id="crash-map-print-sidebar" onClick={this.setSrc}><img id="crash-map-print-icon" src={print} alt="print stats icon" /> print statistics</span>
+                    <span id="crash-map-print-sidebar" onClick={this.setSrc}><img id="crash-map-print-icon" src={print} alt="print stats icon" /> <span className="crash-map-print-text">print statistics</span></span>
 
                     <p className="sidebar-paragraphs first-paragraph">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2017 to 2021. Five years of data is typically used by local, state, and federal partners in safety analyses.</p>
                     <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong> in <strong>{area}</strong>. You can adjust the range and severity type using the forms below:</p>
