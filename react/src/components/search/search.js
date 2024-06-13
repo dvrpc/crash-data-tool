@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { getDataFromKeyword, setMapCenter, setMapBounding, setSidebarHeaderContext, getBoundingBox, urlRoute } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, setMapCenter, setMapBounding, setSidebarHeaderContext, getBoundingBox, urlRoute, defaultRange } from '../../redux/reducers/mapReducer.js'
 import * as form from './handleForm.js'
 
 import './search.css'
@@ -36,7 +36,7 @@ class Search extends Component {
         }
 
         // get KSI and range state from store
-        const range = this.props.range || {}
+        const range = this.props.range || defaultRange
         const ksiCheck = this.props.crashType || 'KSI'
         output.isKSI = ksiCheck === 'KSI' ? 'yes' : 'no'
 

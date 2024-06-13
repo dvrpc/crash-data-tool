@@ -28,7 +28,6 @@ const rangeFilter = (from, to) => {
 }
 
 // default map range
-// @DATA UPDATES: edit this obj to propagate changes to map, sidebar, and print
 const defaultRange = {
     from: 2017,
     to: 2021

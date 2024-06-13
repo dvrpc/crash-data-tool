@@ -14,6 +14,7 @@ import './map.css';
 class Map extends Component {
     constructor(props) {
         super(props)
+
         this.state = {
             boundary: null,
             polygon: false,
@@ -416,7 +417,7 @@ class Map extends Component {
         const { county, muni, philly } = removeBoundaryFilter()
 
         // remove filter while maintaining crash type filter (all or ksi)
-        let range = this.props.range || {}
+        const range = this.props.range || defaultRange
         const filterObj = {filterType: newFilterType, range}
 
         // set store filter state
@@ -511,7 +512,7 @@ class Map extends Component {
         let geoID = features.properties.geoid
 
         // get KSI and range state from store
-        const range = this.props.range || {}
+        const range = this.props.range || defaultRange
         const newFilterType = this.props.crashType || 'KSI'
         let isKSI = newFilterType === 'KSI' ? 'yes' : 'no'
 
@@ -681,7 +682,7 @@ class Map extends Component {
 
         const name = decodeURIComponent(geo[2])
         const newFilterType = params.filterParams
-        const range = {}
+        const range = defaultRange
         let isKSI = newFilterType === 'KSI' ? 'yes' : 'no'
 
         if(sourceLayer === 'county'){

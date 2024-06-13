@@ -6,7 +6,8 @@ import { counties, munis, philly } from '../search/dropdowns'
 import * as charts from './charts.js'
 import Footer from '../footer/footer.js'
 import print from './print.png'
-import { getDataFromKeyword, sidebarCrashType, sidebarRange, setSrc, setMapLoading, getDefaultRange, urlRoute } from '../../redux/reducers/mapReducer.js'
+import { getDataFromKeyword, sidebarCrashType, sidebarRange, setSrc, setMapLoading, urlRoute, defaultRange } from '../../redux/reducers/mapReducer.js'
+
 import './sidebar.css';
 
 
@@ -14,14 +15,12 @@ class Sidebar extends Component {
     constructor(props) {
         super(props)
 
-        const defaultRange = props.getDefaultRange()
-
         this.state = {
             data: 'default',
             context: 'the DVRPC region',
             crashType: 'KSI',
-            from: defaultRange.range.from,
-            to: defaultRange.range.to,
+            from: defaultRange.from,
+            to: defaultRange.to,
             loading: this.props.mapLoading,
             route: urlRoute
         }
@@ -366,7 +365,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         getCrashData: region => dispatch(getDataFromKeyword(region)),
-        getDefaultRange: () => dispatch(getDefaultRange()),
+        // getDefaultRange: () => dispatch(getDefaultRange()),
         setCrashTypeFilter: filter => dispatch(sidebarCrashType(filter)),
         setCrashRange: range => dispatch(sidebarRange(range)),
         setSrc: src => dispatch(setSrc(src)),
