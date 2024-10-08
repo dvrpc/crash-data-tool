@@ -558,8 +558,8 @@ class Map extends Component {
         // set URL state
         this.state.route.searchParams.set('filter', newFilterType)
         this.state.route.searchParams.set('geom', `${geoID},${sourceLayer},${encodeURI(name)}`)
-        
-        window.history.replaceState(null, null, `?geom=${geoID},${sourceLayer},${encodeURI(name)}&filter=${newFilterType}`)
+
+        window.history.replaceState(null, null, `${window.location.pathname}?geom=${geoID},${sourceLayer},${encodeURI(name)}&filter=${newFilterType}`)
     }
 
     // create bbox object from polygon & hit endpoints w/it
