@@ -440,7 +440,7 @@ class Map extends Component {
 
         // remove route
         this.state.route.searchParams.delete('geom')
-        window.history.replaceState(null, null, '/')
+        window.history.replaceState(null, null, window.location.pathname)
     }
 
     // add fill effect when hovering over a geography type (county or municipality)
@@ -559,7 +559,7 @@ class Map extends Component {
         this.state.route.searchParams.set('filter', newFilterType)
         this.state.route.searchParams.set('geom', `${geoID},${sourceLayer},${encodeURI(name)}`)
 
-        window.history.replaceState(null, null, `${window.location.pathname}?geom=${geoID},${sourceLayer},${encodeURI(name)}&filter=${newFilterType}`)
+        window.history.replaceState(null, null, `?geom=${geoID},${sourceLayer},${encodeURI(name)}&filter=${newFilterType}`)
     }
 
     // create bbox object from polygon & hit endpoints w/it
