@@ -29,8 +29,8 @@ const rangeFilter = (from, to) => {
 
 // default map range
 const defaultRange = {
-    from: 2017,
-    to: 2021
+    from: 2018,
+    to: 2022
 }
 const urlRoute = new URL(window.location.href)
 

@@ -231,7 +231,7 @@ class Sidebar extends Component {
 
                     <span id="crash-map-print-sidebar" onClick={this.setSrc}><img id="crash-map-print-icon" src={print} alt="print stats icon" /> <span className="crash-map-print-text">print statistics</span></span>
 
-                    <p className="sidebar-paragraphs first-paragraph">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for 2017 to 2021. Five years of data is typically used by local, state, and federal partners in safety analyses.</p>
+                    <p className="sidebar-paragraphs first-paragraph">This tool's default setting is limited to five years of killed and severe injury crashes (abbreviated as "KSI") for {defaultRange.from} to {defaultRange.to}. Five years of data is typically used by local, state, and federal partners in safety analyses.</p>
                     <p className="sidebar-paragraphs">The following charts and map are showing results for <strong>{crashType}</strong> crash types from <strong>{from}</strong> to <strong>{to}</strong> in <strong>{area}</strong>. You can adjust the range and severity type using the forms below:</p>
 
                     <form className="crash-map-charts-form" id="crash-map-update-range" onSubmit={this.updateRange}>
@@ -251,12 +251,14 @@ class Sidebar extends Component {
                                             <option value="2019">2019</option>
                                             <option value="2020">2020</option>
                                             <option value="2021">2021</option>
+                                            <option value="2022">2022</option>
                                         </select>
                                     </label>
 
                                     <label>
                                         To:
                                         <select name="to" className="hover-btn" defaultValue={to}>
+                                            <option value="2022">2022</option>
                                             <option value="2021">2021</option>
                                             <option value="2020">2020</option>
                                             <option value="2019">2019</option>
